@@ -1,5 +1,5 @@
 ---
-title: Matchup satellite data to ship, glider, or animal tracks
+title: Matchups satellite data to animal tracks
 author: NOAA CoastWatch
 date: May 20, 2021
 output:
@@ -7,25 +7,21 @@ output:
     variant: gfm
 ---
 
-# Matchup satellite data to ship, glider, or animal tracks
-history | Updated August 2023
+# Matchups to ship or animal tracks
+
+history | Modified August 2023
 
 In this exercise you will extract satellite data around a set of points defined by longitude, latitude, and time coordinates, like that produced by an animal telemetry tag, and ship track, or a glider tract.
 
-## The exercise demonstrates the following techniques:
-* Loading data from a tab- or comma-separated file
+The exercise demonstrates the following techniques:
+* Importing track data in csv file to data frame
 * Plotting the latitude/longitude points onto a map
 * Extracting satellite data along a track
 * Building an ERDDAP data-request URL
 * Saving results as a CSV file
 * Plotting the satellite data onto a map
 
-## Datasets used:
-* Chlorophyll a concentration from the European Space Agency's Ocean Colour Climate Change Initiative Monthly dataset v6.0
-
-* A loggerhead turtle telemetry track that has been sub-sampled to reduce the data requests needed for this tutorial from over 1200 to 25. The turtle was raised in captivity in Japan, then tagged and released on 05/04/2005 in the Central Pacific. Its tag transmitted for over 3 years and went all the way to the Southern tip of Baja California. The track data can be downloaded here: https://sunny_change_this/25317_05_subsampled.dat
-
-[COMMENTS] LINK TO THE DATA SOURCE?
+This data is taken from the ERDDAP server at [http://coastwatch.pfeg.noaa.gov/erddap/](http://coastwatch.pfeg.noaa.gov/erddap/)
 
 ## Install required packages and load libraries
 ```{r install,message=FALSE,warning=FALSE}
@@ -55,33 +51,34 @@ for (pk in list.of.packages) {
 }
 
 ```
-## Import Turtle track data into a data frame
+## Get XYZ coordinates
+In this exercise we willuse in the XYZ coordinates that have been brought in from a file. Installation of the "rerddapXtracto" package comes with the "Marlintag38606" dataset which we will use for this exercise. It is the track of a tagged marlin in the Pacific Ocean (courtesy of Dr. Mike Musyl of the Pelagic Research Group LLC). 
+
+The "Marlintag38606" file has this structure:  
 
 ```{r tag}
-turtle.df <- read.csv("25317_05_subsampled.dat")
-
-print(head(turtle.df, 2))
-
-print('Spatial corrdinate ranges')
-paste('latitude range', round(min(turtle.df$mean_lat), 2), "," ,round(max(turtle.df$mean_lat), 2))
-paste('longitude range', round(min(turtle.df$mean_lon), 2), "," ,round(max(turtle.df$mean_lon), 2))
-
+str(Marlintag38606)
 ```
+
+We will use the "date", "lon" and "lat" variables to get the matching satellite data. 
+Here the time variable is already in a date format.  Often when reading in your own data you will have to convert the date into a date format (Remember R syntax is Y for a 4 digit year and y for a 2 digit year)
 
 ```{r rename}
 
 ## For convenience make shorter names for the variables  
-xcoord <- turtle.df$mean_lon  
-ycoord <- turtle.df$mean_lat
-tcoord <- turtle.df$date
-
-
+xcoord <- Marlintag38606$lon  
+ycoord <- Marlintag38606$lat
+tcoord <- Marlintag38606$date
 
 ```
 
-## Request Satellite dataset and download its metadata
+## Select the dataset and download its metadata  
+For this example we will use the SeaWiFS 8-day composite chlorophyll dataset (ID erdSW2018chla8day)  
 
-We will use the SeaWiFS 8-day composite chlorophyll dataset (ID erdSW2018chla8day) using **rerddap**.
+**The script below:**  
+
+* Gathers information about the dataset (metadata) using **rerddap**  
+* Displays the information  
 
 **Set the following arguments for rerddap**  
 
@@ -90,11 +87,11 @@ We will use the SeaWiFS 8-day composite chlorophyll dataset (ID erdSW2018chla8da
 * The default source ERDDAP for **rerddap** is "https://upwell.pfeg.noaa.gov/erddap". Since we are pulling the data from the ERDDAP at "http://coastwatch.pfeg.noaa.gov/erddap/", change the url to url = "http://coastwatch.pfeg.noaa.gov/erddap/"
 
 ```{r dataInfo}
-dataset <- 'esa-cci-chla-monthly-v6-0'
+dataset <- 'erdSW2018chla8day'
 # Use rerddap to get dataset metadata 
 # if you encouter an error reading the nc file clear the rerrdap cache: 
 rerddap::cache_delete_all(force = TRUE)
-dataInfo <- rerddap::info(dataset, url= "https://oceanwatch.pifsc.noaa.gov/erddap/")
+dataInfo <- rerddap::info(dataset, url= "https://coastwatch.pfeg.noaa.gov/erddap/")
 # Display the metadata
 dataInfo
 ```
@@ -114,7 +111,7 @@ dataInfo
 
 ```{r rxtracto, message=FALSE}
 
-parameter <- 'chlor_a'
+parameter <- 'chlorophyll'
 
 xlen <- 0.2 
 ylen <- 0.2
@@ -123,7 +120,7 @@ ylen <- 0.2
 # If the dataInfo shows an altitude dimension, uncomment "zcoord <- 0" and include zcoord=zcoord in the rxtracto call.
 # zcoord <- 0.
 
-chl <- rxtracto(dataInfo, 
+swchl <- rxtracto(dataInfo, 
                   parameter=parameter, 
                   xcoord=xcoord, ycoord=ycoord, 
                   tcoord=tcoord, xlen=xlen, ylen=ylen)
@@ -132,8 +129,8 @@ chl <- rxtracto(dataInfo,
 
 After the extraction is complete, "swchl" will contain the following columns.
 
-```{r chl}
-str(chl)
+```{r swchl}
+str(swchl)
 ```
 
 
@@ -148,7 +145,7 @@ We will use the "plotTrack" function to plot the results.
 # Uncomment the png line and the dev.off() line to save the image
 # png(file="xyt_matchup.png")
 
-plotTrack(chl, xcoord, ycoord, tcoord, plotColor = 'algae')
+plotTrack(swchl, xcoord, ycoord, tcoord, plotColor = 'algae')
 
 #dev.off()
 ```
@@ -158,7 +155,7 @@ plotTrack(chl, xcoord, ycoord, tcoord, plotColor = 'algae')
 Make a cumulative animation of the track. This will take a minute to run. It creates an animated gif that will display in the Rstudio viewer window once the encoding to gif is done.
 
 ```{r track}
-plotTrack(chl, xcoord, ycoord, tcoord, plotColor = 'algae',
+plotTrack(swchl, xcoord, ycoord, tcoord, plotColor = 'algae',
                     animate = TRUE, cumulative = TRUE)
 ```
 
@@ -212,9 +209,6 @@ parameter <- 'chlor_a'
 
 ```{r dinfo}
 dataInfo
-
-
-
 ```
 
 
