@@ -13,7 +13,7 @@ history | Modified August 2023
 
 In this exercise you will extract satellite data around a set of points defined by longitude, latitude, and time coordinates, like that produced by an animal telemetry tag, and ship track, or a glider tract.
 
-The exercise demonstrates the following techniques:
+**The exercise demonstrates the following techniques:**
 * Importing track data in csv file to data frame
 * Plotting the latitude/longitude points onto a map
 * Extracting satellite data along a track
@@ -21,7 +21,11 @@ The exercise demonstrates the following techniques:
 * Saving results as a CSV file
 * Plotting the satellite data onto a map
 
-This data is taken from the ERDDAP server at [http://coastwatch.pfeg.noaa.gov/erddap/](http://coastwatch.pfeg.noaa.gov/erddap/)
+**Datasets used:**
+* Chlorophyll a concentration from the European Space Agency's Ocean Colour Climate Change Initiative Monthly dataset v6.0
+
+* A loggerhead turtle telemetry track that has been subsample to reduce the data requests needed for this tutorial from over 1200 to 25. The turtle was raised in captivity in Japan, then tagged and released on 05/04/2005 in the Central Pacific. Its tag transmitted for over 3 years and went all the way to the Southern tip of Baja California. The track data are stored in the data folder in this project folder.
+
 
 ## Install required packages and load libraries
 ```{r install,message=FALSE,warning=FALSE}
@@ -38,8 +42,8 @@ pkgTest <- function(x)
 }
 
 # create list of required packages
-list.of.packages <- c("ncdf4", "rerddap", "plotdap", "parsedate",
-                      "graphics", "maps", "mapdata", "RColorBrewer", "ggplot2", "gifski",
+list.of.packages <- c("ncdf4", "rerddap", "plotdap", "parsedate", "ggplot2",'rnaturalearth', 'rnaturalearthdata',
+                      "graphics", "maps", "mapdata", "RColorBrewer", "ggplot2", "gifski", 
                       "png", "rerddapXtracto")
 
 # create list of installed packages
@@ -51,86 +55,61 @@ for (pk in list.of.packages) {
 }
 
 ```
-## Get XYZ coordinates
-In this exercise we willuse in the XYZ coordinates that have been brought in from a file. Installation of the "rerddapXtracto" package comes with the "Marlintag38606" dataset which we will use for this exercise. It is the track of a tagged marlin in the Pacific Ocean (courtesy of Dr. Mike Musyl of the Pelagic Research Group LLC). 
-
-The "Marlintag38606" file has this structure:  
+## Import the track data into data frame
 
 ```{r tag}
-str(Marlintag38606)
+# Import csv file into a data frame
+turtle_df <- read.csv("../data/25317_05_subsampled.dat")
+
+# Show 3 rows from the data frame
+head(turtle_df,3)
 ```
 
-We will use the "date", "lon" and "lat" variables to get the matching satellite data. 
-Here the time variable is already in a date format.  Often when reading in your own data you will have to convert the date into a date format (Remember R syntax is Y for a 4 digit year and y for a 2 digit year)
+## Plot the track on a map
 
-```{r rename}
+```{r}
 
-## For convenience make shorter names for the variables  
-xcoord <- Marlintag38606$lon  
-ycoord <- Marlintag38606$lat
-tcoord <- Marlintag38606$date
 
 ```
 
-## Select the dataset and download its metadata  
-For this example we will use the SeaWiFS 8-day composite chlorophyll dataset (ID erdSW2018chla8day)  
 
-**The script below:**  
-
-* Gathers information about the dataset (metadata) using **rerddap**  
-* Displays the information  
-
-**Set the following arguments for rerddap**  
-
-* Set the dataset ID: dataset <- 'erdSW2018chla8day'
-
-* The default source ERDDAP for **rerddap** is "https://upwell.pfeg.noaa.gov/erddap". Since we are pulling the data from the ERDDAP at "http://coastwatch.pfeg.noaa.gov/erddap/", change the url to url = "http://coastwatch.pfeg.noaa.gov/erddap/"
-
-```{r dataInfo}
-dataset <- 'erdSW2018chla8day'
-# Use rerddap to get dataset metadata 
-# if you encouter an error reading the nc file clear the rerrdap cache: 
-rerddap::cache_delete_all(force = TRUE)
-dataInfo <- rerddap::info(dataset, url= "https://coastwatch.pfeg.noaa.gov/erddap/")
-# Display the metadata
-dataInfo
-```
-## Extract the satellite data  
-
-* Double check dataInfo to make sure the dataset covers the time, longitude, and latitude ranges in your XYT data.  
-
-* Use the name of the chlorophyll parameter that was displayed above in dataInfo: **parameter <- "chlorophyll"**  
-
-* Use the xcoord, ycoord, and tcoord vectors you extracted from the marlin tag file. 
-
-* Some datasets have an altitude dimension. If so, then zcood must be included in the rxtracto call. The "erdSW2018chla8day" dataset does not include an altitude dimension.  
+##Prepare track data for use in the ERDDAP data-request URL
 
 * Define the search "radius" for the gridded data. The **rxtracto** function allow you to set the size of the box used to collect data around the track points using the xlen and ylen arguments. The values for xlen and ylen are in degrees. For our example we 0.2 degrees for both arguments. Note: You can also submit vectors for xlen and ylen, as long as the are the same length as xcoord, ycoord, and tcoord
 
 * Run the rxtracto function to extract the data from ERDDAP.  
+```{r}
+
+dataset <- 'esa-cci-chla-monthly-v6-0'
+rerddap::cache_delete_all(force = TRUE)
+dataInfo <- rerddap::info(dataset, url= "https://oceanwatch.pifsc.noaa.gov/erddap")
+# Display the metadata
+dataInfo
+```
 
 ```{r rxtracto, message=FALSE}
-
-parameter <- 'chlorophyll'
+library('rerddapXtracto')
+parameter <- 'chlor_a'
 
 xlen <- 0.2 
 ylen <- 0.2
 
-# Some datasets have an altitude dimension. If so, then zcood must be included in the rxtracto call.  
-# If the dataInfo shows an altitude dimension, uncomment "zcoord <- 0" and include zcoord=zcoord in the rxtracto call.
-# zcoord <- 0.
-
-swchl <- rxtracto(dataInfo, 
+xcoords <- turtle_df$mean_lon
+ycoords <- turtle_df$mean_lat
+tcoords <- turtle_df$date
+chl_grid <- rxtracto(dataInfo, 
                   parameter=parameter, 
-                  xcoord=xcoord, ycoord=ycoord, 
-                  tcoord=tcoord, xlen=xlen, ylen=ylen)
+                  xcoord=xcoords, ycoord=ycoords, 
+                  tcoord=tcoords, xlen=xlen, ylen=ylen)
 
 ```
 
-After the extraction is complete, "swchl" will contain the following columns.
+```{r}
+require("ggplot2")
+require("plotdap")
 
-```{r swchl}
-str(swchl)
+myPlot <- plotTrack(chl_grid, xcoords, ycoords, tcoords, plotColor = 'algae')
+myPlot
 ```
 
 
