@@ -19,19 +19,21 @@ tract.
 ## Datasets used
 
 **Chlorophyll a concentration, the European Space Agency’s Ocean Colour
-Climate Change Initiative Monthly dataset v6.0** We’ll use the European
-Space Agency’s OC-CCI product
+Climate Change Initiative Monthly dataset v6.0**
+
+We’ll use the European Space Agency’s OC-CCI product
 (<https://climate.esa.int/en/projects/ocean-colour/>) to obtain
 chlorophyll data. This is a merged product combining data from many
 ocean color sensors to create a long time series (1997-present).
 
-**Loggerhead turtle telemetry track data** The turtle was raised in
-captivity in Japan, then tagged and released on 05/04/2005 in the
-Central Pacific. Its tag transmitted for over 3 years and went all the
-way to the Southern tip of Baja California. This dataset has been
-subsampled to reduce the data requests needed for this tutorial from
-over 1200 to 25. The track data are stored in the data folder in this
-project folder.
+**Loggerhead turtle telemetry track data**
+
+The turtle was raised in captivity in Japan, then tagged and released on
+05/04/2005 in the Central Pacific. Its tag transmitted for over 3 years
+and went all the way to the Southern tip of Baja California. This
+dataset has been subsampled to reduce the data requests needed for this
+tutorial from over 1200 to 25. The track data are stored in the data
+folder in this project folder.
 
 ## Install required packages and load libraries
 
@@ -88,7 +90,8 @@ ggplot(turtle_df, aes(mean_lon,mean_lat)) +
   geom_point(aes(x=mean_lon[length(mean_lon)],y=mean_lat[length(mean_lat)]), shape=22, size=3, fill="red")+
   geom_polygon(data = mapWorld, aes(x=long, y = lat, group = group)) + 
   coord_cartesian(xlim = c(120,260),ylim = c(15,60))+
-  labs(x="Longitude (deg)", y="Latitude (deg)")
+  labs(x="Longitude (deg)", y="Latitude (deg)", title="Turtle Track starting position (green) and ending position(red)")+
+  theme(plot.title=element_text(hjust=0.5))
 ```
 
 ![](images/trackplot-1.png)<!-- -->
@@ -365,10 +368,11 @@ from the turtle and associated satellite chlor-a values.
 
 ``` r
 # Create a data frame coords from turtle and chlora values 
-new_df <- as.data.frame(cbind(xcoords, ycoords, chlora))
+new_df <- as.data.frame(cbind(xcoords, ycoords,  chl_grid$`requested lon min`, chl_grid$`requested lon max`, chl_grid$`requested lat min`, chl_grid$`requested lon max`,  chlora))
 
 # Set variable names
-names(new_df) <- c("Lon", "Lat", "Chlor_a")
+names(new_df) <- c("Lon", "Lat", "Matchup_Lon_Lower", "Matchup_Lon_Upper", "Matchup_Lat_Lower", "Matchup_Lat_Upper",  "Chlor_a")
+write.csv(new_df, "matchup_df.csv")
 ```
 
 ### Plot using ggplot and data in the new dataframe
@@ -383,11 +387,13 @@ ggplot(new_df) +
   geom_polygon(data = mapWorld, aes(x=long, y = lat, group = group)) + 
   coord_cartesian(xlim = c(120,260),ylim = c(15,60)) +
   scale_color_gradientn(colours=brewer.pal(n = 8, name = "YlGn")) +
-  labs(x="", y="")
+  labs(x="Longitude (deg)", y="Latitude (deg)", title="Turtle Track with chlor-a values")+
+  theme(plot.title=element_text(hjust=0.5))
 ```
 
 ![](images/ggplot_track-1.png)<!-- -->
-\## On your own!
+
+## On your own!
 
 ##### Exercise 1:
 
