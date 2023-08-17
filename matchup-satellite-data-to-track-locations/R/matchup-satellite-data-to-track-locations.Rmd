@@ -23,10 +23,12 @@ This tutorial will demonstration how to extract satellite data around a set of p
 * Plotting the satellite data onto a map
 
 ## Datasets used
+
 **Chlorophyll a concentration, the European Space Agency's Ocean Colour Climate Change Initiative Monthly dataset v6.0**
 We'll use the European Space Agency's OC-CCI product (https://climate.esa.int/en/projects/ocean-colour/) to obtain chlorophyll data. This is a merged product combining data from many ocean color sensors to create a long time series (1997-present).
+
 **Loggerhead turtle telemetry track data**
-The turtle was raised in captivity in Japan, then tagged and released on 05/04/2005 in the Central Pacific. Its tag transmitted for over 3 years and went all the way to the Southern tip of Baja California. This dataset has been subsample to reduce the data requests needed for this tutorial from over 1200 to 25.  The track data are stored in the data folder in this project folder.
+The turtle was raised in captivity in Japan, then tagged and released on 05/04/2005 in the Central Pacific. Its tag transmitted for over 3 years and went all the way to the Southern tip of Baja California. This dataset has been subsampled to reduce the data requests needed for this tutorial from over 1200 to 25.  The track data are stored in the data folder in this project folder.
 
 ## Install required packages and load libraries
 ```{r install,message=FALSE,warning=FALSE}
@@ -57,7 +59,7 @@ for (pk in list.of.packages) {
 ```
 ## Import the track data into data frame
 
-```{r tag}
+```{r track}
 # Import csv file into a data frame
 turtle_df <- read.csv("../data/25317_05_subsampled.dat")
 
@@ -66,8 +68,8 @@ head(turtle_df,3)
 ```
 
 ## Plot the track on a map
-
-```{r}
+ 
+```{r trackplot}
 
 # Download world map
 mapWorld <- map_data("world", wrap=c(0,360))
@@ -87,11 +89,11 @@ ggplot(turtle_df, aes(mean_lon,mean_lat)) +
 
 ## Extract data from a satellite dataset corresponding to points on the track
 
-We are going to download data from an ERDDAP server using the following steps:
+We are going to download data from an ERDDAP data server using the following steps:
 
-* Select a dataset and ERDDAP server
-* Get data information using rerddap
-* Extract data using rxtracto function with lat and lon of the turtle track data
+* Select a dataset and ERDDAP data server
+* Get data information using <code>rerddap</code> package
+* Extract data using <code>rxtracto</code> function with latitudes and longitudes of the turtle track data
 * Create data frame with the satellite data and turtle tracks
 
 ### Select a dataset and get Data Info using rerddap function
@@ -112,7 +114,8 @@ The time range is 1997-09-04 to 2023-03-01 (at the day of this writing), which c
 You should also note the name of the variable you will be downloading. For this dataset it is "__chlor_a__"
 
 
-```{r}
+```{r datainfo}
+
 # Deleting all cached files
 rerddap::cache_delete_all(force = TRUE)
 
@@ -128,7 +131,7 @@ dataInfo
 
 ### Extract data using rxtracto function
 
-Define the bounding box within which to search for coordinates.  The **rxtracto** function allow you to set the size of the box used to collect data around the track points using the xlen and ylen arguments. The values for xlen and ylen are in degrees. For our example we 0.2 degrees for both arguments. Note: You can also submit vectors for xlen and ylen, as long as the are the same length as xcoord, ycoord, and tcoord.
+First we need to define the bounding box within which to search for coordinates.  The **rxtracto** function allow you to set the size of the box used to collect data around the track points using the xlen and ylen arguments. The values for xlen and ylen are in degrees. For our example we 0.2 degrees for both arguments. Note: You can also submit vectors for xlen and ylen, as long as the are the same length as xcoord, ycoord, and tcoord.
 
 
 ```{r rxtracto, message=FALSE}
@@ -140,9 +143,15 @@ parameter <- 'chlor_a'
 xlen <- 0.2 
 ylen <- 0.2
 
+# Create date column using year, month and day
+turtle_df$date <- as.Date(paste(turtle_df$year, turtle_df$month, turtle_df$day, sep="-"))
+
+# Get variables x, y, t coordinates from turtle track data
 xcoords <- turtle_df$mean_lon
 ycoords <- turtle_df$mean_lat
 tcoords <- turtle_df$date
+
+# Extract satellite data using x, y, t coordinates from turtle track data
 chl_grid <- rxtracto(dataInfo, 
                   parameter=parameter, 
                   xcoord=xcoords, ycoord=ycoords, 
@@ -152,71 +161,53 @@ chl_grid <- rxtracto(dataInfo,
 
 ## Check variables extracted using rxtracto
 
-```{r}
+```{r check_extracto}
 # Check all variables extracted using rxtracto
-names(chl_grid)
+chl_grid
 ```
 
 ### Plot a histogram of the chlorophyll data
 
-```{r}
+```{r hist}
 
-chlora <- chl_grid$`mean chlor_a`
+chlora <- chl_grid$"mean chlor_a"
 
-# histogram with added parameters
+# Histogram of Chlor_a
 hist(chlora,
-main="Histogram of Chlorophyll",
-xlab="Chlorophyll",
-breaks = 40,
-col="lightblue",
-freq=FALSE
+    main="Histogram of Chlorophyll-a",
+    xlab="Chlorophyll",
+    breaks = 40,
+    col="lightblue",
+    freq=FALSE
 )
 
 ```
 ## Plot a histogram of the log of the chlorophyll data
 
-```{r}
+```{r loghist}
 
-
-# histogram with added parameters
+# Histogram of Log of Chlor_a
 hist(log(chlora),
-main="Histogram of Log(Chlorophyll)",
-xlab="Chlorophyll",
-breaks = 30,
-col="lightblue",
-freq=FALSE
+    main="Histogram of Log(Chlorophyll-a)",
+    xlab="Chlorophyll",
+    breaks = 30,
+    col="lightblue",
+    freq=FALSE
 )
 
 ```
-After the log transformatin the data seem less skewed and more normal.
+After the log transformation the data look more normal.
 The range of log chlorophyll is about -2.9 to -0.3 but most of the values are between -2.5 and -0.8.
 Knowing the distribution of values can also help to set the color bar range for our map.
 
-```{r}
 
-```
-
-## Plotting the results
-
+## Plotting the results using plotTrack
 We will use the "plotTrack" function to plot the results.  "plotTrack" is a function of the "rerddapXtracto" package designed specifically to plot the results from "rxtracto".  
   
-```{r plot}
+```{r chloraplot}
 
 # Plot tracks with color: algae specifically designed for chlorophyll
 plotTrack(chl_grid, xcoords, ycoords, tcoords, size=3, plotColor = 'algae')
-
-```
-
-```{r land}
-mapWorld <- map_data("world", wrap=c(0,360))
-
-ggplot(chlsta) +
-  geom_point(aes(x,y,color=chl)) +
-  geom_polygon(data = mapWorld, aes(x=long, y = lat, group = group)) + 
-  coord_cartesian(xlim = c(120,260),ylim = c(15,60)) +
-  scale_color_gradientn(colours=brewer.pal(n = 8, name = "YlGn")) +
-  labs(x="", y="")
-
 
 ```
 
@@ -224,11 +215,65 @@ ggplot(chlsta) +
 
 Make a cumulative animation of the track. This will take a minute to run. It creates an animated gif that will display in the Rstudio viewer window once the encoding to gif is done.
 
-```{r track}
-library(plotdap)
-plotTrack(swchl, xcoord, ycoord, tcoord, plotColor = 'algae',
+```{r animatetrack, message=FALSE}
+
+# Animate tracks
+plotTrack(chl_grid, xcoords, ycoords, tcoords, plotColor = 'algae',
                     animate = TRUE, cumulative = TRUE)
 ```
      
-     
+
+## Plotting the results using ggplot
+
+### Create a data frame with turtle track and chlor-a
+We will first create a data frame that contains longitudes and latitudes from the turtle and associated satellite chlor-a values.
+
+```{r dataframe}
+
+# Create a data frame coords from turtle and chlora values 
+new_df <- as.data.frame(cbind(xcoords, ycoords, chlora))
+
+# Set variable names
+names(new_df) <- c("Lon", "Lat", "Chlor_a")
+```
+
+### Plot using ggplot and data in the new dataframe
+
+```{r ggplot_track}
+
+# Import world map
+mapWorld <- map_data("world", wrap=c(0,360))
+
+# Draw the track positions with associated chlora values
+ggplot(new_df) +
+  geom_point(aes(Lon,Lat,color=Chlor_a)) +
+  geom_polygon(data = mapWorld, aes(x=long, y = lat, group = group)) + 
+  coord_cartesian(xlim = c(120,260),ylim = c(15,60)) +
+  scale_color_gradientn(colours=brewer.pal(n = 8, name = "YlGn")) +
+  labs(x="", y="")
+
+
+```
+## On your own!
+
+##### Exercise 1:
+Repeat the steps above with a different dataset.
+For example, extract sea surface temperature data using the following dataset:
+https://coastwatch.pfeg.noaa.gov/erddap/griddap/nesdisGeoPolarSSTN5NRT_Lon0360.html  
+* This dataset is a different ERDDAP, so remember the change the base URL.
+* Set the new dataset ID and variable name.
+
+
+##### Exercise 2:
+Go to an ERDDAP of your choice, find a dataset of interest, generate the URL, copy it and edit the script above to run a match up on that dataset.
+To find other ERDDAP servers, you can use this search engine:
+http://erddap.com/  
+* This dataset will likely be on a different ERDDAP, so remember the change the base URL.
+* Set the new dataset ID and variable name.
+* Check the metadata to make sure the dataset covers the spatial and temporal range of the track dataset. 
+
+##### Optional
+Repeat the steps above with a daily version of the OC-CCI dataset to see how cloud cover can reduce the data you retrieve. 
+https://oceanwatch.pifsc.noaa.gov/erddap/griddap/CRW_sst_v1_0.html
+
  
