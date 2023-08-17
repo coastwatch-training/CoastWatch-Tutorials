@@ -8,7 +8,7 @@ The repository is organized in a directory structure and catagorized by topics. 
 
 ### Questions?
 
-If you need any further assistance or questions, please submit an issue on github.
+If you need any further assistance, questions or error reporting, please submit an issue on github.
 
 
 
