@@ -7,18 +7,26 @@ output:
     variant: gfm
 ---
 
-# Create and plot timeseries  
->notebook filename | timeseries_satellite_data.Rmd    
-history | Created May 2021: converted to R notebook from Timeseries_CHL.R  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.path = "images/"
+)
+```
 
-This example extracts a time-series of monthly satellite chlorophyll data for the period of 1997-present from four different monthly satellite datasets:  
+# Create and plot timeseries  
+> Updated August 2023 <br/>
+
+## Objective
+
+This exercise will show how to extract a time-series of monthly satellite chlorophyll data for the period of 1997-present from four different monthly satellite datasets:  
 
 * SeaWiFS, 1997-2012 (ID = erdSWchlamday)  
 * MODIS, 2002-present (ID = erdMH1chlamday)  
 * VIIRS, 2012-present  (ID = nesdisVHNSQchlaMonthly)  
 * OC-CCI, 1997-2017, a blended product that merges multiple satellite missions  (ID = pmlEsaCCI50OceanColorMonthly)  
 
-The exercise demonstrates the following techniques:  
+## The tutorial demonstrates the following techniques
 
 * Using **xtracto_3D** to extract data from a rectangular area of the ocean over time
 * Using **rerddap** to retrieve information about a dataset from ERDDAP
@@ -55,25 +63,17 @@ for (pk in list.of.packages) {
   pkgTest(pk)
 }
 
-# create list of required packages not installed
-#new.packages <- list.of.packages[!(list.of.packages %in% pkges)]
-
-# install missing packages
-#if(length(new.packages)) install.packages(new.packages)
-
 ```
 ## Define the area boundaries  
-Next, extract data for an area in the Southern California Bight, between -120 to -115 degrees east longitude and 31 to 34 degrees north latitude.  
-
-* Set the longitude range: xcoord<-c(-120, -115)  
-* Set the latitude range: xcoord<-c(31,34)  
+Next, extract data for an area in the Gulf of Mexico, between -95 to -90°W longitude and 25-30°N latitude.  
 
 ```{r bounds}
-xcoord<-c(-120, -115)
-ycoord<-c(31,34)
+xcoord<-c(-95, -90)
+ycoord<-c(25,30)
 
 ##Format Box Coordinates for cosmetics, to make a nice map title
 ttext<-paste(paste(abs(xcoord), collapse="-"),"W, ", paste(ycoord, collapse="-"),"N")
+
 ```
 ## Extract satellite data with rxtracto_3D    
 For each dataset, you will extract satellite data for the entire length of the available timeseries.  
@@ -178,7 +178,7 @@ chlMODIS<-rxtracto_3D(dataInfo,
 ```
 ### Get VIIRS data
 
-First get the dataset metadata with "rerddap::info" by changeing the dataset ID to "nesdisVHNSQchlaMonthly"
+First get the dataset metadata with "rerddap::info" by changing the dataset ID to "nesdisVHNSQchlaMonthly"
 
 Repeat the same commands but change the name of the dataset.
 ```{r dataInfo3}
@@ -188,7 +188,8 @@ Repeat the same commands but change the name of the dataset.
 #url <- 'https://coastwatch.pfeg.noaa.gov/erddap/'
 #dataInfo <- rerddap::info('nesdisVHNSQchlaMonthly',url=url)
 
-dataInfo <- rerddap::info('erdVHNchlamday')  # alternate dataset to use
+dataInfo <- rerddap::info('nesdisVHNSQchlaMonthly',url='https://coastwatch.pfeg.noaa.gov/erddap/')  
+# alternate dataset to use
 dataInfo
 ```
 **Set the arguments for VIIRS Extraction**  
@@ -221,10 +222,10 @@ chlVIIRS<-rxtracto_3D(dataInfo,
                       zcoord=zcoord)
 
 ## Remove extraneous zcoord dimension for chlorophyll 
-chlVIIRS$chla <- drop(chlVIIRS$chla)
+chlVIIRS$chlor_a <- drop(chlVIIRS$chlor_a)
 ```
 
-## Create timeseries of mean montly data  
+## Create timeseries of mean monthly data  
 
 **The script below:**  
 
@@ -236,19 +237,19 @@ chlVIIRS$chla <- drop(chlVIIRS$chla)
 ## The c(3) indicates the dimension to keep - in this case time 
 chlSeaWiFS$avg <- apply(chlSeaWiFS$chlorophyll, c(3),function(x) mean(x,na.rm=TRUE))
 chlMODIS$avg <- apply(chlMODIS$chlorophyll, c(3),function(x) mean(x,na.rm=TRUE))
-chlVIIRS$avg <- apply(chlVIIRS$chla, c(3),function(x) mean(x,na.rm=TRUE))
+chlVIIRS$avg <- apply(chlVIIRS$chlor_a, c(3),function(x) mean(x,na.rm=TRUE))
 
 ## Temporally average all of the data into one map 
 ## The c(1,2) indicates the dimensions to keep - in this case latitude and longitude  
 chlSeaWiFS$avgmap <- apply(chlSeaWiFS$chlorophyll,c(1,2),function(x) mean(x,na.rm=TRUE))
 chlMODIS$avgmap <- apply(chlMODIS$chlorophyll,c(1,2),function(x) mean(x,na.rm=TRUE))
-chlVIIRS$avgmap <- apply(chlVIIRS$chla,c(1,2),function(x) mean(x,na.rm=TRUE))
+chlVIIRS$avgmap <- apply(chlVIIRS$chlor_a,c(1,2),function(x) mean(x,na.rm=TRUE))
 ```
 ## Plot time series  
 * Displays a timeseries plot of all three datasets
 
 ```{r plot}
-## To print out a file uncomment the png command and the dev.off command
+## To print out the plot uncomment the png command and the dev.off command
 ##png(file="CHL_timeseries.png", width=10,height=7.5,units="in",res=500)
 plot(as.Date(chlSeaWiFS$time), chlSeaWiFS$avg, 
      type='b', bg="blue", pch=21, xlab="", cex=.7,
@@ -359,8 +360,8 @@ for(i in 1:4) {
          geom_tile(na.rm=T) +
          geom_polygon(data = coast, aes(x=long, y = lat, group = group), fill = "grey80") +
          theme_bw(base_size = 12) + ylab("Latitude") + xlab("Longitude") +
-         coord_fixed(1.3, xlim = c(-120,-116), ylim = ycoord) +
-         scale_fill_gradientn(colours = rev(rainbow(12)), na.value = NA, limits=c(-2,3)) +
+         coord_fixed(1.3, xlim = c(-95,-90), ylim = ycoord) +
+         scale_fill_gradientn(colours = rev(rainbow(12)), na.value = NA, limits=c(-2.5,3)) +
          ggtitle(paste("Average", datasetnames[i])
       ) 
 

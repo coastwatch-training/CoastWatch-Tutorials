@@ -23,7 +23,7 @@ There are buoys in many locations around the world that provide data streams of 
 
 ## Objective
 
-This tutorial will demonstration how to shape satellite data into a buoy data format
+This tutorial will demonstrate how to shape satellite data into a buoy data format
 
 ## The tutorial demonstrates the following techniques
 
