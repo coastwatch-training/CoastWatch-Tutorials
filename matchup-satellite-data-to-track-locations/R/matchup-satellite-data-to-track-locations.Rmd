@@ -4,10 +4,6 @@ author: NOAA CoastWatch
 date: August 2023
 output:
   md_document:
-<<<<<<< HEAD
-    variant: gfm
----
-=======
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -15,7 +11,6 @@ knitr::opts_chunk$set(
   fig.path = "images/"
 )
 ```
->>>>>>> sun-dev
 
 # Matchup Satellite data to track locations
 
