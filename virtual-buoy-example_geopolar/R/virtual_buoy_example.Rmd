@@ -33,7 +33,7 @@ This tutorial will demonstrate how to shape satellite data into a buoy data form
 * Resampling buoy data (aggregation) to match satellite data temporal resolution
 * Validating the  satellite data with the actual buoy data
 * Performing a linear regression of satellite vs. buoy data
-* Creating residual plot 
+* Creating a scatter plot of satellite vs. buoy data with the regression line
 
 ## Datasets used
 
