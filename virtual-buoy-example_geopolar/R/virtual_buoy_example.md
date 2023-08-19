@@ -15,7 +15,7 @@ be used to create a dataset in a buoy data format.
 
 ## Objective
 
-This tutorial will demonstration how to shape satellite data into a buoy
+This tutorial will demonstrate how to shape satellite data into a buoy
 data format
 
 ## The tutorial demonstrates the following techniques
@@ -274,13 +274,14 @@ regression
     # Run linear regression 
     model <- lm(mean_sst ~ sst, data = merged_df)   
 
-## Plot fitted vs. residuals
+## Plot satellite vs. buoy data and overlay the regression line
 
-    # Plot fitted vs residuals 
-    ggplot() +
-      geom_point(aes(x = model$fitted.values, y = model$residuals), size=0.8) +
-      geom_hline(yintercept = 0, color = "red") +
-      labs(x = "Fitted Values", y = "Residuals", title = "Residual Plot") +
+    ggplot(merged_df, aes(x=sst, y=mean_sst)) +
+      geom_point(color="black", size=1) +                      # Plot the data points
+      geom_smooth(method="lm", se=FALSE) +
+      labs(x = "SST from Buoy", y = "SST from Satellite", title = "Satellite vs Buoy data with regression line") +
       theme(plot.title=element_text(hjust=0.5))
+
+    ## `geom_smooth()` using formula = 'y ~ x'
 
 ![](images/unnamed-chunk-13-1.png)
