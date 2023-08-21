@@ -9,7 +9,11 @@ date created: "7/23/2021"
 
 > notebook filename \| sea_ice_extent.Rmd
 
-Calculation of sea ice extent is a common need in the polar regions. This exercise demonstrates how to calculate sea ice area and extent for a projected dataset using the cell area. The R terra package allows us to easily generate the cell areas (even for projected datasets).
+#COMMENT: what's the difference between area and extent? I would put the definitions at the beginning. added, copied from NSIDC.
+Calculation of sea ice extent is a common need in the polar regions. This exercise demonstrates how to calculate sea ice area and extent for a projected dataset using the cell area. Sea ice area is the total region covered by ice. Extent is the total region with at least 15 percent sea ice cover. 
+
+The R terra package allows us to easily generate the area of each cell (even for projected datasets).
+
 
 This exercise demonstrates the following techniques:
 
@@ -39,7 +43,7 @@ Key R packages and functions used:
 
 Terra is an R package for geospatial data handling. Terra handles the spatial analysis of projected data. Learn more about terra via the links in the references section at the end of this tutorial.
 
-The current CRAN version of terra (1.3-4) has a bug so we will need to install the development version (1.3-15). The current CRAN version of terra ()
+The current CRAN version of terra (1.3-4) has a bug so we will need to install the development version (1.3-15).
 
 The code in this exercise was tested with terra 1.3-15 and 1.7-38.
 
@@ -72,7 +76,7 @@ download.file(data_url, destfile=f, mode="wb")
 -   Create spatial object
 -   Assign the coordinate reference system. Here we use the EPSG code as decribed in the dataset metadata
 -   Calculate the cell areas
--   View the nominal generic resolution
+-   View the nominal generic resolution  # COMMENT: what does that mean? nominal generic? 
 
 ```{r spatial_raster}
 ice_rast <- rast(f)
@@ -99,7 +103,7 @@ true_cell_area
 Plot the true cell area in km squared with a land mask
 
 ```{r plot_area}
-
+#COMMENT: I would add some explanations here: how do you know what's land? what is this 100000 factor?
 masked_area <- mask(true_cell_area, ice_rast) /100000
 plot(masked_area)
 
@@ -110,8 +114,8 @@ plot(masked_area)
 -   The sea ice concentration data is stored in the spatial raster object (ice_rast).
 -   The concentration values are represented as ice fraction
 -   Sea ice area can be calculated by multiplying the ice fraction values by the calculated cell area
--   Sea ice extent value is defined as 1 for ice fraction equal or greater than 0.15 and 0 otherwise. First
--   so we can simply multiply the ice values by the calculated cell area to determine the overall ice area.
+-   Sea ice extent value is defined as 1 for ice fraction equal or greater than 0.15 and 0 otherwise. 
+-   So we can simply multiply the ice fraction values by the calculated cell areas to determine the overall ice area.
 -   The resulting sea ice area is in square kilometers
 
 ```{r}
@@ -124,7 +128,7 @@ sia
 
 -   Similar to the total sea ice calculation, the concentration values represented as ice fraction are used for the extent calculation
 
--   Sea ice extent defines each grid as either "ice-covered" or "not ice-covered" with a threshold value, typically 15%. In extent calculation, the sea ice concentration fractions first need to be converted to 1 if the fraction value is equal or greater than 0.15 and 0 otherwise. More information about extent can be found from NSIDC page below
+-   Sea ice extent defines each grid as either "ice-covered" or "not ice-covered" with a threshold value, typically 15%. In extent calculation, the sea ice concentration fractions first need to be converted to 1 if the fraction value is equal or greater than 0.15 and 0 otherwise. More information about extent can be found from the NSIDC page below
 
 -   Sea ice extent can be calculated by multiplying the extent value of 0 and 1 by the calculated cell area.
 
