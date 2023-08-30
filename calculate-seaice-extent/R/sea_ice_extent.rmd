@@ -34,6 +34,13 @@ __Polar Stereographic Grid Cell Area Values of 25km grid, Polar Stereographic (N
 This dataset includes area values (m<sup>2</sup>) of each grid cell in the 25km resolution Northern Polar Stereographic projection. This dataset is available on the <a href="https://polarwatch.noaa.gov/erddap/info/pstere_gridcell_N25k/index.html">PolarWatch ERDDAP</a>
 
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.path = "images/"
+)
+```
+
 
 ```{r Setup}
 
@@ -58,6 +65,7 @@ for (pk in list.of.packages) {
 # Set up download method as libcurl, this is only needed for Windows machines
 options(download.file.method="libcurl", url.method="libcurl")
 ```
+
 
 # Get the sea ice data from ERDDAP
 
@@ -161,9 +169,10 @@ download.file(cell_url, destfile=f, mode="wb")
 ## Examine grid cell dataset metadata and extract values
 
 Just like the sea ice concentration dataset, we will examine the metadata and extract the variables of grid cell areas along with x and y grids.  
+
 ```{r results="hide"}
 # Open netcdf file
-nc1=nc_open('gridcell')
+nc1=nc_open('gridcell.nc')
 
 # Examine data metadata
 print(nc1)
