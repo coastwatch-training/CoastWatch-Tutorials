@@ -297,7 +297,7 @@ print(paste("Sea Ice Extent (km^2): ", extent))
 
     ## [1] "Sea Ice Extent (km^2):  13608755.1037903"
 
-## Create a time series with 12 months of data
+## Generate the sea ice area and extent time series
 
 ``` r
 # Replicate grid areas for all timestep
@@ -311,12 +311,12 @@ area12 <- apply(area_total12, c(3), sum)
 ext12 <- apply(ext_total12, c(3), sum)
 ```
 
-## Plot 12 time step
+## Plot the sea ice area and extent time series
 
 ``` r
 upper = max(max(ext12), max(area12))
 lower = min(min(ext12), min(area12))
-plot(dates,ext12,type='o',pch=20,xlab='',ylab='Sea ice area (km^2)', col="blue" ,  ylim=c(lower, upper))
+plot(dates,ext12,type='o',pch=20,xlab='Date',ylab='Area (km^2)', col="blue" , ylim=c(lower, upper),  main="2021 Monthly Sea ice area and sea ice extent")
 lines(dates, area12, type='o', pch=20, col="red")
 legend("topright", legend=c("Sea ice Area", "Sea ice Extent"),
        col=c("red", "blue"), lty=1:1, cex=0.8)
