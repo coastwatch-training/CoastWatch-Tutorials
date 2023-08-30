@@ -2,8 +2,11 @@
 title: "Calculate sea ice extent"
 author: "NOAA CoastWatch"
 date updated: "8/30/2023"
-date created: "7/23/2021"
+output:
+  md_document:
+    variant: gfm
 ---
+
 
 # Calculate sea ice extent
 

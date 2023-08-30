@@ -1,218 +1,326 @@
----
-title: "Calculate sea ice extent"
-author: "NOAA CoastWatch"
-date updated: "7/10/2023"
-date created: "7/23/2021"
----
-
 # Calculate sea ice extent
 
 > notebook filename \| sea_ice_extent.Rmd
 
-Calculation of sea ice extent is a common need in the polar regions. This exercise demonstrates how to calculate sea ice area and extent for a projected dataset using the cell area. The R terra package allows us to easily generate the cell areas (even for projected datasets).
+## Background
 
-This exercise demonstrates the following techniques:
+The sea ice cover is one of the key components of the polar ecological
+and climatological research. This measurement has gained attention
+because of the recent decrease in the Arctic sea ice cover. Satellite
+observations are a key tool in tracking sea ice cover, providing
+continuous global coverage extending back to 1978. Typically, sea ice
+cover is reported as sea ice concentration, which is the percent areal
+coverage of ice within a grid cell. Depending on the application,
+additional parameters of interest can be calculated from sea ice
+cover:  
+\* **Sea ice area** - the sum of the product of ice concentration and
+area of all grid cells with at least 15% ice concentration.  
+\* **Sea ice extent** - the sum of the areas of all grid cells with at
+least 15% ice concentration
 
--   Accessing the sea ice data from the PolarWatch ERDDAP\
+## Objective
 
--   Calculating the area for each cell in the data grid\
+This tutorial will demonstration how to calculate the sea ice area and
+extent using sea ice concentration and grid cell area data. Please visit
+the
+<a href="https://nsidc.org/learn/ask-scientist/what-difference-between-sea-ice-area-and-extent#:~:text=But%20NSIDC%20scientists%2C%20like%20most,the%20total%20in%20their%20entirety.&text=Calculating%20sea%20ice%20extent%20means,with%2015%20percent%20or%20more.">NSIDC
+website</a> for more detailed descriptions of the calculations.
 
--   Plotting the area with a land mask\
+## The tutorial demonstrates the following techniques
 
--   Calculating the sea ice area\
+- Downloading and saving a netcdf file from PolarWatch ERDDAP data
+  server
+- Accessing satellite data and metadata in polar stereographic
+  projection
+- Downloading and adding grid cell area data to the satellite data
+- Visualizing data on a map
+- Computing sea ice area and extent using sea ice concentration data
+- Plotting a time series of sea ice area and extent
 
--   Calculating the sea ice extent\
+## Datasets used
 
-Key R packages and functions used:
+**Sea Ice Concentration, NOAA/NSIDC Climate Data Record V4, Northern
+Hemisphere**  
+The Sea ice concentration (SIC) dataset used in this exercise is
+produced by NOAA NSIDC from passive microwave sensors at part of the
+Climate Data Record. It is a science quality dataset of monthly averages
+the extends from 1978-2022. SIC is reported as the fraction (0 to 1) of
+each grid cell that is covered by ice. The data are mapped in the
+Northern Polar Stereographic projection (EPSG:3413). The resolution is
+25km, meaning each grid in this data set represents a value that covers
+a 25km by 25km area. The dataset is available on the
+<a href="https://polarwatch.noaa.gov/catalog/ice-sq-nh-nsidc-cdr-v4/preview/?dataset=monthly&var=cdr_seaice_conc_monthly&time_min=2022-12-01T00:00:00Z&time_max=2022-12-01T00:00:00Z&proj=epsg3413&colorBar=KT_ice,,,0,1,">PolarWatch
+data portal</a> and can be downloaded directly from the PolarWatch
+ERDDAP at the following link:
+<https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4nhmday.graph>
 
--   **terra::rast** - the spatial raster object for the data\
+**Polar Stereographic Grid Cell Area Values of 25km grid, Polar
+Stereographic (North), NSIDC Ancillary Data**  
+This dataset includes area values (m<sup>2</sup>) of each grid cell in
+the 25km resolution Northern Polar Stereographic projection. This
+dataset is available on the
+<a href="https://polarwatch.noaa.gov/erddap/info/pstere_gridcell_N25k/index.html">PolarWatch
+ERDDAP</a>
 
--   **terra::crs** - a function for assigning a projection to a spatial raster object\
+``` r
+# Function to check if pkgs are installed, install missing pkgs, and load
+pkgTest <- function(x)
+{
+  if (!require(x,character.only = TRUE))
+  {
+    install.packages(x,dep=TRUE,repos='http://cran.us.r-project.org')
+    if(!require(x,character.only = TRUE)) stop(x, " :Package not found")
+  }
+}
 
--   **terra::cellSize** - the function to calculate grid cell area\
+list.of.packages <- c( "ggplot2" ,"ncdf4",  "RColorBrewer", "scales")
 
--   **terra::mask** - a function for applying a land mask to the spatial raster object\
-
--   **terra::ifel** - a function for getting values based on conditions\
-
-## Getting set up
-
-Terra is an R package for geospatial data handling. Terra handles the spatial analysis of projected data. Learn more about terra via the links in the references section at the end of this tutorial.
-
-The current CRAN version of terra (1.3-4) has a bug so we will need to install the development version (1.3-15). The current CRAN version of terra ()
-
-The code in this exercise was tested with terra 1.3-15 and 1.7-38.
-
-`install.packages('terra')`
-
-*Note: Installing terra depends on R 3.5.0 or newer and imports the Rcpp and raster packages.*
-
-
-```r
-# Load terra, make sure you have it installed first, see above
-library(terra)
+# create list of installed packages
+pkges = installed.packages()[,"Package"]
+for (pk in list.of.packages) {
+  pkgTest(pk)
+}
 ```
 
-```
-## terra 1.7.18
-```
+    ## Loading required package: ggplot2
 
-```
-## 
-## Attaching package: 'terra'
-```
+    ## Loading required package: ncdf4
 
-```
-## The following object is masked from 'package:scales':
-## 
-##     rescale
-```
+    ## Loading required package: RColorBrewer
 
-```
-## The following object is masked from 'package:rgdal':
-## 
-##     project
-```
+    ## Loading required package: scales
 
-```
-## The following object is masked from 'package:knitr':
-## 
-##     spin
-```
-
-```r
+``` r
 # Set up download method as libcurl, this is only needed for Windows machines
 options(download.file.method="libcurl", url.method="libcurl")
 ```
 
 # Get the sea ice data from ERDDAP
 
-Here we download the average monthly sea ice concentration for the Arctic in December 2019. We are using the NSIDC Sea Ice Concentration Climate Data Record (NSIDC ID: G002202). We will download a netCDF file and then load it in as a spatial raster.
+Here we download the average monthly sea ice concentration for the
+Arctic from 2021 (January to December). We are using the NSIDC Sea Ice
+Concentration Climate Data Record (NSIDC ID: G002202).
 
+**The ERDDAP data request URL for this data subset is presented below.**
 
-```r
-data_url <- "https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4nhmday.nc?cdr_seaice_conc_monthly[(2022-12-01T00:00:00Z):1:(2022-12-01T00:00:00Z)][(4851137.11):1:(-4850758.92)][(-3850000.0):1:(3750000.0)]"
+    https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4nhmday.nc?cdr_seaice_conc_monthly[(2021-01-01T00:00:00Z):1:(2021-12-01T00:00:00Z)][(4843696.04):1:(-4858210.64)][(-3850000.0):1:(3750000.0)]"
 
-f <- 'nsidcG02202v4nhmday.nc'
+**The following table shows the component parts of the ERDDAP data
+request URL.**
+
+|              Name | Value                                                          | Description                                            |
+|------------------:|:---------------------------------------------------------------|:-------------------------------------------------------|
+|      **base_url** | <https://polarwatch.noaa.gov/erddap/griddap>                   | ERDDAP URL for gridded datasets                        |
+|     **datasetID** | nsidcG02202v4nhmday                                            | Unique ID for dataset from PolarWatch ERDDAP           |
+|     **file_type** | .nc                                                            | NetCDF and there are many other available file formats |
+|   **query_start** | ?                                                              | Details of the query follow the ?                      |
+| **variable_name** | cdr_seaice_conc_monthly                                        | Variables from the dataset                             |
+|    **date_range** | **\[(2021-01-01T00:00:00Z):1:(2021-12-01T00:00:00Z)\]**        | Temporal range                                         |
+| **spatial_range** | \[(4843696.04):1:(-4858210.64)\]\[(-3850000.0):1:(3750000.0)\] | Spatial range                                          |
+
+``` r
+# Set data request URL for PolarWatch ERDDAP data server
+data_url <- "https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4nhmday.nc?cdr_seaice_conc_monthly[(2021-01-01T00:00:00Z):1:(2021-12-01T00:00:00Z)][(4843696.04):1:(-4858210.64)][(-3850000.0):1:(3750000.0)]"
+
+# Send data request and download file to the file name
+f <- 'sic.nc'
 download.file(data_url, destfile=f, mode="wb")
 ```
 
-# Calculate the cell areas
+``` r
+# Open netcdf file
+nc=nc_open('sic.nc')
 
--   Create spatial object
--   Assign the coordinate reference system. Here we use the EPSG code as decribed in the dataset metadata
--   Calculate the cell areas
--   View the nominal generic resolution
+# Examine data metadata
+print(nc)
 
+# Examine names of variables
+names(nc$var)
 
-```r
-ice_rast <- rast(f)
-crs(ice_rast) <- "epsg:3413"
-res(ice_rast)
+# Get first variable metadata
+var1 <- nc$var[[1]]
+
+# Examine variable metadata
+print(var1)
+
+# Get variable values
+sic=ncvar_get(nc,var1$name)
+
+# Examine dimension of variable values
+dim(sic)
+
+# Based on metadata, set xgrid, ygrid, time
+xgrid <- var1$dim[[1]]$vals
+ygrid <- var1$dim[[2]]$vals
+
+# convert time variable to date format
+dates=as.POSIXlt(var1$dim[[3]]$vals,origin='1970-01-01',tz='GMT')
+
+# Close and remove the netCDF file and clear memories
+nc_close(nc)
+file.remove('sic.nc')
 ```
 
-```
-## [1] 25000 25000
-```
+## Plot Sea Ice Concentration Data
 
-Calculate the generic cell area, without using the projection info
+``` r
+# create dataframe
+sicd <- expand.grid(xgrid=xgrid, ygrid=ygrid)
+sicd$sic <- array(sic, dim(xgrid)*dim(ygrid))
 
-
-```r
-nominal_cell_area <- cellSize(ice_rast, mask=F, unit="m", transform=FALSE)
-nominal_cell_area
-```
-
-```
-## class       : SpatRaster 
-## dimensions  : 390, 304, 1  (nrow, ncol, nlyr)
-## resolution  : 25000, 25000  (x, y)
-## extent      : -3850000, 3750000, -4875000, 4875000  (xmin, xmax, ymin, ymax)
-## coord. ref. : WGS 84 / NSIDC Sea Ice Polar Stereographic North (EPSG:3413) 
-## source(s)   : memory
-## name        :     area 
-## min value   : 6.25e+08 
-## max value   : 6.25e+08 
-## time        : 2022-12-01 UTC
+# exclude fillvalue
+sicd$sic[sicd$sic > 2] <- NA 
+# map sea ice concentration
+ggplot(data = sicd, aes(x = xgrid, y = ygrid, fill=sic) ) + 
+       geom_tile() + 
+       coord_fixed(ratio = 1) + 
+       scale_y_continuous() + 
+       scale_x_continuous() +
+       scale_fill_gradientn(colours=rev(brewer.pal(n = 3, name = "Blues")),na.value="tan") +
+      ggtitle("Sea Ice Concentration on Polar Steregraphic projection")
 ```
 
-Calculate the actual area, using the projection info
+![](images/unnamed-chunk-2-1.png)<!-- -->
 
+## Get the grid cell area for each grid of the polar stereographic proection
 
-```r
-true_cell_area <- cellSize(ice_rast, mask=F, unit="m", transform=TRUE)
-true_cell_area
+Now we download the the cell area values (m^2) of each grid cell in the
+25km resolution Northern Polar Stereographic projection.
+
+``` r
+cell_url <- "https://polarwatch.noaa.gov/erddap/griddap/pstere_gridcell_N25k.nc?cell_area%5B(5837500.0):1:(-5337500.0)%5D%5B(-3837500.0):1:(3737500.0)%5D"
+
+f <- 'gridcell.nc'
+download.file(cell_url, destfile=f, mode="wb")
 ```
 
-```
-## class       : SpatRaster 
-## dimensions  : 390, 304, 1  (nrow, ncol, nlyr)
-## resolution  : 25000, 25000  (x, y)
-## extent      : -3850000, 3750000, -4875000, 4875000  (xmin, xmax, ymin, ymax)
-## coord. ref. : WGS 84 / NSIDC Sea Ice Polar Stereographic North (EPSG:3413) 
-## source(s)   : memory
-## name        :      area 
-## min value   : 426740576 
-## max value   : 664430336
-```
+## Examine grid cell dataset metadata and extract values
 
-Plot the true cell area in km squared with a land mask
+Just like the sea ice concentration dataset, we will examine the
+metadata and extract the variables of grid cell areas along with x and y
+grids.
 
+``` r
+# Open netcdf file
+nc1=nc_open('gridcell.nc')
 
-```r
-masked_area <- mask(true_cell_area, ice_rast) /100000
-plot(masked_area)
-```
+# Examine data metadata
+print(nc1)
 
-![plot of chunk plot_area](figure/plot_area-1.png)
+# Examine names of variables
+names(nc1$var)
+# cell_area[x,y]
+# y 448 (actual_range: -5337500
+#             actual_range: 5837500)
+# x 304            actual_range: -3837500
+#            actual_range: 3737500
 
-# Calculate the sea ice area
+# Get first variable metadata
+area_var <- nc1$var[[1]]
 
--   The sea ice concentration data is stored in the spatial raster object (ice_rast).
--   The concentration values are represented as ice fraction
--   Sea ice area can be calculated by multiplying the ice fraction values by the calculated cell area
--   Sea ice extent value is defined as 1 for ice fraction equal or greater than 0.15 and 0 otherwise. First
--   so we can simply multiply the ice values by the calculated cell area to determine the overall ice area.
--   The resulting sea ice area is in square kilometers
+# Examine variable metadata
+print(area_var)
 
+# Get variable values
+cellarea =ncvar_get(nc1,area_var$name)
 
-```r
-x <- ice_rast * masked_area
-sia <- global(x, "sum", na.rm=TRUE)
-sia
-```
+# Examine dimension of variable values
+dim(cellarea)
 
-```
-##                               sum
-## cdr_seaice_conc_monthly 111048529
-```
+# Based on metadata, set xgrid, ygrid, time
+x_area <- area_var$dim[[1]]$vals
+y_area <- area_var$dim[[2]]$vals
 
-# Calculate the sea ice extent
+# convert time variable to date format
+dates=as.POSIXlt(var1$dim[[3]]$vals,origin='1970-01-01',tz='GMT')
 
--   Similar to the total sea ice calculation, the concentration values represented as ice fraction are used for the extent calculation
-
--   Sea ice extent defines each grid as either "ice-covered" or "not ice-covered" with a threshold value, typically 15%. In extent calculation, the sea ice concentration fractions first need to be converted to 1 if the fraction value is equal or greater than 0.15 and 0 otherwise. More information about extent can be found from NSIDC page below
-
--   Sea ice extent can be calculated by multiplying the extent value of 0 and 1 by the calculated cell area.
-
--   The resulting sea ice extent is in square kilometers.
-
-
-```r
-new_r <- ifel(x > 0.15, 1, 0)
-extent <- global(new_r, "sum", na.rm=TRUE)
-extent
+# Close and remove the netCDF file and clear memories
+nc_close(nc1)
+file.remove('gridcell.nc')
 ```
 
+## Match cell area grids with sic grids
+
+``` r
+x_indices <- which(xgrid %in% x_area)
+y_indices <- which(ygrid %in% y_area)
+
+sic.match <- sic[x_indices, y_indices,]
+grid.match <- cellarea[x_indices, y_indices]
 ```
-##                           sum
-## cdr_seaice_conc_monthly 21085
+
+## Clean sea ice concentration data for sea ice area calculation
+
+We need to clean the data before computing the sea ice area and extent.
+
+1.  The dataset includes flag values indicating non sea ice area such as
+    land, lake, etc.
+    - task: remove flag values (2 and higher) by setting the flag values
+      as Nan.
+2.  For this example of the sea ice area and extent calculations, 0.15
+    of sea ice concentration value will be used as a threshold.
+    - task: set sic value to 0 if the value is less than 0.15
+
+For more detailed information about the flag values, go to the user
+guide. For the calculation of sea ice area and extent with a threshold,
+go to the NSIDC article.
+
+``` r
+# Set 0 to sic values greater than 1 (removal of flag values)
+sic.match[sic.match > 1] <- 0
+
+# Set 0 to sic values less than 0.15 (applying 0.15 threshold)
+sic.match[sic.match < 0.15] <- 0
+
+# Set NA to 0
+sic.match[is.na(sic.match)] <- 0
+
+# Sic for extent calc
+sic_ext <- sic.match
+sic_ext[sic_ext >= 0.15] <- 1
+
+# Perform element-wise multiplication for time step :1 
+area_total <- sic.match[,,1] * grid.match
+ext_total <- sic_ext[,,1] * grid.match
+
+# Sum sea ice grid area for time step: 1
+area <- sum(area_total, na.rm = TRUE) / 1000000
+extent <- sum(ext_total, na.rm = TRUE) / 1000000
+print(paste("Sea Ice Area (km^2): ", area))
 ```
 
-# References
+    ## [1] "Sea Ice Area (km^2):  12352936.1797234"
 
-R package Terra: <https://cran.r-project.org/web/packages/terra/>
+``` r
+print(paste("Sea Ice Extent (km^2): ", extent))
+```
 
-Terra tutorials, Robert J. Hijmans: <https://rspatial.org/spatial-terra>
+    ## [1] "Sea Ice Extent (km^2):  13608755.1037903"
 
-Sea Ice Dataset Source and Background Information: NOAA/NSIDC Climate Data Record of Passive Microwave Sea Ice Concentration, Version 4. Data Set ID: G02202. <https://nsidc.org/data/g02202>
+## Create a time series with 12 months of data
+
+``` r
+# Replicate grid areas for all timestep
+rep_grid_areas <- array(rep(grid.match, each=dim(sic.match)[3]), dim=dim(sic.match))
+
+# Perform element-wise multiplication
+area_total12 <- sic.match * rep_grid_areas
+ext_total12 <- sic_ext * rep_grid_areas
+
+area12 <- apply(area_total12, c(3), sum)
+ext12 <- apply(ext_total12, c(3), sum)
+```
+
+## Plot 12 time step
+
+``` r
+upper = max(max(ext12), max(area12))
+lower = min(min(ext12), min(area12))
+plot(dates,ext12,type='o',pch=20,xlab='',ylab='Sea ice area (km^2)', col="blue" ,  ylim=c(lower, upper))
+lines(dates, area12, type='o', pch=20, col="red")
+legend("topright", legend=c("Sea ice Area", "Sea ice Extent"),
+       col=c("red", "blue"), lty=1:1, cex=0.8)
+box()
+```
+
+![](images/unnamed-chunk-7-1.png)<!-- -->
