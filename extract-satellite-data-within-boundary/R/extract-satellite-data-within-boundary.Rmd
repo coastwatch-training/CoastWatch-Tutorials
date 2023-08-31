@@ -38,7 +38,7 @@ https://coastwatch.pfeg.noaa.gov/erddap/griddap/NOAA_DHW_monthly
 __Longhurst Marine Provinces__  
 The dataset represents the division of the world oceans into provinces as defined by Longhurst (1995; 1998; 2006). This division has been based on the prevailing role of physical forcing as a regulator of phytoplankton distribution. The Longhurst Marine Provinces dataset is available online (https://www.marineregions.org/downloads.php) and within the shapes folder associated with this repository. For this tutorial we will use the Gulf Stream province (ProvCode: GFST)  
 
-![../images/longhurst.png](attachment:longhurst.png)
+![../images/longhurst.png](../images/longhurst.png)
 
 ## Install packages and load libraries
 ```{r install,message=FALSE,warning=FALSE}

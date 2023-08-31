@@ -48,7 +48,7 @@ available online (<https://www.marineregions.org/downloads.php>) and
 within the shapes folder associated with this repository. For this
 tutorial we will use the Gulf Stream province (ProvCode: GFST)
 
-![../images/longhurst.png](attachment:longhurst.png)
+![](../images/longhurst.png)
 
 ## Install packages and load libraries
 
