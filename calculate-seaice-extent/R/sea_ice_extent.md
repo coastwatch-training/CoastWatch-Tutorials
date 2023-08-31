@@ -11,12 +11,12 @@ observations are a key tool in tracking sea ice cover, providing
 continuous global coverage extending back to 1978. Typically, sea ice
 cover is reported as sea ice concentration, which is the percent areal
 coverage of ice within a grid cell. Depending on the application,
-additional parameters of interest can be calculated from sea ice
-cover:  
-\* **Sea ice area** - the sum of the product of ice concentration and
-area of all grid cells with at least 15% ice concentration.  
-\* **Sea ice extent** - the sum of the areas of all grid cells with at
-least 15% ice concentration
+additional parameters of interest can be calculated from sea ice cover:
+
+- **Sea ice area** - the sum of the product of ice concentration and
+  area of all grid cells with at least 15% ice concentration.  
+- **Sea ice extent** - the sum of the areas of all grid cells with at
+  least 15% ice concentration
 
 ## Objective
 
@@ -95,7 +95,7 @@ for (pk in list.of.packages) {
 options(download.file.method="libcurl", url.method="libcurl")
 ```
 
-# Get the sea ice data from ERDDAP
+## Get the sea ice data from ERDDAP
 
 Here we download the average monthly sea ice concentration for the
 Arctic from 2021 (January to December). We are using the NSIDC Sea Ice
@@ -144,7 +144,7 @@ var1 <- nc$var[[1]]
 print(var1)
 
 # Get variable values
-sic=ncvar_get(nc,var1$name)
+sic <- ncvar_get(nc,var1$name)
 
 # Examine dimension of variable values
 dim(sic)
@@ -154,7 +154,7 @@ xgrid <- var1$dim[[1]]$vals
 ygrid <- var1$dim[[2]]$vals
 
 # convert time variable to date format
-dates=as.POSIXlt(var1$dim[[3]]$vals,origin='1970-01-01',tz='GMT')
+dates <- as.POSIXlt(var1$dim[[3]]$vals,origin='1970-01-01',tz='GMT')
 
 # Close and remove the netCDF file and clear memories
 nc_close(nc)
@@ -163,14 +163,21 @@ file.remove('sic.nc')
 
 ## Plot Sea Ice Concentration Data
 
+To plot sea ice concentration (sic) data that are in xgrid and ygrid
+dimensions, we will create a data frame with coordiantes (xgrid, ygrid)
+and associated sea ice concentration values.
+
 ``` r
-# create dataframe
+# Create a data frame with all combinations of xgrid and ygrid
 sicd <- expand.grid(xgrid=xgrid, ygrid=ygrid)
+
+# Add sic data array to the data frame
 sicd$sic <- array(sic, dim(xgrid)*dim(ygrid))
 
-# exclude fillvalue
+# exclude fillvalue and all other mask values
 sicd$sic[sicd$sic > 2] <- NA 
-# map sea ice concentration
+
+# Map sea ice concentration
 ggplot(data = sicd, aes(x = xgrid, y = ygrid, fill=sic) ) + 
        geom_tile() + 
        coord_fixed(ratio = 1) + 
@@ -182,10 +189,11 @@ ggplot(data = sicd, aes(x = xgrid, y = ygrid, fill=sic) ) +
 
 ![](images/unnamed-chunk-2-1.png)<!-- -->
 
-## Get the grid cell area for each grid of the polar stereographic proection
+## Download grid cell area values
 
-Now we download the the cell area values (m^2) of each grid cell in the
-25km resolution Northern Polar Stereographic projection.
+While the resolution of this data set is 25km (25km by 25km grid), the
+actual area of the grid depends on the grid projection. We will download
+the grid area values from PolarWatch ERDDAP.
 
 ``` r
 cell_url <- "https://polarwatch.noaa.gov/erddap/griddap/pstere_gridcell_N25k.nc?cell_area%5B(5837500.0):1:(-5337500.0)%5D%5B(-3837500.0):1:(3737500.0)%5D"
@@ -209,11 +217,6 @@ print(nc1)
 
 # Examine names of variables
 names(nc1$var)
-# cell_area[x,y]
-# y 448 (actual_range: -5337500
-#             actual_range: 5837500)
-# x 304            actual_range: -3837500
-#            actual_range: 3737500
 
 # Get first variable metadata
 area_var <- nc1$var[[1]]
@@ -241,11 +244,21 @@ file.remove('gridcell.nc')
 
 ## Match cell area grids with sic grids
 
-``` r
-x_indices <- which(xgrid %in% x_area)
-y_indices <- which(ygrid %in% y_area)
+Now we have two data sets: sea ice concentration and grid cell values
+for each grid of northern polar stereographic projection. As examined in
+the metadata, the grid cell area dataset has a larger spatial coverage
+meaning sic data grid coverage is a subset of the grid area data
+coverage.
 
-sic.match <- sic[x_indices, y_indices,]
+We will extract only the grid areas of the grids that are included in
+the sea ice concentration data set.
+
+``` r
+# Get indices in areas where x and y grids equal those of sic
+x_indices <- match(xgrid, x_area)
+y_indices <- match(ygrid, y_area)
+
+# Extract grid area
 grid.match <- cellarea[x_indices, y_indices]
 ```
 
@@ -266,45 +279,43 @@ guide. For the calculation of sea ice area and extent with a threshold,
 go to the NSIDC article.
 
 ``` r
-# Set 0 to sic values greater than 1 (removal of flag values)
-sic.match[sic.match > 1] <- 0
-
 # Set 0 to sic values less than 0.15 (applying 0.15 threshold)
-sic.match[sic.match < 0.15] <- 0
+sic[sic < 0.15] <- 0
 
 # Set NA to 0
-sic.match[is.na(sic.match)] <- 0
+sic[is.na(sic)] <- 0
 
 # Sic for extent calc
-sic_ext <- sic.match
+sic_ext <- sic
 sic_ext[sic_ext >= 0.15] <- 1
 
 # Perform element-wise multiplication for time step :1 
-area_total <- sic.match[,,1] * grid.match
+area_total <- sic[,,1] * grid.match
 ext_total <- sic_ext[,,1] * grid.match
 
-# Sum sea ice grid area for time step: 1
+# Sum sea ice grid area and convert from m^2 to km^2
 area <- sum(area_total, na.rm = TRUE) / 1000000
 extent <- sum(ext_total, na.rm = TRUE) / 1000000
+
 print(paste("Sea Ice Area (km^2): ", area))
 ```
 
-    ## [1] "Sea Ice Area (km^2):  12352936.1797234"
+    ## [1] "Sea Ice Area (km^2):  19712238.9577206"
 
 ``` r
 print(paste("Sea Ice Extent (km^2): ", extent))
 ```
 
-    ## [1] "Sea Ice Extent (km^2):  13608755.1037903"
+    ## [1] "Sea Ice Extent (km^2):  16649530.4783623"
 
 ## Generate the sea ice area and extent time series
 
 ``` r
 # Replicate grid areas for all timestep
-rep_grid_areas <- array(rep(grid.match, each=dim(sic.match)[3]), dim=dim(sic.match))
+rep_grid_areas <- array(rep(grid.match, each=dim(sic)[3]), dim=dim(sic))
 
 # Perform element-wise multiplication
-area_total12 <- sic.match * rep_grid_areas
+area_total12 <- sic * rep_grid_areas
 ext_total12 <- sic_ext * rep_grid_areas
 
 area12 <- apply(area_total12, c(3), sum)
@@ -316,10 +327,10 @@ ext12 <- apply(ext_total12, c(3), sum)
 ``` r
 upper = max(max(ext12), max(area12))
 lower = min(min(ext12), min(area12))
-plot(dates,ext12,type='o',pch=20,xlab='Date',ylab='Area (km^2)', col="blue" , ylim=c(lower, upper),  main="2021 Monthly Sea ice area and sea ice extent")
-lines(dates, area12, type='o', pch=20, col="red")
+plot(dates,ext12,type='o',pch=20,xlab='Date',ylab='Area (km^2)', col="red" , ylim=c(lower, upper),  main="2021 Monthly Sea ice area and sea ice extent")
+lines(dates, area12, type='o', pch=20, col="blue")
 legend("topright", legend=c("Sea ice Area", "Sea ice Extent"),
-       col=c("red", "blue"), lty=1:1, cex=0.8)
+       col=c("blue", "red"), lty=1:1, cex=0.8)
 box()
 ```
 
