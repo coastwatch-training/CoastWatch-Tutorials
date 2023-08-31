@@ -212,17 +212,14 @@ grids.
 # Open netcdf file
 nc1=nc_open('gridcell.nc')
 
-# Examine data metadata
-print(nc1)
-
 # Examine names of variables
 names(nc1$var)
 
 # Get first variable metadata
 area_var <- nc1$var[[1]]
 
-# Examine variable metadata
-print(area_var)
+# Examine area_var
+names(area_var)
 
 # Get variable values
 cellarea =ncvar_get(nc1,area_var$name)
@@ -233,9 +230,6 @@ dim(cellarea)
 # Based on metadata, set xgrid, ygrid, time
 x_area <- area_var$dim[[1]]$vals
 y_area <- area_var$dim[[2]]$vals
-
-# convert time variable to date format
-dates=as.POSIXlt(var1$dim[[3]]$vals,origin='1970-01-01',tz='GMT')
 
 # Close and remove the netCDF file and clear memories
 nc_close(nc1)
@@ -282,6 +276,9 @@ go to the NSIDC article.
 # Set 0 to sic values less than 0.15 (applying 0.15 threshold)
 sic[sic < 0.15] <- 0
 
+# Set 0 for all flag values (>2)
+sic[sic > 1] <- 0
+
 # Set NA to 0
 sic[is.na(sic)] <- 0
 
@@ -294,19 +291,19 @@ area_total <- sic[,,1] * grid.match
 ext_total <- sic_ext[,,1] * grid.match
 
 # Sum sea ice grid area and convert from m^2 to km^2
-area <- sum(area_total, na.rm = TRUE) / 1000000
-extent <- sum(ext_total, na.rm = TRUE) / 1000000
+area <- sum(area_total) / 1000000
+extent <- sum(ext_total) / 1000000
 
 print(paste("Sea Ice Area (km^2): ", area))
 ```
 
-    ## [1] "Sea Ice Area (km^2):  19712238.9577206"
+    ## [1] "Sea Ice Area (km^2):  12528341.191723"
 
 ``` r
 print(paste("Sea Ice Extent (km^2): ", extent))
 ```
 
-    ## [1] "Sea Ice Extent (km^2):  16649530.4783623"
+    ## [1] "Sea Ice Extent (km^2):  13808725.5571709"
 
 ## Generate the sea ice area and extent time series
 
@@ -327,10 +324,10 @@ ext12 <- apply(ext_total12, c(3), sum)
 ``` r
 upper = max(max(ext12), max(area12))
 lower = min(min(ext12), min(area12))
-plot(dates,ext12,type='o',pch=20,xlab='Date',ylab='Area (km^2)', col="red" , ylim=c(lower, upper),  main="2021 Monthly Sea ice area and sea ice extent")
+plot(dates,ext12,type='o',pch=20,xlab='Date',ylab='Area (km^2)', col="orange" , ylim=c(lower, upper),  main="2021 Monthly Sea ice area and sea ice extent")
 lines(dates, area12, type='o', pch=20, col="blue")
 legend("topright", legend=c("Sea ice Area", "Sea ice Extent"),
-       col=c("blue", "red"), lty=1:1, cex=0.8)
+       col=c("blue", "orange"), lty=1:1, cex=0.8)
 box()
 ```
 
