@@ -1,5 +1,5 @@
 ---
-title: Extract data within a polygon 
+title: Extract data within a boundary
 author: NOAA CoastWatch
 date: August 22, 2023
 output:
@@ -16,23 +16,29 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Extract satellite data within a boundary
-Many of the satellite data distributed on the CoastWatch ERDDAP have global coverage. When the interest of data need is bounded by a polygon such as a specific region or a marine sanctuary, the data need to be subsetted within the boundaries of the area of the interest.    
-## Objective
+# Extract data within a boundary
+> Update: August 2023  
 
-This tutorial will demonstrate how to download satellite data within the boundaries of a polygon (one of the Longhurst Marine Provinces) and visualize the data on the map.
+## Background
+One use for satellite observations is to supplement in situ sampling of geographical locations where the timespan or frequency measurements, or spatial dimensions or remoteness of the locations, make physical sampling impossible or impractical. One drawback is that satellite data are often rectangular, whereas geographical locations can have irregular boundaries. Examples of locations with boundaries include marine protected area or marine physical, biological, and ecological divisions like the Longhurst Marine Provinces.  
+
+## Objectives
+In this tutorial we will learn how to download a timeseries of SST satellite data from an ERDDAP server, and then masked the data to retain only the data within an irregular geographical boundary (polygon). We will then plot a yearly seasonal cycle from within the boundary. 
 
 ## The tutorial demonstrates the following techniques
-
-* Accessing information about a dataset from ERDDAP using **rerddap**
-* Subset satellite data within the boundaries of the Longhurst Marine Provinces using the **rxtractogon**
-* Visualizing data on a map
+-   Downloading data from an ERDDAP data server
+-   Visualizing data on a map
+-   Masking satellite data using a shape file
 
 ## Datasets used
-* **Boundary coordinates of Longhurst Provinces** can be obtained at https://www.marineregions.org/downloads.php.  For this exercise, the downloaded files are also stored in the **data/Longhurst_world_v4_2010/** folder of this project folder.
+__NOAA Geo-polar Blended Analysis Sea-Surface Temperature, Global, Daily, 5km, 2019-Present__    
+The NOAA geo-polar blended SST is a high resolution satellite-based sea surface temperature (SST) product that combines SST data from US, Japanese and European geostationary infrared imagers, and low-earth orbiting infrared (U.S. and European) SST data, into a single product.  
+https://coastwatch.pfeg.noaa.gov/erddap/griddap/NOAA_DHW_monthly
 
-* **Geo-polar blended Sea Surface Temperature data ** 
+__Longhurst Marine Provinces__  
+The dataset represents the division of the world oceans into provinces as defined by Longhurst (1995; 1998; 2006). This division has been based on the prevailing role of physical forcing as a regulator of phytoplankton distribution. The Longhurst Marine Provinces dataset is available online (https://www.marineregions.org/downloads.php) and within the shapes folder associated with this repository. For this tutorial we will use the Gulf Stream province (ProvCode: GFST)  
 
+![../images/longhurst.png](attachment:longhurst.png)
 
 ## Install packages and load libraries
 ```{r install,message=FALSE,warning=FALSE}
@@ -70,7 +76,7 @@ Longhurst marine provinces shapefiles includes a list of regions.  For this exer
 ```{r read province boundaries from shapefiles}
 
 # Set directory path
-dir_path <- '../data/longhurst_v4_2010/'
+dir_path <- '../resources/longhurst_v4_2010/'
 
 # Import shape files (Longhurst coordinates)
 shapes <- read_sf(dsn = dir_path, layer = "Longhurst_world_v4_2010")
