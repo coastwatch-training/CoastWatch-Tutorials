@@ -1,11 +1,12 @@
 ---
-title: Define a marine habitat
-author: NOAA CoastWatch
-date: May 20, 2021
+title: "Calculate sea ice extent"
+author: "NOAA CoastWatch"
+date updated: "8/30/2023"
 output:
   md_document:
     variant: gfm
 ---
+
 # Define a marine habitat
 >notebook filename | define_marine_habitat.Rmd  
 
