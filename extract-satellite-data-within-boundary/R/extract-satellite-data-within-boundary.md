@@ -12,14 +12,14 @@ geographical locations where the timespan or frequency measurements, or
 spatial dimensions or remoteness of the locations, make physical
 sampling impossible or impractical. One drawback is that satellite data
 are often rectangular, whereas geographical locations can have irregular
-boundaries. Examples of locations with boundaries include marine
-protected area or marine physical, biological, and ecological divisions
-like the Longhurst Marine Provinces.
+boundaries. Examples of boundaries include marine protected areas or
+marine physical, biological, and ecological divisions like the Longhurst
+Marine Provinces.
 
 ## Objectives
 
 In this tutorial we will learn how to download a timeseries of SST
-satellite data from an ERDDAP server, and then masked the data to retain
+satellite data from an ERDDAP server, and then mask the data to retain
 only the data within an irregular geographical boundary (polygon). We
 will then plot a yearly seasonal cycle from within the boundary.
 
@@ -33,10 +33,11 @@ will then plot a yearly seasonal cycle from within the boundary.
 
 **NOAA Geo-polar Blended Analysis Sea-Surface Temperature, Global,
 Daily, 5km, 2019-Present**  
-The NOAA geo-polar blended SST is a high resolution satellite-based sea
-surface temperature (SST) product that combines SST data from US,
-Japanese and European geostationary infrared imagers, and low-earth
-orbiting infrared (U.S. and European) SST data, into a single product.  
+The NOAA geo-polar blended SST is a high resolution satellite-based
+gap-free sea surface temperature (SST) product that combines SST data
+from US, Japanese and European geostationary infrared imagers, and
+low-earth orbiting infrared (U.S. and European) SST data, into a single
+product.  
 <https://coastwatch.pfeg.noaa.gov/erddap/griddap/NOAA_DHW_monthly>
 
 **Longhurst Marine Provinces**  
@@ -48,7 +49,10 @@ available online (<https://www.marineregions.org/downloads.php>) and
 within the shapes folder associated with this repository. For this
 tutorial we will use the Gulf Stream province (ProvCode: GFST)
 
-![](../images/longhurst.png)
+<figure>
+<img src="../images/longhurst.png" alt="../images/longhurst.png" />
+<figcaption aria-hidden="true">../images/longhurst.png</figcaption>
+</figure>
 
 ## Install packages and load libraries
 
@@ -81,9 +85,9 @@ pkges = installed.packages()[,"Package"]
 
 ## Load boundary coordinates
 
-Longhurst marine provinces shapefiles includes a list of regions. For
-this exercise, we will only use a boundary of one province, Gulf Stream
-region (“GFST”).
+The shapefile for the Longhurst marine provinces includes a list of
+regions. For this exercise, we will only use the boundary of one
+province, the Gulf Stream region (“GFST”).
 
 ``` r
 # Set directory path
@@ -113,12 +117,13 @@ ycoord <- st_coordinates(GFST)[,2]
 
 ## Select the satellite dataset
 
-We will load the sea surface temperature data from a geo-polar blended
-SST satellite data product on the CoastWatch ERDDAP. The dataset ID for
-this data product is **nesdisBLENDEDsstDNDaily**.
+We will load the sea surface temperature data from the geo-polar blended
+SST satellite data product hosted on the CoastWatch ERDDAP. The dataset
+ID for this data product is **nesdisBLENDEDsstDNDaily**.
 
-**rerddap** package first obtains information about the data of our
-interest, then will import the data.
+We will use the *info* function from the **rerddap** package first
+obtains information about the dataset of interest, then we will import
+the data.
 
 ``` r
 # Set ERDDAP URL
@@ -135,7 +140,7 @@ dataInfo
     ##  Base URL: http://coastwatch.pfeg.noaa.gov/erddap 
     ##  Dataset Type: griddap 
     ##  Dimensions (range):  
-    ##      time: (2019-07-22T12:00:00Z, 2023-08-29T12:00:00Z) 
+    ##      time: (2019-07-22T12:00:00Z, 2023-08-30T12:00:00Z) 
     ##      latitude: (-89.975, 89.975) 
     ##      longitude: (-179.975, 179.975) 
     ##  Variables:  
@@ -150,17 +155,17 @@ dataInfo
 ## Set the options for the polygon data extract
 
 Using **rxtractogon** function, we will import the satellite data from
-the erddap. The **rxtractogon** takes in the variable(s) and the
-coordinates as input.
+erddap. The **rxtractogon** function takes the variable(s) of interest
+and the coordinates as input.
 
-- For the coordinates: determine your selctions for x, y, z, and time.
-- time coordinate: The time variable passed to xtracogon must contain
-  two elements, the start and endpoints of the desired time period. This
-  example uses ERDDAP’s **last** option to retrieve data from the most
-  recent time step. The **last** option also accepts the minus **-**
-  operator. To request the time step with the second most recent data
-  use “last-1”. In the script below the time variable (tcoord) is
-  defined as **tcoord \<- c(“last-1”, “last”)**
+- For the coordinates: determine the range of x, y, z, and time.
+- time coordinate: The time variable passed to xtractogon must contain
+  two elements, the start and end points of the desired time period.
+  This example uses ERDDAP’s **last** option to retrieve data from the
+  most recent time step. The **last** option also accepts the minus
+  **-** operator. To request the time step with the second most recent
+  data use “last-1”. In the script below the time variable (tcoord) is
+  defined as **tcoord \<- c(“last-5”, “last”)**
 
 ``` r
 # set the parameter to extract
@@ -169,15 +174,16 @@ parameter <- 'analysed_sst'
 tcoord <- c("last-5", "last-1")
 
 # We already extracted the xcoord (longitude) and ycoord (latitude) from the shapefiles 
-# The dummy code below is just a placekeeper indicating it is necessary to define what the longitude and latitude vectors are that make up the boundary of the polygon.
+# The dummy code below is just a placeholder indicating it is necessary to define what the longitude and latitude vectors are that make up the boundary of the polygon.
 xcoord <- xcoord
 ycoord <- ycoord
 ```
 
 ## Extract data and mask it using rxtractogon
 
-- Run **rxtractogon** to extract data from the satellite dataset and
-  mask out any data outside the polygon boundary.  
+- the **rxtractogon** function automatically extracts data from the
+  satellite dataset and masks out any data outside the polygon
+  boundary.  
 - List the data
 
 ``` r
@@ -189,23 +195,26 @@ str(satdata)
 ```
 
     ## List of 6
-    ##  $ analysed_sst: num [1:600, 1:201, 1:5] 28.3 28.3 28.3 28.4 28.4 ...
+    ##  $ analysed_sst: num [1:600, 1:201, 1:5] 28.5 28.5 28.5 28.5 28.5 ...
     ##  $ datasetname : chr "nesdisBLENDEDsstDNDaily"
     ##  $ longitude   : num [1:600(1d)] -73.5 -73.4 -73.4 -73.3 -73.3 ...
     ##  $ latitude    : num [1:201(1d)] 33.5 33.6 33.6 33.7 33.7 ...
     ##  $ altitude    : logi NA
-    ##  $ time        : POSIXlt[1:5], format: "2023-08-24 12:00:00" "2023-08-25 12:00:00" ...
+    ##  $ time        : POSIXlt[1:5], format: "2023-08-25 12:00:00" "2023-08-26 12:00:00" ...
     ##  - attr(*, "class")= chr [1:2] "list" "rxtracto3D"
 
 ### Plot the data
 
-- Use the plotBBox function in rerddapXtracto to quickly plot the data
+- Use the plotBBox function in the **rerddapXtracto** package to quickly
+  plot the data
 
 ``` r
 plotBBox(satdata, plotColor = 'thermal',maxpixels=1000000)
 ```
 
 ![](images/map-1.png)<!-- -->
+
+## COMMENT: remove this last section as it doesn’t apply to SST
 
 ### Apply a function to the data
 
