@@ -4,7 +4,10 @@ author: NOAA CoastWatch
 date: August 2023
 output:
   md_document:
+    variant: gfm
 ---
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
@@ -53,7 +56,7 @@ pkgTest <- function(x)
 
 # Create list of required packages
 list.of.packages <- c("rerddap", "plotdap", "parsedate", "ggplot2", "rerddapXtracto",
-                       "maps", "mapdata", "RColorBrewer","viridis")
+                       "date", "maps", "mapdata", "RColorBrewer","viridis")
 
 # Create list of installed packages
 pkges = installed.packages()[,"Package"]
@@ -83,15 +86,14 @@ mapWorld <- map_data("world", wrap=c(0,360))
 
 # Map turtle tracks
 ggplot(turtle_df, aes(mean_lon,mean_lat)) +
-  geom_path(group=1)+
-  geom_point(aes(x=mean_lon,y=mean_lat), shape=20, size=2, fill="black")+
+  geom_path(group=1, color="blue")+
+  geom_point(aes(x=mean_lon,y=mean_lat), pch=1, size=2 )+
   geom_point(aes(x=mean_lon[1],y=mean_lat[1]),fill="green", shape=24, size=3)+
   geom_point(aes(x=mean_lon[length(mean_lon)],y=mean_lat[length(mean_lat)]), shape=22, size=3, fill="red")+
   geom_polygon(data = mapWorld, aes(x=long, y = lat, group = group)) + 
   coord_fixed(xlim = c(120,260),ylim = c(15,60))+
   labs(x="Longitude (deg)", y="Latitude (deg)", title="Turtle Track with start (green) and end location (red)")+
-  theme(plot.title=element_text(hjust=0.5))
-
+  theme(plot.title=element_text(hjust=0.5), aspect.ratio=1/2)
 
 ```
 
@@ -102,12 +104,71 @@ We are going to download data from an ERDDAP data server using the following ste
 
 * Select a dataset and ERDDAP data server
 * Get data information using <code>rerddap</code> package
+* Extract data using ERDDAP URL request with latitudes and longitudes of the turtle track data
 * Extract data using <code>rxtracto</code> function with latitudes and longitudes of the turtle track data
 * Create data frame with the satellite data and turtle tracks
 
-### Select a dataset and get Data Info using rerddap function
+## Select a dataset and get Data Info using erddap URL data request
 
-Ideally we would use a daily dataset, selecting the day correspond to the dates of the days along the track. However, chlorophyll measurements can have lots of missing data, primarily due to cloud cover. To reduce data gaps and improve the likelihood of data availability for our matchups, we can use a monthly composite product. 
+In this exercise, two different ways of downloading satellite data from ERDDAP data server are demonstrated:  
+  1. request data via ERDDAP URL 
+  2. request data by using `rerddap` R package
+  
+### Data request using ERDDAP URL
+
+First we need to set up the ERDDAP URL using the datasets ID and the name of the variable we are interested in.
+Note that we are requesting the data as .csv
+
+```data_url = "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/aqua_chla_1d_2018_0.csv?chlor_a"```
+
+Ideally, we would work with daily data since we have one location per day. But chlorophyll data is severely affected by clouds (i.e. lots of missing data), so you might need to use weekly or even monthly data to get sufficient non-missing data. We will start with the monthly chl-a data since it contains fewer gaps.
+
+```{r}
+ 
+# Set erddap address
+erddap <- "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/aqua_chla_monthly_2018_0.csv?chlor_a"
+
+# Get longitude and latitude from turtle track data
+lon = turtle_df$mean_lon
+lat = turtle_df$mean_lat
+
+# Get time from turtle track data and convert into ERDDAP date format
+dates=mdy.date(turtle_df$month,turtle_df$day,turtle_df$year)
+dates2 = format(as.Date(dates), "%Y-%m-%d")
+
+# Initatilize tot variable where data will be downloaded to
+tot = rep(NA, 4)
+
+# Loop through each turtle track data
+for (i in 1:dim(turtle_df)[1]) {
+
+   # Create erddap URL by adding lat, lon, dates of each track point 
+   url = paste(erddap, "[(", dates2[i], "):1:(", dates2[i], ")][(", lat[i], "):1:(", lat[i], ")][(", lon[i], "):1:(", lon[i], ")]", sep = "")  
+   
+   # Request and load satelite data from ERDDAP
+   new = read.csv(url, skip=2, header = FALSE) 
+   
+   # Append the data
+   tot = rbind(tot, new)   
+}
+
+# Delete the first row (default column names)
+tot = tot[-1, ]
+
+# Rename columns
+names(tot) = c("chlo_date", "matched_lat", "matched_lon", "matched_chl.m")
+
+# Create data frame combining turtle track data and the chlo-a data
+result = data.frame(turtle_df, tot)
+
+# Write the data frame to csv file
+write.csv(result, 'turtle-track-chl.m.csv', row.names = FALSE)
+
+```
+
+
+
+### Data request using ```rerddap`` function
 
 __Let's use data from the monthly product of the OC-CCI datasets.__  
 The ERDDAP URLs to the monthly product is below:    
@@ -134,8 +195,24 @@ dataset <- 'esa-cci-chla-monthly-v6-0'
 # Get data information from ERDDAP server
 dataInfo <- rerddap::info(dataset, url= "https://oceanwatch.pifsc.noaa.gov/erddap")
 
+```
+## Examine metadata 
+
+```rerddap::info``` returns metadata of the requested dataset.  We can first understand the attributes dataInfo includes then examine each attribute.
+
+```{r}
 # Display the metadata
 dataInfo
+
+# Display data attributes
+names(dataInfo)
+
+# Examine attribute: variables
+dataInfo$variables
+
+# Distribute attributes of dataInfo$alldata
+names(dataInfo$alldata)
+
 ```
 
 ### Extract data using the rxtracto function
