@@ -3,21 +3,25 @@ title: "Tutorial 1 - Basics of working with satellite data in R"
 author: NOAA CoastWatch
 date: August 2023
 output:
-  html_document:
-    df_print: paged
+  md_document:
+  variant: gfm
 ---
 
-*Objective*
+A tidyverse/ggplot version is also available here: https://github.com/jebyrnes/noaa_coastwatch_tutorial_1/blob/main/tutorial1-1.md
+
+courtesy of Jarrett Byrnes from UMass Boston - http://byrneslab.net   (Thank you Jarrett!!)
+
+## Objective
 
 This tutorial will show the steps to grab data hosted on an ERDDAP server from Python, how to work with NetCDF files in Python and how to make some maps and time-series of sea surface temperature.
 
-*The tutorial demonstrates the following techniques*
+## The tutorial demonstrates the following techniques
 - Locating a satellite product in ERDDAP, manually changing the constraints and copying the URL defining the data request
 - Downloading the resulting NetCDF file
 - Opening and examining the NetCDF file
 - Making basic maps and time series plots
 
-*Datasets used*
+## Datasets used
 
 **CoralTemp Sea Surface Temperature** product from the NOAA Coral Reef Watch program. The NOAA Coral Reef Watch (CRW) daily global 5km Sea Surface Temperature (SST) product, also known as CoralTemp, shows the nighttime ocean temperature measured at the surface. The SST scale ranges from -2 to 35 °C. The CoralTemp SST data product was developed from two, related reanalysis (reprocessed) SST products and a near real-time SST product. Spanning January 1, 1985 to the present, the CoralTemp SST is one of the best and most internally consistent daily global 5km SST products available. More information about the product: https://coralreefwatch.noaa.gov/product/5km/index_5km_sst.php
 
@@ -42,7 +46,7 @@ invisible(lapply(packages, library, character.only = TRUE))
 
 ```
 
-##1. Downloading data from R
+## 1. Downloading data from R
 
 Because ERDDAP includes RESTful services, you can download data listed on any ERDDAP platform from R using the URL structure.
 
@@ -65,7 +69,7 @@ junk <- GET('https://coastwatch.pfeg.noaa.gov/erddap/griddap/NOAA_DHW_monthly.nc
 
 ```
 
-##2. Importing the downloaded file in R
+## 2. Importing the downloaded file in R
 
 Now that we've downloaded the data locally, we can import it and extract our variables of interest:
 
@@ -132,7 +136,7 @@ file.remove('sst.nc')
 
 ```
 
-##3. Working with the extracted data
+## 3. Working with the extracted data
 
 ### Creating a map for one time step
 
@@ -190,7 +194,7 @@ box()
 
 
 
-###Plotting a time series
+### Plotting a time series
 
 Let's pick the following box : 36-38N, -77 to -75W.. We are going to generate a time series of mean SST within that box. 
 
