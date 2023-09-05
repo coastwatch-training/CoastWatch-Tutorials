@@ -1,5 +1,4 @@
-> notebook filename \| extract_data_marine_sanctuary.Rmd  
-> history \| Updated August 2023
+history \| Updated August 2023
 
 # Extract data within a boundary
 
@@ -49,10 +48,7 @@ available online (<https://www.marineregions.org/downloads.php>) and
 within the shapes folder associated with this repository. For this
 tutorial we will use the Gulf Stream province (ProvCode: GFST)
 
-<figure>
-<img src="../images/longhurst.png" alt="../images/longhurst.png" />
-<figcaption aria-hidden="true">../images/longhurst.png</figcaption>
-</figure>
+![](../images/longhurst.png)
 
 ## Install packages and load libraries
 
@@ -140,7 +136,7 @@ dataInfo
     ##  Base URL: http://coastwatch.pfeg.noaa.gov/erddap 
     ##  Dataset Type: griddap 
     ##  Dimensions (range):  
-    ##      time: (2019-07-22T12:00:00Z, 2023-08-30T12:00:00Z) 
+    ##      time: (2019-07-22T12:00:00Z, 2023-09-03T12:00:00Z) 
     ##      latitude: (-89.975, 89.975) 
     ##      longitude: (-179.975, 179.975) 
     ##  Variables:  
@@ -195,12 +191,12 @@ str(satdata)
 ```
 
     ## List of 6
-    ##  $ analysed_sst: num [1:600, 1:201, 1:5] 28.5 28.5 28.5 28.5 28.5 ...
+    ##  $ analysed_sst: num [1:600, 1:201, 1:5] 28.6 28.6 28.6 28.7 28.7 ...
     ##  $ datasetname : chr "nesdisBLENDEDsstDNDaily"
     ##  $ longitude   : num [1:600(1d)] -73.5 -73.4 -73.4 -73.3 -73.3 ...
     ##  $ latitude    : num [1:201(1d)] 33.5 33.6 33.6 33.7 33.7 ...
     ##  $ altitude    : logi NA
-    ##  $ time        : POSIXlt[1:5], format: "2023-08-25 12:00:00" "2023-08-26 12:00:00" ...
+    ##  $ time        : POSIXlt[1:5], format: "2023-08-29 12:00:00" "2023-08-30 12:00:00" ...
     ##  - attr(*, "class")= chr [1:2] "list" "rxtracto3D"
 
 ### Plot the data
@@ -213,17 +209,3 @@ plotBBox(satdata, plotColor = 'thermal',maxpixels=1000000)
 ```
 
 ![](images/map-1.png)<!-- -->
-
-## COMMENT: remove this last section as it doesn’t apply to SST
-
-### Apply a function to the data
-
-- Here we apply a log function to the chlorophyll data and plot it
-  again.
-
-``` r
-myFunc <- function(x) log(x) 
-plotBBox(satdata, plotColor = 'thermal',maxpixels=1000000, myFunc=myFunc)
-```
-
-![](images/addfunc-1.png)<!-- -->

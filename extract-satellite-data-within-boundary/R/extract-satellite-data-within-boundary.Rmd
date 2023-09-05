@@ -6,7 +6,6 @@ output:
   md_document:
     variant: gfm
 ---
->notebook filename | extract_data_marine_sanctuary.Rmd  
 history | Updated August 2023    
 
 ```{r setup, include=FALSE}
@@ -149,16 +148,6 @@ plotBBox(satdata, plotColor = 'thermal',maxpixels=1000000)
 
 ```
 
-## COMMENT: remove this last section as it doesn't apply to SST
-### Apply a function to the data 
-* Here we apply a log function to the chlorophyll data and plot it again.
-
-```{r addfunc}
-myFunc <- function(x) log(x) 
-plotBBox(satdata, plotColor = 'thermal',maxpixels=1000000, myFunc=myFunc)
-
-
-```
 
 
 
