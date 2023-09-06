@@ -1,0 +1,157 @@
+---
+title: Extract data within a polygon 
+author: NOAA CoastWatch
+date: August 22, 2023
+output:
+  md_document:
+    variant: gfm
+---
+>notebook filename | extract_data_marine_sanctuary.Rmd  
+history | Updated August 2023    
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.path = "images/"
+)
+```
+
+# Extract satellite data within a boundary
+Many of the satellite data distributed on the CoastWatch ERDDAP have global coverage. When the interest of data need is bounded by a polygon such as a specific region or a marine sanctuary, the data need to be subsetted within the boundaries of the area of the interest.    
+## Objective
+
+This tutorial will demonstrate how to download satellite data within the boundaries of a polygon (one of the Longhurst Marine Provinces) and visualize the data on the map.
+
+## The tutorial demonstrates the following techniques
+
+* Accessing information about a dataset from ERDDAP using **rerddap**
+* Subset satellite data within the boundaries of the Longhurst Marine Provinces using the **rxtractogon**
+* Visualizing data on a map
+
+## Datasets used
+* **Boundary coordinates of Longhurst Provinces** can be obtained at https://www.marineregions.org/downloads.php.  For this exercise, the downloaded files are also stored in the **data/Longhurst_world_v4_2010/** folder of this project folder.
+
+* **Geo-polar blended Sea Surface Temperature data ** 
+
+
+## Install packages and load libraries
+```{r install,message=FALSE,warning=FALSE}
+pkges = installed.packages()[,"Package"]
+# Function to check if pkgs are installed, install missing pkgs, and load
+pkgTest <- function(x)
+{
+  if (!require(x,character.only = TRUE))
+  {
+    install.packages(x,dep=TRUE,repos='http://cran.us.r-project.org')
+    if(!require(x,character.only = TRUE)) stop(x, " :Package not found")
+  }
+}
+
+# create list of required packages
+list.of.packages <- c("ncdf4", "rerddap","plotdap", "parsedate", 
+                      "sp", "ggplot2", "RColorBrewer", "sf", 
+                      "reshape2", "maps", "mapdata", 
+                      "jsonlite", "rerddapXtracto")
+
+# Run install and load function
+for (pk in list.of.packages) {
+  pkgTest(pk)
+}
+
+# create list of installed packages
+pkges = installed.packages()[,"Package"]
+
+```
+
+## Load boundary coordinates 
+
+Longhurst marine provinces shapefiles includes a list of regions.  For this exercise, we will only use a boundary of one province, Gulf Stream region ("GFST"). 
+
+```{r read province boundaries from shapefiles}
+
+# Set directory path
+dir_path <- '../data/longhurst_v4_2010/'
+
+# Import shape files (Longhurst coordinates)
+shapes <- read_sf(dsn = dir_path, layer = "Longhurst_world_v4_2010")
+
+# Example List of all the province names
+shapes$ProvCode
+
+# Get boundary coordinates for Gulf Stream region (GFST)
+GFST <- shapes[shapes$ProvCode == "GFST",]
+
+xcoord <- st_coordinates(GFST)[,1]
+ycoord <- st_coordinates(GFST)[,2]
+
+```
+
+## Select the satellite dataset  
+
+We will load the sea surface temperature data from a geo-polar blended SST satellite data product on the CoastWatch ERDDAP. The dataset ID for this data product is **nesdisBLENDEDsstDNDaily**.
+
+**rerddap** package first obtains information about the data of our interest, then will import the data.
+
+```{r dataInfo}
+
+# Set ERDDAP URL
+erd_url = "http://coastwatch.pfeg.noaa.gov/erddap/"
+
+# Obtain data info using the erddap url and dataset ID
+dataInfo <- rerddap::info('nesdisBLENDEDsstDNDaily',url=erd_url)  
+
+# Examine the metadata dataset info
+dataInfo
+```
+
+## Set the options for the polygon data extract
+Using **rxtractogon** function, we will import the satellite data from the erddap.
+The **rxtractogon** takes in the variable(s) and the coordinates as input. 
+
+* For the coordinates: determine your selctions for x, y, z, and time.
+* time coordinate: The time variable passed to xtracogon must contain two elements, the start and endpoints of the desired time period. This example uses ERDDAP's **last** option to retrieve data from the most recent time step. The **last** option also accepts the minus **-** operator. To request the time step with the second most recent data use "last-1". In the script below the time variable (tcoord) is defined as **tcoord <- c("last-1", "last")**  
+
+```{r options}
+# set the parameter to extract
+parameter <- 'analysed_sst'
+# set the time range
+tcoord <- c("last-5", "last-1")
+
+# We already extracted the xcoord (longitude) and ycoord (latitude) from the shapefiles 
+# The dummy code below is just a placekeeper indicating it is necessary to define what the longitude and latitude vectors are that make up the boundary of the polygon.
+xcoord <- xcoord
+ycoord <- ycoord
+ 
+```
+## Extract data and mask it using rxtractogon  
+* Run **rxtractogon** to extract data from the satellite dataset and mask out any data outside the polygon boundary.  
+* List the data
+```{r octogon}
+## Request the data
+satdata <- rxtractogon(dataInfo, parameter=parameter, xcoord=xcoord, ycoord=ycoord,tcoord=tcoord)
+
+## List the returned data
+str(satdata)
+```
+
+
+### Plot the data
+* Use the plotBBox function in rerddapXtracto to quickly plot the data
+
+```{r map}
+plotBBox(satdata, plotColor = 'thermal',maxpixels=1000000)
+
+```
+
+### Apply a function to the data 
+* Here we apply a log function to the chlorophyll data and plot it again.
+
+```{r addfunc}
+myFunc <- function(x) log(x) 
+plotBBox(satdata, plotColor = 'thermal',maxpixels=1000000, myFunc=myFunc)
+
+
+```
+
+
+
