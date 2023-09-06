@@ -13,27 +13,27 @@ The repository is structured into directories, categorized by specific topics. W
 * [Tutorial1-basics](Tutorial1-basics) 
 Learn to access satellite data from CoastWatch ERDDAP data server and to work with NetCDF files.  Visualize sea surface temperature on a map and plot time series data.
 * [Tutorial2-timeseries-compare-sensors](Tutorial2-timeseries-compare-sensors)
-Access time-series chlorophyll data from four different satellite datasets and summarize and visualize the data for comparison.
+Learn common ways to download data from ERDDAP servers to access time-series chlorophyll data from four different satellite datasets and summarize and visualize the data for comparison.
 * [calculate-seaice-extent](calculate-seaice-extent)
 View sea ice concentration (SIC) data on a map with the polar stereographic projection.  Calculate and compare sea ice area/extent from multi-year SIC datasets.
 * [convert-180+180-to-0-360-longitude](convert-180+180-to-0-360-longitude)
 Work with datasets with -180&deg; to +180&deg; longitude values in a region that crosses the antimeridian.  Convert the coordinates from (-180, +180) to (0, 360)  and visualize data on a map.
 * [create-virtual-buoy-with-satellite-data](create-virtual-buoy-with-satellite-data)
-  Create a “virtual” buoy data using satellite data, aligning closely with the spatial and temporal coverage of an existing buoy.  Clean dataset by removing outliers, and aggregate (resample) to achieve a reduced temporal resolution.  Plot time series data.
+  Create a “virtual” buoy using satellite data to fill the gaps in in-situ data collected by a physical buoy. Extract data from a location closeto an existing buoy.  Clean dataset by removing outliers, and aggregate (resample) to achieve a reduced temporal resolution.  Plot time series data.
 * [define-marine-habitat](define-marine-habitat)
-  Define feature values of interest (marine habitat of loggerhead turtles), and download and plot the satellite sea surface temperature data, showing the defined feature values. 
+  Define habitat characteristics for a marine species (eg. a temperature range where bycatch of loggerhead turtles is likely), and download and plot the satellite sea surface temperature data, highlighting the habitat range. 
 * [extract-satellite-data-within-boundary](extract-satellite-data-within-boundary)
-  Download a timeseries of sea surface temperature satellite data from ERDDAP server, mask the data within an irregular geographical boundary using a shape file, and plot a seasonal cycle within the boundary.
+  Extract sea surface temperature satellite data for an non-rectangular geographical region from an ERDDAP server using a shapefile, make maps, and plot a timeseries of the seasonal cycle of SST within the boundary.
 * [map-data-with-different-projections](map-data-with-different-projections)
-Download and examine polar stereographic projected dataset, plot the data on the projected map.  Add animal track data with the geographical coordinates onto the projected map.
+Download and examine a polar stereographic projected dataset, plot the data on a projected map.  Add animal track data with geographical coordinates onto the projected map.
 * [matchup-satellite-buoy-data](matchup-satellite-buoy-data)
-  Temporally and geospatially subset satellite data to match with buoy data (tabular), run statistical analysis and produce satellite map with overlaying buoy data.
+  Temporally and geospatially subset satellite data to match with buoy data (tabular), run statistical analysis and produce a map of the satellite data with overlaying buoy data.
 * [matchup-satellite-data-to-track-locations](matchup-satellite-data-to-track-locations)
-  Extract satellite data around a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider tract.
+  Extract satellite data along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track.
 * [py-xtractomatic](py-xtractomatic) **need update**
 * [reprojecting-satellite-buoy-data](reprojecting-satellite-buoy-data) **need update**
 * [transform-to-another-map-projection](transform-to-another-map-projection)
-  	Access satellite data with polar stereographic coordinates and transform them into a different coordinate system using EPSG code.
+  	Access satellite data with polar stereographic coordinates and transform it into a different coordinate system using EPSG code.
 * [work-with-projected-datasets](work-with-projected-datasets) **need  update**
 
   

@@ -85,7 +85,7 @@ mapWorld <- map_data("world", wrap=c(0,360))
 
 # Map turtle tracks
 ggplot(turtle_df, aes(mean_lon,mean_lat)) +
-  geom_path(group=1, color="blue")+
+  geom_path(group=1)+
   geom_point(aes(x=mean_lon,y=mean_lat), pch=1, size=2 )+
   geom_point(aes(x=mean_lon[1],y=mean_lat[1]),fill="green", shape=24, size=3)+
   geom_point(aes(x=mean_lon[length(mean_lon)],y=mean_lat[length(mean_lat)]), shape=22, size=3, fill="red")+
@@ -172,10 +172,13 @@ result = data.frame(turtle_df, tot)
 write.csv(result, 'turtle-track-chl.m.csv', row.names = FALSE)
 ```
 
-### Data request using \``rerddap` function
+### Alternative method: Data request using \``rxtracto` function of the **rerddap** package
+
+The **rerddap** package was written to simplify data extraction from
+ERDDAP servers.
 
 **Let’s use data from the monthly product of the OC-CCI datasets.**  
-The ERDDAP URLs to the monthly product is below:  
+The ERDDAP URL to the monthly product is below:  
 <https://oceanwatch.pifsc.noaa.gov/erddap/griddap/esa-cci-chla-monthly-v6-0>
 
 **A note on dataset selection**  
@@ -208,8 +211,9 @@ dataInfo <- rerddap::info(dataset, url= "https://oceanwatch.pifsc.noaa.gov/erdda
 
 ## Examine metadata
 
-`rerddap::info` returns metadata of the requested dataset. We can first
-understand the attributes dataInfo includes then examine each attribute.
+`rerddap::info` returns the metadata of the requested dataset. We can
+first understand the attributes dataInfo includes then examine each
+attribute.
 
 ``` r
 # Display the metadata
@@ -400,7 +404,7 @@ chl_grid
 **rxtracto** computes statistics using all the pixels found in the
 search radius around each track point. Because chl-a concentration tends
 to have very high values and very low values, we will work with the
-median value around wach track point, **median chlor_a**
+median value around each track point, **median chlor_a**
 
 ### Plot a histogram of median chlor_a
 
@@ -417,8 +421,14 @@ hist(chlora,
 )
 ```
 
-![](images/hist-1.png)<!-- --> \## Plot a histogram of the log of the
-chlorophyll data
+![](images/hist-1.png)<!-- --> The distribution of chlorophll values is
+lognormal, with lots of very low values, and a few very high values.
+This could skew a linear color bar so that most lower values have the
+same color.
+
+For this reason we often plot the log or log10 of chlorophyll.
+
+## Plot a histogram of the log of the chlorophyll data
 
 ``` r
 # Histogram of Log of Chlor_a
@@ -431,17 +441,17 @@ hist(log(chlora),
 )
 ```
 
-![](images/loghist-1.png)<!-- --> After the log transformation the data
-looks more normally distributed. The range of log chlorophyll is about
--2.9 to -0.3 but most of the values are between -2.5 and -0.8. Knowing
-the distribution of the values can also help to set the color bar range
-for our map.
+![](images/loghist-1.png)<!-- -->
+
+The range of log chlorophyll is about -2.9 to -0.3 but most of the
+values are between -2.5 and -0.8.
 
 ## Plotting the results using plotTrack
 
 We will use the “plotTrack” function to plot the results. “plotTrack” is
 a function of the “rerddapXtracto” package designed specifically to plot
-the results from “rxtracto”. However it’s not very customizable.
+the results of the “rxtracto” function. However it’s not very
+customizable.
 
 ``` r
 # Plot tracks with color: algae specifically designed for chlorophyll
@@ -465,6 +475,11 @@ plotTrack(chl_grid, xcoords, ycoords, tcoords, plotColor = 'viridis',
 ```
 
     ## Warning in latlon_adjust(table): Invalid longitude values
+
+    ## Warning: No renderer available. Please install the gifski, av, or magick
+    ## package to create animated output
+
+    ## NULL
 
 ## Plotting the results using ggplot
 
