@@ -5,7 +5,7 @@
 1. Make sure you have __python 3__ and __conda__ installed on your machine
 2. Download this repository. 
     * Use the green __Code__ dropdown to select __Download Zip__ and unzip to a location on your computer
-    * Or [use this zip file link](https://github.com/CoastWatch-WestCoast/python_code/archive/refs/heads/satellite_course_jan_2022.zip)
+    * Or [use this zip file link](https://github.com/coastwatch-training/CoastWatch-Tutorials/archive/refs/heads/main.zip)
 3. Use a terminal window to navigate to the unzipped folder 
 
 The following commands:  
