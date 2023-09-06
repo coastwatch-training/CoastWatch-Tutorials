@@ -30,11 +30,11 @@ Download and examine a polar stereographic projected dataset, plot the data on a
   Temporally and geospatially subset satellite data to match with buoy data (tabular), run statistical analysis and produce a map of the satellite data with overlaying buoy data.
 * [matchup-satellite-data-to-track-locations](matchup-satellite-data-to-track-locations)
   Extract satellite data along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track.
-* [py-xtractomatic](py-xtractomatic) **need update**
-* [reprojecting-satellite-buoy-data](reprojecting-satellite-buoy-data) **need update**
 * [transform-to-another-map-projection](transform-to-another-map-projection)
   	Access satellite data with polar stereographic coordinates and transform it into a different coordinate system using EPSG code.
-* [work-with-projected-datasets](work-with-projected-datasets) **need  update**
+* [work-with-projected-datasets](work-with-projected-datasets) 
+* [reprojecting-satellite-buoy-data](reprojecting-satellite-buoy-data)
+* [py-xtractomatic](py-xtractomatic) 
 
   
 
