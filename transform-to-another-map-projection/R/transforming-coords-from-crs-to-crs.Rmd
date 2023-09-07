@@ -3,6 +3,12 @@ title: "Transforming coordinates from crs to crs"
 output: md_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.path = "images/"
+)
+```
 > history \| Create July 2023 \| Updated August 2023<br/>
 
 
