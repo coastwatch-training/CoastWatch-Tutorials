@@ -1,18 +1,14 @@
-# Matchup satellite and buoy data
-
-> history \| Updated August 2023
+\# Match up satellite and buoy data \> history \| Updated August 2023
 
 There are buoys in many locations around the world that provide data
 streams of oceanic and atmospheric parameters. The data are often
-available through data centers like the those National Data Buoy Center
-(NDBC <https://www.ndbc.noaa.gov>) and ARGO floats program
+available through data centers like the National Data Buoy Center (NDBC
+<https://www.ndbc.noaa.gov>) and the ARGO floats program
 (<http://www.argo.ucsd.edu>). In situ buoy data are widely used to
 monitor environmental conditions.
 
-In the absence of in situ buoy data, whether the buoy operation is
-discontinued, interrupted, or limited, satellite data with close
-temporal and spatial coverage can be used to create a dataset in the
-format of in situ buoy data.
+In-situ buoy data can be used to evaluate the accuracy of satellite
+data.
 
 **In this exercise, we will learn** how to match up satellite data to in
 situ buoy data using rerddap and rxtracto R packages.
@@ -22,19 +18,19 @@ The exercise demonstrates the following techniques:
 - Downloading tabular data (buoy data) from CoastWatch ERDDAP data
   server
 - Retrieving information about a dataset from ERDDAP
-- Subsetting satellite data within a rectangular boundaries
+- Subsetting satellite data within a rectangular boundary
 - Matching satellite data with the buoy data
-- Generating linear regression
+- Running statistical analysis to compare buoy and satellite data
 - Producing satellite maps and overlaying buoy data
 
 **Datasets used:**
 
 - <a href="https://coastwatch.pfeg.noaa.gov/erddap/griddap/nesdisBLENDEDsstDNDaily.graph">The
-  sea surface temperature (SST) satellite data</a> from NOAA Geo-polar
-  blended analysis are used for transforming to buoy data format
+  sea surface temperature (SST) satellite data</a> from the NOAA
+  Geo-polar blended analysis
 - <a href="https://coastwatch.pfeg.noaa.gov/erddap/tabledap/cwwcNDBCMet.graph?time%2Cwtmp%2Cwd&station=%2246259%22&time%3E=2020-09-15T00%3A00%3A00Z&time%3C=2022-09-15T00%3A00%3A00Z&.draw=markers&.marker=5%7C5&.color=0x000000&.colorBar=%7C%7C%7C%7C%7C&.bgColor=0xffccccff">
-  NDBC Standard Meteorological Buoy Data (dataset ID: cwwcNDBCMet) </a>
-  was used for validating or ground truthing
+  The NDBC Standard Meteorological Buoy Data (dataset ID: cwwcNDBCMet)
+  </a> is used for validating or ground truthing the satellite SST data
 
 **References:** -
 <a href="https://coastwatch.pfeg.noaa.gov/data.html">NOAA CoastWatch
@@ -44,7 +40,7 @@ National Data Buoy Center</a> -
 <a href="https://docs.ropensci.org/rerddap/">Rerddap R Package
 reference</a>
 
-## Install required packages and load libraries
+\## Install required packages and load libraries
 
 ``` r
 # Function to check if pkgs are installed, install missing pkgs, and load
@@ -61,7 +57,7 @@ pkgTest <- function(x)
 list.of.packages <- c( "ncdf4", "rerddap", "plotdap", "httr",
                        "lubridate", "gridGraphics",  "mapdata",
                        "ggplot2", "RColorBrewer", "grid", "PBSmapping", 
-                       "rerddapXtracto")
+                       "rerddapXtracto","dplyr")
 
 # create list of installed packages
 pkges = installed.packages()[,"Package"]
@@ -73,29 +69,34 @@ for (pk in list.of.packages) {
 
 ## Downloading buoy data from ERDDAP
 
-**Extract data using the rerddap::tabledap function**  
-\* \* In the region bounded by 30.86 to 41.75 north latitude and -128 to
--116 east longitude  
-\* request the station, latitude, longitude, time, and water temperature
-parameters  
-\* put the data into a data frame
+**Extract data using the rerddap::tabledap function**
+
+Using rerddap::tabledap function, we will request and download data with
+the following specifications:
+
+- Buoy dataset ID: cwwcNDBCMet
+- Region boundaries: 35 to 40 north latitude and -125 to -120 east
+  longitude  
+- Time span: 08/01/2023 to 08/10/2023
+- Variables: station, latitude, longitude, time, and water temperature
+  parameters
 
 ``` r
 # Subset and download tabular data from ERDDAP 
 buoy <- rerddap::tabledap(
   'cwwcNDBCMet', 
   fields=c('station', 'latitude',  'longitude', 'time', 'wtmp'), 
-  'time>=2023-08-01',   'time<=2023-08-13', 
-  'latitude>=30.86','latitude<=41.75', 'longitude>=-128','longitude<=-116',
+  'time>=2023-08-01',   'time<=2023-08-10', 
+  'latitude>=35','latitude<=40', 'longitude>=-125','longitude<=-120',
   'wtmp>0'
 )
 
-#Create data frame with downloaded data
+#Create data frame with the downloaded data
 buoy.df <-data.frame(station=buoy$station,
-                 longitude=as.numeric(buoy$longitude),
-                 latitude=as.numeric(buoy$latitude),
-                 time=strptime(buoy$time, "%Y-%m-%dT%H:%M:%S"),
-                 sst=as.numeric(buoy$wtmp))
+                     longitude=as.numeric(buoy$longitude),
+                     latitude=as.numeric(buoy$latitude),
+                     time=strptime(buoy$time, "%Y-%m-%dT%H:%M:%S"),
+                     temp=as.numeric(buoy$wtmp))
 
 # Check for unique stations
 unique.sta <- unique(buoy$sta)
@@ -103,17 +104,40 @@ n.sta <- length(unique.sta)
 n.sta
 ```
 
-    ## [1] 57
+    ## [1] 23
+
+**Plot the buoy data for the first 10 stations in buoy.df**
+
+Let’s see what the buoy data looks like for our time period.
+
+``` r
+plot(buoy.df$time,buoy.df$temp,type='n', xlab='Date', ylab='SST (ºC)',main='SST from the first 10 stations')
+for (i in 1:10){
+  I=which(buoy.df$station==unique.sta[i])
+  lines(buoy.df$time[I],buoy.df$temp[I])
+}
+```
+
+![](matchup_satellite_buoy_data_files/figure-gfm/buoy_plot-1.png)<!-- -->
 
 **Select buoy data closest in time to satellite data**
 
-Since buoy data are hourly and satellite data are daily, buoy data needs
-to be subsetted to the time coverage that corresponds to the time the
-satellite passes overhead (22h00 GMT (2pm local + 8).
+Since buoy data are hourly and the satellite data are daily, the buoy
+data needs to be averaged daily for each station.
 
 ``` r
-dailybuoy <- subset(buoy.df,hour(time)==22)
+buoy.df.day=buoy.df %>%
+  mutate(date = floor_date(time, unit="days")) %>%
+  group_by(station, date) %>%
+  summarize(
+    lon=mean(longitude),
+    lat=mean(latitude),
+    temp.day=mean(temp)
+    )
 ```
+
+    ## `summarise()` has grouped output by 'station'. You can override using the
+    ## `.groups` argument.
 
 ## Download Satellite SST (sea surface temperature) data
 
@@ -138,7 +162,7 @@ dataInfo
     ##  Base URL: https://coastwatch.pfeg.noaa.gov/erddap 
     ##  Dataset Type: griddap 
     ##  Dimensions (range):  
-    ##      time: (2019-07-22T12:00:00Z, 2023-08-13T12:00:00Z) 
+    ##      time: (2019-07-22T12:00:00Z, 2023-09-05T12:00:00Z) 
     ##      latitude: (-89.975, 89.975) 
     ##      longitude: (-179.975, 179.975) 
     ##  Variables:  
@@ -152,104 +176,108 @@ dataInfo
 
 **Extract the matchup data using rxtracto**
 
-We will subset satellite data using buoy data information.  
-1. get coordinates from buoy data 2. using rxtracto function and the
-coordinates from buoy data, subset satellite data
+We will extract satellite data for each buoy station.  
+1. get coordinates of each buoy station 2. use the rxtracto function and
+the buoy coordinates to download satellite data closest to each station
 
 ``` r
-# Set variable name of interest from satellite data
+# Set the variable name of interest from the satellite data
 parameter <- 'analysed_sst'
 
 # Set x,y,t,z coordinates based on buoy data
-xcoord <- dailybuoy$longitude
-ycoord <- dailybuoy$latitude
-tcoord <- dailybuoy$time
+xcoord <- buoy.df.day$lon
+ycoord <- buoy.df.day$lat
+tcoord <- buoy.df.day$date
 
 
-# Extract (subset) satellite data 
+# Extract satellite data 
 extract <- rxtracto(dataInfo, parameter=parameter, 
                     tcoord=tcoord,
                     xcoord=xcoord,ycoord=ycoord,
                     xlen=.01,ylen=.01)
                      
-dailybuoy$sat<-extract$`mean analysed_sst`
+buoy.df.day$sst<-extract$`mean analysed_sst`
 ```
 
 **Get subset of data where a satellite value was found**
 
-- Not all matchup will yield data, for example due to cloud cover.
+- Our satellite product is gap-free (gaps due to clouds were filled
+  using some interpolation) but it has a spatial resolution of 5km. Some
+  buoy stations may be so close to shore that they end up in the
+  landmask of the satellite data. So let’s find the stations that were
+  matched up to an SST pixel.
 
 ``` r
 # Get subset of data where there is a satellite value 
-goodbuoy<-subset(dailybuoy, sat > 0)
-unique.sta<-unique(goodbuoy$sta)
+goodbuoy<-subset(buoy.df.day, sst > 0)
+unique.sta<-unique(goodbuoy$station)
 nbuoy<-length(unique.sta)
-ndata<-length(goodbuoy$sta)
+ndata<-length(goodbuoy$station)
 ```
 
 ## Compare results for satellite and buoy
 
-- Plot the VIIRS satellite verses the buoy data to visualize how well
-  the two datasets track each other.
+- Plot the satellite SST verses the buoy temperature to visualize how
+  well the two datasets match each other.
 
 ``` r
 # Set up map title 
-main="California coast, 8/1/23-8/13/23"   
+main="California coast, 8/1/23-8/10/23"   
 
-p <- ggplot(goodbuoy, aes(sst, sat,color=latitude)) + 
+p <- ggplot(goodbuoy, aes(temp.day, sst,color=lat)) + 
      coord_fixed(xlim=c(8,25),ylim=c(8,25)) 
 p + geom_point() + 
   ylab('Blended SST')  + 
-  xlab('NDBC Buoy SST @ 2pm') +
+  xlab('NDBC Buoy average daily SST') +
   scale_x_continuous(minor_breaks = seq(8, 25)) + 
   scale_y_continuous(minor_breaks = seq(8, 25)) + 
   #geom_abline(a=fit[1],b=fit[2]) +
   #annotation_custom(my_grob) + 
   scale_color_gradientn(colours = rev(rainbow(9)), name="Buoy\nLatitude") +
-  labs(title=main) + theme(plot.title = element_text(size=25, face="bold", vjust=2)) 
+  labs(title=main) + theme(plot.title = element_text(size=20, face="bold", vjust=2)) 
 ```
 
 ![](matchup_satellite_buoy_data_files/figure-gfm/xyplot-1.png)<!-- -->
 
-Run a linear regression of Blended satellite verses the buoy data. \*
-The R squared in close to 1 (0.9807) \* The slope is near 1 (0.950711)
+Run a linear regression of Blended SST versus the buoy data. \* The R
+squared is close to 1 (0.8733) \* The slope is 0.7151
 
 ``` r
-lmHeight = lm(sat~sst, data = goodbuoy)
+lmHeight = lm(sst~temp.day, data = goodbuoy)
 summary(lmHeight)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = sat ~ sst, data = goodbuoy)
+    ## lm(formula = sst ~ temp.day, data = goodbuoy)
     ## 
     ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -4.0823 -0.5010  0.2333  0.7072  3.4517 
+    ##      Min       1Q   Median       3Q      Max 
+    ## -2.21964 -0.48245  0.02077  0.41449  2.19809 
     ## 
     ## Coefficients:
     ##             Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept) 1.180988   0.092772   12.73   <2e-16 ***
-    ## sst         0.897339   0.005369  167.14   <2e-16 ***
+    ## (Intercept)  3.65434    0.27805   13.14   <2e-16 ***
+    ## temp.day     0.71510    0.01997   35.81   <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.101 on 2532 degrees of freedom
-    ## Multiple R-squared:  0.9169, Adjusted R-squared:  0.9169 
-    ## F-statistic: 2.794e+04 on 1 and 2532 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 0.739 on 186 degrees of freedom
+    ## Multiple R-squared:  0.8733, Adjusted R-squared:  0.8726 
+    ## F-statistic:  1282 on 1 and 186 DF,  p-value: < 2.2e-16
 
-## Create a satellite map and overlay buoy data
+## Create a map of SST and overlay the buoy data
 
-**Extract VIIRS chlorophyll data for the month of August 2018**
+**Extract blended SST data for August 1st, 2023**
 
 ``` r
 # First define the box and time limits of the requested data 
-ylim<-c(30.87,41.75)
-xlim<-c(-128,-115)
+ylim<-c(32,42)
+xlim<-c(-127,-118)
 
 # Extract the monthly satellite data
 SST <- rxtracto_3D(dataInfo,xcoord=xlim,ycoord=ylim,parameter=parameter, 
-                   tcoord=c('2023-08-06','2023-08-06'))
+                   tcoord=c('2023-08-01','2023-08-01'))
 
 SST$sst <- drop(SST$analysed_sst)
 ```
@@ -269,7 +297,7 @@ sstFrame<-mapFrame(SST$longitude,SST$latitude,SST$sst)
 coast <- map_data("worldHires", ylim = ylim, xlim = xlim)
 my.col <- colorRampPalette(rev(brewer.pal(11, "RdYlBu")))(22-13) 
 
-buoy2<-subset(dailybuoy, month(time)==8 &day(time)==5 & sst > 0)
+buoy2<-subset(buoy.df.day, month(date)==8 &day(date)==1 & temp.day > 0)
 ```
 
 **Create the map**
@@ -281,8 +309,8 @@ myplot<-ggplot(data = sstFrame, aes(x = x, y = y, fill = sst)) +
   theme_bw(base_size = 15) + ylab("Latitude") + xlab("Longitude") +
   coord_fixed(1.3,xlim = xlim, ylim = ylim) +
   scale_fill_gradientn(colours = rev(rainbow(12)),limits=c(10,25),na.value = NA) +
-  ggtitle(paste("VIIRS and NDBC buoy SST \n", unique(as.Date(SST$time)))) +
-  geom_point(data=buoy2, aes(x=longitude,y=latitude,color=sst),size=3,shape=21,color="black") + 
+  ggtitle(paste("Blended SST and NDBC buoy temperature \n", unique(as.Date(SST$time)))) +
+  geom_point(data=buoy2, aes(x=lon,y=lat,color=temp.day),size=3,shape=21,color="black") + 
   scale_color_gradientn(colours = rev(rainbow(12)),limits=c(10,25),na.value ="grey20") 
   
 myplot

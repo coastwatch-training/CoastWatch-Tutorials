@@ -19,7 +19,7 @@ View sea ice concentration (SIC) data on a map with the polar stereographic proj
 * [convert-180+180-to-0-360-longitude](convert-180+180-to-0-360-longitude)
 Work with datasets with -180&deg; to +180&deg; longitude values in a region that crosses the antimeridian.  Convert the coordinates from (-180, +180) to (0, 360)  and visualize data on a map.
 * [create-virtual-buoy-with-satellite-data](create-virtual-buoy-with-satellite-data)
-  Create a “virtual” buoy using satellite data to fill the gaps in in-situ data collected by a physical buoy. Extract data from a location closeto an existing buoy.  Clean dataset by removing outliers, and aggregate (resample) to achieve a reduced temporal resolution.  Plot time series data.
+  Create a “virtual” buoy using satellite data to fill the gaps in in-situ data collected by a physical buoy. Extract data from a location close to an existing buoy.  Clean dataset by removing outliers, and aggregate (resample) to achieve a reduced temporal resolution.  Plot time series data.
 * [define-marine-habitat](define-marine-habitat)
   Define habitat characteristics for a marine species (eg. a temperature range where bycatch of loggerhead turtles is likely), and download and plot the satellite sea surface temperature data, highlighting the habitat range. 
 * [extract-satellite-data-within-boundary](extract-satellite-data-within-boundary)
