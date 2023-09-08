@@ -1,3 +1,10 @@
+``` r
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.path = "images/"
+)
+```
+
 \# Match up satellite and buoy data \> history \| Updated August 2023
 
 There are buoys in many locations around the world that provide data
@@ -118,7 +125,7 @@ for (i in 1:10){
 }
 ```
 
-![](matchup_satellite_buoy_data_files/figure-gfm/buoy_plot-1.png)<!-- -->
+![](images/buoy_plot-1.png)<!-- -->
 
 **Select buoy data closest in time to satellite data**
 
@@ -162,7 +169,7 @@ dataInfo
     ##  Base URL: https://coastwatch.pfeg.noaa.gov/erddap 
     ##  Dataset Type: griddap 
     ##  Dimensions (range):  
-    ##      time: (2019-07-22T12:00:00Z, 2023-09-05T12:00:00Z) 
+    ##      time: (2019-07-22T12:00:00Z, 2023-09-06T12:00:00Z) 
     ##      latitude: (-89.975, 89.975) 
     ##      longitude: (-179.975, 179.975) 
     ##  Variables:  
@@ -237,7 +244,7 @@ p + geom_point() +
   labs(title=main) + theme(plot.title = element_text(size=20, face="bold", vjust=2)) 
 ```
 
-![](matchup_satellite_buoy_data_files/figure-gfm/xyplot-1.png)<!-- -->
+![](images/xyplot-1.png)<!-- -->
 
 Run a linear regression of Blended SST versus the buoy data. \* The R
 squared is close to 1 (0.8733) \* The slope is 0.7151
@@ -316,4 +323,4 @@ myplot<-ggplot(data = sstFrame, aes(x = x, y = y, fill = sst)) +
 myplot
 ```
 
-![](matchup_satellite_buoy_data_files/figure-gfm/map-1.png)<!-- -->
+![](images/map-1.png)<!-- -->

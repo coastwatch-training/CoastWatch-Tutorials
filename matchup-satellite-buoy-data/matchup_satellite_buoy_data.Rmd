@@ -6,7 +6,12 @@ output:
   md_document:
     variant: gfm
 ---
-  
+```{r}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.path = "images/"
+)
+```  
   # Match up satellite and buoy data
   > history | Updated August 2023 
 
