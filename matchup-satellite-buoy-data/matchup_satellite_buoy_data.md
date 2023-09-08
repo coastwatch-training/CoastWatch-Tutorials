@@ -139,12 +139,22 @@ buoy.df.day=buoy.df %>%
   summarize(
     lon=mean(longitude),
     lat=mean(latitude),
-    temp.day=mean(temp)
+    temp.day=mean(temp),
+    .groups="drop"
     )
+
+head(buoy.df.day)
 ```
 
-    ## `summarise()` has grouped output by 'station'. You can override using the
-    ## `.groups` argument.
+    ## # A tibble: 6 × 5
+    ##   station date                  lon   lat temp.day
+    ##   <chr>   <dttm>              <dbl> <dbl>    <dbl>
+    ## 1 46013   2023-08-01 00:00:00 -123.  38.2     10.4
+    ## 2 46013   2023-08-02 00:00:00 -123.  38.2     10.7
+    ## 3 46013   2023-08-03 00:00:00 -123.  38.2     10.6
+    ## 4 46013   2023-08-04 00:00:00 -123.  38.2     10.4
+    ## 5 46013   2023-08-05 00:00:00 -123.  38.2     10.7
+    ## 6 46013   2023-08-06 00:00:00 -123.  38.2     10.6
 
 ## Download Satellite SST (sea surface temperature) data
 

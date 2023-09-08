@@ -129,9 +129,11 @@ buoy.df.day=buoy.df %>%
   summarize(
     lon=mean(longitude),
     lat=mean(latitude),
-    temp.day=mean(temp)
+    temp.day=mean(temp),
+    .groups="drop"
     )
-    
+
+head(buoy.df.day)
 ```
 
 ## Download Satellite SST (sea surface temperature) data
