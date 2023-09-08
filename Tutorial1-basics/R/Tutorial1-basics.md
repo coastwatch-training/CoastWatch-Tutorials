@@ -1,3 +1,8 @@
+    knitr::opts_chunk$set(
+      echo = TRUE,
+      fig.path = "images/"
+    )
+
 A tidyverse/ggplot version is also available here:
 <https://github.com/jebyrnes/noaa_coastwatch_tutorial_1/blob/main/tutorial1-1.md>
 
@@ -194,7 +199,7 @@ it to your working directory to plot the color scale properly.
     axis(4, las=1)
     box()
 
-![](Tutorial1-basics_files/figure-markdown_strict/unnamed-chunk-13-1.png)
+![](images/unnamed-chunk-14-1.png)
 
 ### Plotting a time series
 
@@ -213,7 +218,7 @@ generate a time series of mean SST within that box.
     axis(1,1:n,format(dates,'%m'))
     box()
 
-![](Tutorial1-basics_files/figure-markdown_strict/unnamed-chunk-14-1.png)
+![](images/unnamed-chunk-15-1.png)
 
 ### Creating a map of average SST over a year
 
@@ -230,4 +235,4 @@ generate a time series of mean SST within that box.
     axis(4)
     box()
 
-![](Tutorial1-basics_files/figure-markdown_strict/unnamed-chunk-15-1.png)
+![](images/unnamed-chunk-16-1.png)

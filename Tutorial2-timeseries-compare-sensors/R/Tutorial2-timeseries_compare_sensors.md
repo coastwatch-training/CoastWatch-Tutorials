@@ -1,3 +1,8 @@
+    knitr::opts_chunk$set(
+      echo = TRUE,
+      fig.path = "images/"
+    )
+
 A tidyverse/ggplot version is also available here:
 <https://github.com/jebyrnes/noaa_coastwatch_tutorial_1/blob/main/tutorial2-1.md>
 Links to an external site.
@@ -142,7 +147,7 @@ while.
       labs(fill="log(Chl)") +
       scale_fill_viridis_c()
 
-![](Tutorial2-timeseries_compare_sensors_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+![](images/unnamed-chunk-7-1.png)
 
     #Spatially average all the data within the box
 
@@ -183,7 +188,7 @@ while.
 
     legend('topleft',legend=c('sw','mod','viirs'),cex=0.6,col=c(2,4,3),lwd=2)
 
-![](Tutorial2-timeseries_compare_sensors_files/figure-markdown_strict/unnamed-chunk-10-1.png)
+![](images/unnamed-chunk-11-1.png)
 
 You can see that the values of chl-a concentration don’t match between
 sensors.
@@ -257,4 +262,4 @@ This dataset contains many variables. Our variable of interest is
 
     legend('topleft',legend=c('sw','mod','viirs','cci'), cex=0.6,col=c(2,4,3,1),pch=c(20,20,20,NA),lty=c(NA,NA,NA,1),lwd=2)  
 
-![](Tutorial2-timeseries_compare_sensors_files/figure-markdown_strict/unnamed-chunk-13-1.png)
+![](images/unnamed-chunk-14-1.png)
