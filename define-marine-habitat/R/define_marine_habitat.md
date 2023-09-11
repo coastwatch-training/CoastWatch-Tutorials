@@ -137,8 +137,8 @@ plotBBox(SST, plotColor = 'thermal')
 
 ## Define and plot the TurtleWatch temperature band
 
-\_\_ Set the temperature band to 17.5-18.5 degrees C, as determined by
-the TurtleWatch program.\_\_
+**Set the temperature band to 17.5-18.5 degrees C, as determined by the
+TurtleWatch program.**
 
 ``` r
 ## Define turtle temperature range
