@@ -6,7 +6,12 @@ output:
   md_document:
     variant: gfm
 ---
-  
+```{r}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.path = "images/"
+)
+```  
   # Match up satellite and buoy data
   > history | Updated August 2023 
 
@@ -124,9 +129,11 @@ buoy.df.day=buoy.df %>%
   summarize(
     lon=mean(longitude),
     lat=mean(latitude),
-    temp.day=mean(temp)
+    temp.day=mean(temp),
+    .groups="drop"
     )
-    
+
+head(buoy.df.day)
 ```
 
 ## Download Satellite SST (sea surface temperature) data
