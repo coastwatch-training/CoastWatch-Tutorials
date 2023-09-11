@@ -1,11 +1,3 @@
-``` r
-knitr::opts_chunk$set(
-  echo = TRUE,
-  fig.path = "images/",
-  warning = FALSE, message = FALSE
-)
-```
-
 # Define a marine habitat
 
 > notebook filename \| define_marine_habitat.Rmd
@@ -19,7 +11,7 @@ fishing effort of the Hawaii-based shallow-set longline fishery in the
 Pacific Ocean north of the Hawaiian Islands. That fishery, which targets
 swordfish, used to experience high levels of bycatch of loggerhead
 turtles. Considerable changes in gear and operations lowered bycatch
-rate and the TurtleWatch products was designed as a tool to advise
+rate and the TurtleWatch product was designed as a tool to advise
 fishermen on areas to avoid to limit bycatch.
 
 Research results indicated that 50% of interactions occurred between
@@ -35,7 +27,7 @@ satellite sea surface temperature.
 - Using the *xtracto_3D* function to extract data from a rectangular
   area  
 - Masking a data array  
-- Plotting maps using ggplot
+- Plotting maps using plotBBox and ggplot
 
 # Datasets used
 
@@ -77,11 +69,11 @@ for (pk in list.of.packages) {
 
 ## Select the Satellite Data
 
-- Use the coralTemp SST dataset (ID CRW_sst_v3_1) from the OceanWatch
+- Use the CoralTemp SST dataset (ID CRW_sst_v3_1) from the OceanWatch
   ERDDAP server
   (<https://oceanwatch.pifsc.noaa.gov/erddap/index.html>)  
 - Gather information about the dataset (metadata) using **rerddap**  
-- Displays the information
+- Display the information
 
 ``` r
 # Let's look at the metadata
@@ -115,8 +107,8 @@ dataInfo
   operates: longitude range of 185 to 235 east and latitude range of 20
   to 45 north  
 - Select a date in the first quarter of the year when bycatch typically
-  occurs: tcoord=c(‘2023-01-06’,‘2023-01-06’)). tcoord needs to be a
-  vector even if we are pulling only one day of data.
+  occurs: `tcoord=c('2023-01-06', '2023-01-06'))`. `tcoord` needs to be
+  a vector even if we are pulling only one day of data.
 
 ``` r
 # latitude and longitude of the vertices
@@ -167,7 +159,7 @@ plotBBox(SST2, plotColor = 'thermal')
 ![](images/makeVar-1.png)<!-- -->
 
 It would be nicer to color in the TurtleWatch band (the NA values) with
-a different color. If you want to customize graphs it’s better to use
+a different color. If you want to customize graphs, it’s better to use
 `ggplot` than the `plotBBox` that comes with the `rerrdapXtracto`
 package. Here we will use `ggplot` to plot the data. But first the data
 is reformatted for use in `ggplot`.
