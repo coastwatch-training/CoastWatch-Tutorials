@@ -12,8 +12,8 @@ courtesy of Jarrett Byrnes from UMass Boston - <http://byrneslab.net>
 ## Objective
 
 This tutorial will show the steps to grab data hosted on an ERDDAP
-server from Python, how to work with NetCDF files in Python and how to
-make some maps and time-series of sea surface temperature.
+server from R, how to work with NetCDF files in R and how to make some
+maps and time-series of sea surface temperature.
 
 ## The tutorial demonstrates the following techniques
 
