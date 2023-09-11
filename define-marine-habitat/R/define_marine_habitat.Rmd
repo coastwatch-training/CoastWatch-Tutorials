@@ -7,7 +7,7 @@ output:
     variant: gfm
 ---
 
-```{r}
+```{r  echo=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
   fig.path = "images/",
@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 # Context
 
-The [TurleWatch project](https://oceanwatch.pifsc.noaa.gov/turtlewatch.html) investigated the overlap between loggerhead sea turtles habitat and fishing effort of the Hawaii-based shallow-set longline fishery in the Pacific Ocean north of the Hawaiian Islands. That fishery, which targets swordfish, used to experience high levels of bycatch of loggerhead turtles. Considerable changes in gear and operations lowered bycatch rate and the TurtleWatch products was designed as a tool to advise fishermen on areas to avoid to limit bycatch.
+The [TurleWatch project](https://oceanwatch.pifsc.noaa.gov/turtlewatch.html) investigated the overlap between loggerhead sea turtles habitat and fishing effort of the Hawaii-based shallow-set longline fishery in the Pacific Ocean north of the Hawaiian Islands. That fishery, which targets swordfish, used to experience high levels of bycatch of loggerhead turtles. Considerable changes in gear and operations lowered bycatch rate and the TurtleWatch product was designed as a tool to advise fishermen on areas to avoid to limit bycatch.
 
 Research results indicated that 50% of interactions occurred between 17.5°C and 18.5°C. 
 
@@ -31,7 +31,7 @@ Here we will draw the 17.5 and 18.5ºC temperature contours on a map of satellit
 # The tutorial demonstrates the following techniques
 * Using the _xtracto_3D_ function to extract data from a rectangular area  
 * Masking a data array  
-* Plotting maps using ggplot  
+* Plotting maps using plotBBox and ggplot  
 
 # Datasets used
 CoralTemp Sea Surface Temperature product from the NOAA Coral Reef Watch program. The NOAA Coral Reef Watch (CRW) daily global 5km Sea Surface Temperature (SST) product, also known as CoralTemp, shows the nighttime ocean temperature measured at the surface. The SST scale ranges from -2 to 35 °C. The CoralTemp SST data product was developed from two, related reanalysis (reprocessed) SST products and a near real-time SST product. Spanning January 1, 1985 to the present, the CoralTemp SST is one of the best and most internally consistent daily global 5km SST products available. More information about the product: https://coralreefwatch.noaa.gov/product/5km/index_5km_sst.php
@@ -65,9 +65,9 @@ for (pk in list.of.packages) {
 ```
 
 ## Select the Satellite Data
-* Use the coralTemp SST dataset (ID CRW_sst_v3_1) from the OceanWatch ERDDAP server (https://oceanwatch.pifsc.noaa.gov/erddap/index.html)  
+* Use the CoralTemp SST dataset (ID CRW_sst_v3_1) from the OceanWatch ERDDAP server (https://oceanwatch.pifsc.noaa.gov/erddap/index.html)  
 * Gather information about the dataset (metadata) using **rerddap**  
-* Displays the information  
+* Display the information  
 ```{r dataInfo}
 # Let's look at the metadata
 
@@ -83,7 +83,7 @@ dataInfo
 
 ## Get Satellite Data  
 * Select an area of the central North Pacific where the fishery operates: longitude range of 185 to 235 east and latitude range of 20 to 45 north  
-* Select a date in the first quarter of the year when bycatch typically occurs: tcoord=c('2023-01-06','2023-01-06')). tcoord needs to be a vector even if we are pulling only one day of data.
+* Select a date in the first quarter of the year when bycatch typically occurs: `tcoord=c('2023-01-06', '2023-01-06'))`. `tcoord` needs to be a vector even if we are pulling only one day of data.
 
 ```{r getdata}
 
@@ -108,7 +108,7 @@ plotBBox(SST, plotColor = 'thermal')
 
 ## Define and  plot the TurtleWatch temperature band  
 
-__ Set the temperature band to 17.5-18.5 degrees C, as determined by the TurtleWatch program.__  
+__Set the temperature band to 17.5-18.5 degrees C, as determined by the TurtleWatch program.__  
 
 ```{r temp}
 ## Define turtle temperature range
@@ -127,7 +127,7 @@ plotBBox(SST2, plotColor = 'thermal')
 
 ```
 
-It would be nicer to color in the TurtleWatch band (the NA values) with a different color. If you want to customize graphs it's better to use `ggplot` than the `plotBBox` that comes with the
+It would be nicer to color in the TurtleWatch band (the NA values) with a different color. If you want to customize graphs, it's better to use `ggplot` than the `plotBBox` that comes with the
 `rerrdapXtracto` package.  Here we will use `ggplot` to plot the data. But first the data is reformatted for use in `ggplot`. 
 
 Restructure the data 
