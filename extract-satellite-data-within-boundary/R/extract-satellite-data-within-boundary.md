@@ -7,7 +7,7 @@ history \| Updated August 2023
 ## Background
 
 One use for satellite observations is to supplement in situ sampling of
-geographical locations where the timespan or frequency measurements, or
+geographical locations where the timespan, frequency measurements,
 spatial dimensions or remoteness of the locations, make physical
 sampling impossible or impractical. One drawback is that satellite data
 are often rectangular, whereas geographical locations can have irregular
@@ -48,7 +48,10 @@ available online (<https://www.marineregions.org/downloads.php>) and
 within the shapes folder associated with this repository. For this
 tutorial we will use the Gulf Stream province (ProvCode: GFST)
 
-![](../images/longhurst.png)
+<figure>
+<img src="../images/longhurst.png" alt="../images/longhurst.png" />
+<figcaption aria-hidden="true">../images/longhurst.png</figcaption>
+</figure>
 
 ## Install packages and load libraries
 
@@ -117,8 +120,8 @@ We will load the sea surface temperature data from the geo-polar blended
 SST satellite data product hosted on the CoastWatch ERDDAP. The dataset
 ID for this data product is **nesdisBLENDEDsstDNDaily**.
 
-We will use the *info* function from the **rerddap** package first
-obtains information about the dataset of interest, then we will import
+We will use the *info* function from the **rerddap** package to first
+obtain information about the dataset of interest, then we will import
 the data.
 
 ``` r
@@ -136,7 +139,7 @@ dataInfo
     ##  Base URL: http://coastwatch.pfeg.noaa.gov/erddap 
     ##  Dataset Type: griddap 
     ##  Dimensions (range):  
-    ##      time: (2019-07-22T12:00:00Z, 2023-09-03T12:00:00Z) 
+    ##      time: (2019-07-22T12:00:00Z, 2023-09-10T12:00:00Z) 
     ##      latitude: (-89.975, 89.975) 
     ##      longitude: (-179.975, 179.975) 
     ##  Variables:  
@@ -150,13 +153,13 @@ dataInfo
 
 ## Set the options for the polygon data extract
 
-Using **rxtractogon** function, we will import the satellite data from
-erddap. The **rxtractogon** function takes the variable(s) of interest
-and the coordinates as input.
+Using the **rxtractogon** function, we will import the satellite data
+from erddap. The **rxtractogon** function takes the variable(s) of
+interest and the coordinates as input.
 
 - For the coordinates: determine the range of x, y, z, and time.
 - time coordinate: The time variable passed to xtractogon must contain
-  two elements, the start and end points of the desired time period.
+  two elements: the start and end points of the desired time period.
   This example uses ERDDAP’s **last** option to retrieve data from the
   most recent time step. The **last** option also accepts the minus
   **-** operator. To request the time step with the second most recent
@@ -191,12 +194,12 @@ str(satdata)
 ```
 
     ## List of 6
-    ##  $ analysed_sst: num [1:600, 1:201, 1:5] 28.6 28.6 28.6 28.7 28.7 ...
+    ##  $ analysed_sst: num [1:600, 1:201, 1:5] 26.9 26.9 26.8 26.8 26.8 ...
     ##  $ datasetname : chr "nesdisBLENDEDsstDNDaily"
     ##  $ longitude   : num [1:600(1d)] -73.5 -73.4 -73.4 -73.3 -73.3 ...
     ##  $ latitude    : num [1:201(1d)] 33.5 33.6 33.6 33.7 33.7 ...
     ##  $ altitude    : logi NA
-    ##  $ time        : POSIXlt[1:5], format: "2023-08-29 12:00:00" "2023-08-30 12:00:00" ...
+    ##  $ time        : POSIXlt[1:5], format: "2023-09-05 12:00:00" "2023-09-06 12:00:00" ...
     ##  - attr(*, "class")= chr [1:2] "list" "rxtracto3D"
 
 ### Plot the data

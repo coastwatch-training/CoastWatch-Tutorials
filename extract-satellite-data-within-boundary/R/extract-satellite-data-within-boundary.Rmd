@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 > Update: August 2023  
 
 ## Background
-One use for satellite observations is to supplement in situ sampling of geographical locations where the timespan or frequency measurements, or spatial dimensions or remoteness of the locations, make physical sampling impossible or impractical. One drawback is that satellite data are often rectangular, whereas geographical locations can have irregular boundaries. Examples of boundaries include marine protected areas or marine physical, biological, and ecological divisions like the Longhurst Marine Provinces.  
+One use for satellite observations is to supplement in situ sampling of geographical locations where the timespan, frequency measurements, spatial dimensions or remoteness of the locations, make physical sampling impossible or impractical. One drawback is that satellite data are often rectangular, whereas geographical locations can have irregular boundaries. Examples of boundaries include marine protected areas or marine physical, biological, and ecological divisions like the Longhurst Marine Provinces.  
 
 ## Objectives
 In this tutorial we will learn how to download a timeseries of SST satellite data from an ERDDAP server, and then mask the data to retain only the data within an irregular geographical boundary (polygon). We will then plot a yearly seasonal cycle from within the boundary. 
@@ -95,7 +95,7 @@ ycoord <- st_coordinates(GFST)[,2]
 
 We will load the sea surface temperature data from the geo-polar blended SST satellite data product hosted on the CoastWatch ERDDAP. The dataset ID for this data product is **nesdisBLENDEDsstDNDaily**.
 
-We will use the *info* function from the **rerddap** package first obtains information about the dataset of interest, then we will import the data.
+We will use the *info* function from the **rerddap** package to first obtain information about the dataset of interest, then we will import the data.
 
 ```{r dataInfo}
 
@@ -110,11 +110,11 @@ dataInfo
 ```
 
 ## Set the options for the polygon data extract
-Using **rxtractogon** function, we will import the satellite data from erddap.
+Using the **rxtractogon** function, we will import the satellite data from erddap.
 The **rxtractogon** function takes the variable(s) of interest and the coordinates as input. 
 
 * For the coordinates: determine the range of x, y, z, and time.
-* time coordinate: The time variable passed to xtractogon must contain two elements, the start and end points of the desired time period. This example uses ERDDAP's **last** option to retrieve data from the most recent time step. The **last** option also accepts the minus **-** operator. To request the time step with the second most recent data use "last-1". In the script below the time variable (tcoord) is defined as **tcoord <- c("last-5", "last")**  
+* time coordinate: The time variable passed to xtractogon must contain two elements: the start and end points of the desired time period. This example uses ERDDAP's **last** option to retrieve data from the most recent time step. The **last** option also accepts the minus **-** operator. To request the time step with the second most recent data use "last-1". In the script below the time variable (tcoord) is defined as **tcoord <- c("last-5", "last")**  
 
 ```{r options}
 # set the parameter to extract
