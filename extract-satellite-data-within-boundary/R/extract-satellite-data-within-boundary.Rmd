@@ -26,9 +26,9 @@ One use for satellite observations is to supplement in situ sampling of geograph
 In this tutorial we will learn how to download a timeseries of SST satellite data from an ERDDAP server, and then mask the data to retain only the data within an irregular geographical boundary (polygon). We will then plot a yearly seasonal cycle from within the boundary. 
 
 ## The tutorial demonstrates the following techniques
--   Downloading data from an ERDDAP data server
+-   Downloading data from an ERDDAP data server for a non-rectangular region using the *rerddapXtracto* package
 -   Visualizing data on a map
--   Masking satellite data using a shape file
+-   Plotting a time-series of mean SST 
 
 ## Datasets used
 __NOAA Geo-polar Blended Analysis Sea-Surface Temperature, Global, Monthlyly, 5km, 2019-Present__    

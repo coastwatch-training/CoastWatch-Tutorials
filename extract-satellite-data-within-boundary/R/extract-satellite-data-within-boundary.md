@@ -24,9 +24,10 @@ will then plot a yearly seasonal cycle from within the boundary.
 
 ## The tutorial demonstrates the following techniques
 
-- Downloading data from an ERDDAP data server
+- Downloading data from an ERDDAP data server for a non-rectangular
+  region using the *rerddapXtracto* package
 - Visualizing data on a map
-- Masking satellite data using a shape file
+- Plotting a time-series of mean SST
 
 ## Datasets used
 
