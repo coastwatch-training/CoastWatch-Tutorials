@@ -8,10 +8,11 @@ output:
 ---
 
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
-  fig.path = "images/"
+  fig.path = "images/",
+  warning = FALSE, message = FALSE
 )
 ```
 
@@ -168,7 +169,7 @@ write.csv(result, 'turtle-track-chl.m.csv', row.names = FALSE)
 
 
 
-### Alternative method: Data request using ```rxtracto`` function of the **rerddap** package
+### Alternative method: Data request using the ```rxtracto`` function of the **rerddapXtracto** package
 The **rerddap** package was written to simplify data extraction from ERDDAP servers.
 
 __Let's use data from the monthly product of the OC-CCI datasets.__  
