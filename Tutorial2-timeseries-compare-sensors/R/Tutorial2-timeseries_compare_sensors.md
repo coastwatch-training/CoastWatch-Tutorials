@@ -1,8 +1,3 @@
-    knitr::opts_chunk$set(
-      echo = TRUE,
-      fig.path = "images/"
-    )
-
 A tidyverse/ggplot version is also available here:
 <https://github.com/jebyrnes/noaa_coastwatch_tutorial_1/blob/main/tutorial2-1.md>
 Links to an external site.
@@ -81,13 +76,6 @@ water classification.
 
     # Load packages 
     invisible(lapply(packages, library, character.only = TRUE))
-
-    ## 
-    ## Attaching package: 'lubridate'
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     date, intersect, setdiff, union
 
 ## Define the area to extract
 
