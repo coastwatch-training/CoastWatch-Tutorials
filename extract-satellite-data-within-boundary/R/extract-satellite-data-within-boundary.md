@@ -24,19 +24,20 @@ will then plot a yearly seasonal cycle from within the boundary.
 
 ## The tutorial demonstrates the following techniques
 
-- Downloading data from an ERDDAP data server
+- Downloading data from an ERDDAP data server for a non-rectangular
+  region using the *rerddapXtracto* package
 - Visualizing data on a map
-- Masking satellite data using a shape file
+- Plotting a time-series of mean SST
 
 ## Datasets used
 
 **NOAA Geo-polar Blended Analysis Sea-Surface Temperature, Global,
-Daily, 5km, 2019-Present**  
+Monthlyly, 5km, 2019-Present**  
 The NOAA geo-polar blended SST is a high resolution satellite-based
 gap-free sea surface temperature (SST) product that combines SST data
 from US, Japanese and European geostationary infrared imagers, and
 low-earth orbiting infrared (U.S. and European) SST data, into a single
-product.  
+product. We will use the monthly composite.
 <https://coastwatch.pfeg.noaa.gov/erddap/griddap/NOAA_DHW_monthly>
 
 **Longhurst Marine Provinces**  
@@ -129,27 +130,26 @@ the data.
 erd_url = "http://coastwatch.pfeg.noaa.gov/erddap/"
 
 # Obtain data info using the erddap url and dataset ID
-dataInfo <- rerddap::info('nesdisBLENDEDsstDNDaily',url=erd_url)  
+dataInfo <- rerddap::info('NOAA_DHW_monthly',url=erd_url)  
 
 # Examine the metadata dataset info
 dataInfo
 ```
 
-    ## <ERDDAP info> nesdisBLENDEDsstDNDaily 
+    ## <ERDDAP info> NOAA_DHW_monthly 
     ##  Base URL: http://coastwatch.pfeg.noaa.gov/erddap 
     ##  Dataset Type: griddap 
     ##  Dimensions (range):  
-    ##      time: (2019-07-22T12:00:00Z, 2023-09-10T12:00:00Z) 
+    ##      time: (1985-01-16T00:00:00Z, 2023-08-16T00:00:00Z) 
     ##      latitude: (-89.975, 89.975) 
     ##      longitude: (-179.975, 179.975) 
     ##  Variables:  
-    ##      analysed_sst: 
-    ##          Units: degree_C 
-    ##      analysis_error: 
-    ##          Units: degree_C 
     ##      mask: 
-    ##      sea_ice_fraction: 
-    ##          Units: 1
+    ##          Units: pixel_classification 
+    ##      sea_surface_temperature: 
+    ##          Units: degree_C 
+    ##      sea_surface_temperature_anomaly: 
+    ##          Units: degree_C
 
 ## Set the options for the polygon data extract
 
@@ -158,19 +158,13 @@ from erddap. The **rxtractogon** function takes the variable(s) of
 interest and the coordinates as input.
 
 - For the coordinates: determine the range of x, y, z, and time.
-- time coordinate: The time variable passed to xtractogon must contain
-  two elements: the start and end points of the desired time period.
-  This example uses ERDDAP’s **last** option to retrieve data from the
-  most recent time step. The **last** option also accepts the minus
-  **-** operator. To request the time step with the second most recent
-  data use “last-1”. In the script below the time variable (tcoord) is
-  defined as **tcoord \<- c(“last-5”, “last”)**
+- time coordinate: select the entire year of 2020
 
 ``` r
 # set the parameter to extract
-parameter <- 'analysed_sst'
+parameter <- 'sea_surface_temperature'
 # set the time range
-tcoord <- c("last-5", "last-1")
+tcoord <- c("2020-01-16", "2020-12-16")
 
 # We already extracted the xcoord (longitude) and ycoord (latitude) from the shapefiles 
 # The dummy code below is just a placeholder indicating it is necessary to define what the longitude and latitude vectors are that make up the boundary of the polygon.
@@ -194,12 +188,12 @@ str(satdata)
 ```
 
     ## List of 6
-    ##  $ analysed_sst: num [1:600, 1:201, 1:5] 26.9 26.9 26.8 26.8 26.8 ...
-    ##  $ datasetname : chr "nesdisBLENDEDsstDNDaily"
-    ##  $ longitude   : num [1:600(1d)] -73.5 -73.4 -73.4 -73.3 -73.3 ...
-    ##  $ latitude    : num [1:201(1d)] 33.5 33.6 33.6 33.7 33.7 ...
-    ##  $ altitude    : logi NA
-    ##  $ time        : POSIXlt[1:5], format: "2023-09-05 12:00:00" "2023-09-06 12:00:00" ...
+    ##  $ sea_surface_temperature: num [1:601, 1:202, 1:12] NA NA NA NA NA NA NA NA NA NA ...
+    ##  $ datasetname            : chr "NOAA_DHW_monthly"
+    ##  $ longitude              : num [1:601(1d)] -73.5 -73.5 -73.4 -73.4 -73.3 ...
+    ##  $ latitude               : num [1:202(1d)] 33.5 33.5 33.6 33.6 33.7 ...
+    ##  $ altitude               : logi NA
+    ##  $ time                   : POSIXlt[1:12], format: "2020-01-16 00:00:00" "2020-02-16 00:00:00" ...
     ##  - attr(*, "class")= chr [1:2] "list" "rxtracto3D"
 
 ### Plot the data
@@ -212,3 +206,15 @@ plotBBox(satdata, plotColor = 'thermal',maxpixels=1000000)
 ```
 
 ![](images/map-1.png)<!-- -->
+
+### Plot the mean seasonal temperature for the province
+
+``` r
+sst_mean=apply(satdata$sea_surface_temperature,3,mean,na.rm=TRUE)
+```
+
+``` r
+plot(satdata$time,sst_mean,main='Gulf Stream Province Monthly Mean Temperature 2020',ylab='SSt (ºC)',xlab='',type='b')
+```
+
+![](images/unnamed-chunk-2-1.png)<!-- -->

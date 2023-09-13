@@ -8,10 +8,11 @@ output:
 ---
 history | Updated August 2023    
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
-  fig.path = "images/"
+  fig.path = "images/",
+  warning = FALSE, message = FALSE
 )
 ```
 
@@ -25,13 +26,13 @@ One use for satellite observations is to supplement in situ sampling of geograph
 In this tutorial we will learn how to download a timeseries of SST satellite data from an ERDDAP server, and then mask the data to retain only the data within an irregular geographical boundary (polygon). We will then plot a yearly seasonal cycle from within the boundary. 
 
 ## The tutorial demonstrates the following techniques
--   Downloading data from an ERDDAP data server
+-   Downloading data from an ERDDAP data server for a non-rectangular region using the *rerddapXtracto* package
 -   Visualizing data on a map
--   Masking satellite data using a shape file
+-   Plotting a time-series of mean SST 
 
 ## Datasets used
-__NOAA Geo-polar Blended Analysis Sea-Surface Temperature, Global, Daily, 5km, 2019-Present__    
-The NOAA geo-polar blended SST is a high resolution satellite-based gap-free sea surface temperature (SST) product that combines SST data from US, Japanese and European geostationary infrared imagers, and low-earth orbiting infrared (U.S. and European) SST data, into a single product.  
+__NOAA Geo-polar Blended Analysis Sea-Surface Temperature, Global, Monthlyly, 5km, 2019-Present__    
+The NOAA geo-polar blended SST is a high resolution satellite-based gap-free sea surface temperature (SST) product that combines SST data from US, Japanese and European geostationary infrared imagers, and low-earth orbiting infrared (U.S. and European) SST data, into a single product. We will use the monthly composite.
 https://coastwatch.pfeg.noaa.gov/erddap/griddap/NOAA_DHW_monthly
 
 __Longhurst Marine Provinces__  
@@ -103,7 +104,7 @@ We will use the *info* function from the **rerddap** package to first obtain inf
 erd_url = "http://coastwatch.pfeg.noaa.gov/erddap/"
 
 # Obtain data info using the erddap url and dataset ID
-dataInfo <- rerddap::info('nesdisBLENDEDsstDNDaily',url=erd_url)  
+dataInfo <- rerddap::info('NOAA_DHW_monthly',url=erd_url)  
 
 # Examine the metadata dataset info
 dataInfo
@@ -114,13 +115,13 @@ Using the **rxtractogon** function, we will import the satellite data from erdda
 The **rxtractogon** function takes the variable(s) of interest and the coordinates as input. 
 
 * For the coordinates: determine the range of x, y, z, and time.
-* time coordinate: The time variable passed to xtractogon must contain two elements: the start and end points of the desired time period. This example uses ERDDAP's **last** option to retrieve data from the most recent time step. The **last** option also accepts the minus **-** operator. To request the time step with the second most recent data use "last-1". In the script below the time variable (tcoord) is defined as **tcoord <- c("last-5", "last")**  
+* time coordinate: select the entire year of 2020
 
 ```{r options}
 # set the parameter to extract
-parameter <- 'analysed_sst'
+parameter <- 'sea_surface_temperature'
 # set the time range
-tcoord <- c("last-5", "last-1")
+tcoord <- c("2020-01-16", "2020-12-16")
 
 # We already extracted the xcoord (longitude) and ycoord (latitude) from the shapefiles 
 # The dummy code below is just a placeholder indicating it is necessary to define what the longitude and latitude vectors are that make up the boundary of the polygon.
@@ -148,6 +149,15 @@ plotBBox(satdata, plotColor = 'thermal',maxpixels=1000000)
 
 ```
 
+### Plot the mean seasonal temperature for the province
+
+```{r}
+sst_mean=apply(satdata$sea_surface_temperature,3,mean,na.rm=TRUE)
+```
+
+```{r}
+plot(satdata$time,sst_mean,main='Gulf Stream Province Monthly Mean Temperature 2020',ylab='SSt (ºC)',xlab='',type='b')
+```
 
 
 
