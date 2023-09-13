@@ -1,8 +1,3 @@
-    knitr::opts_chunk$set(
-      echo = TRUE,
-      fig.path = "images/"
-    )
-
 A tidyverse/ggplot version is also available here:
 <https://github.com/jebyrnes/noaa_coastwatch_tutorial_1/blob/main/tutorial1-1.md>
 

@@ -7,7 +7,7 @@ output:
   variant: gfm
 ---
 
-```{r}
+```{r echo=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
   fig.path = "images/"
