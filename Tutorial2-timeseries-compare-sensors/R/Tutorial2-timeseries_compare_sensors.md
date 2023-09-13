@@ -36,7 +36,7 @@ and here:
 
 -   Using **rerddap** to extract data from a rectangular area of the
     ocean over time
--   Retrieve information about a dataset from ERDDAP
+-   Retrieving information about a dataset from ERDDAP
 -   Comparing results from different sensors
 -   Averaging data spatially
 -   Producing timeseries plots
@@ -53,12 +53,12 @@ MODIS Aqua, Chlorophyll-a, V.2022, Monthly, Global, 4km, 2002-present
 NOAA VIIRS S-NPP, Chlorophyll-a, Monthly, Global, 4km, 2012-present
 <https://coastwatch.pfeg.noaa.gov/erddap/griddap/nesdisVHNSQchlaMonthly>
 
-ESA CCI Ocean Colour Dataset, v6.0, Monthly, Globsl, 4km, 1997-Present
+ESA CCI Ocean Colour Dataset, v6.0, Monthly, Global, 4km, 1997-Present
 This dataset was developed by the European Space Agency’s Climate Change
 Initiative. The dataset merges data from multiple sensors (MERIS, MODIS,
 VIIRS and SeaWiFS) to create a long timeseries (1997 to present) with
 better spatial coverage than any single sensor. Parameters include
-chlorophyll a, remote sensing reflectance, diffuse attenuation
+chlorophyll-a, remote sensing reflectance, diffuse attenuation
 coefficients, absorption coefficients, backscatter coefficients, and
 water classification.
 <https://coastwatch.pfeg.noaa.gov/erddap/griddap/pmlEsaCCI60OceanColorMonthly>
@@ -90,7 +90,7 @@ Next we define the URL of the ERDDAP we will be using:
 
     ERDDAP_Node <- "https://coastwatch.pfeg.noaa.gov/erddap/"
 
-### Get monthly seawifs data, which starts in 1997.
+### Get monthly SeaWiFS data, which starts in 1997.
 
 Go to ERDDAP to find the name of the dataset for monthly SeaWIFS data:
 erdSW2018chlamday
