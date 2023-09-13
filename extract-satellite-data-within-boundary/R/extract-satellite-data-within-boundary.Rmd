@@ -148,6 +148,7 @@ str(satdata)
 plotBBox(satdata, plotColor = 'thermal',maxpixels=1000000)
 
 ```
+
 ### Plot the mean seasonal temperature for the province
 
 ```{r}

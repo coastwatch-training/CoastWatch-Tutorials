@@ -204,8 +204,9 @@ str(satdata)
 plotBBox(satdata, plotColor = 'thermal',maxpixels=1000000)
 ```
 
-![](images/map-1.png)<!-- --> \### Plot the mean seasonal temperature
-for the province
+![](images/map-1.png)<!-- -->
+
+### Plot the mean seasonal temperature for the province
 
 ``` r
 sst_mean=apply(satdata$sea_surface_temperature,3,mean,na.rm=TRUE)
