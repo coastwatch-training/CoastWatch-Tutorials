@@ -83,17 +83,7 @@ pkges = installed.packages()[,"Package"]
 for (pk in list.of.packages) {
   pkgTest(pk)
 }
-```
 
-    ## Loading required package: ggplot2
-
-    ## Loading required package: ncdf4
-
-    ## Loading required package: RColorBrewer
-
-    ## Loading required package: scales
-
-``` r
 # Set up download method as libcurl, this is only needed for Windows machines
 options(download.file.method="libcurl", url.method="libcurl")
 ```
@@ -140,7 +130,7 @@ download.file(data_url, destfile=f, mode="wb")
 nc=nc_open('sic.nc')
 
 # Examine file metadata
-print(nc)
+#print(nc)
 
 # Examine names of variables
 names(nc$var)
@@ -199,7 +189,7 @@ ggplot(data = sicd, aes(x = xgrid, y = ygrid, fill=sic) ) +
       ggtitle("Sea Ice Concentration on Polar Steregraphic projection")
 ```
 
-![](images/unnamed-chunk-3-1.png)<!-- -->
+![](images/unnamed-chunk-4-1.png)<!-- -->
 
 ## Download grid cell area values
 
@@ -340,4 +330,22 @@ legend("topright", legend=c("Sea ice Area", "Sea ice Extent"),
 box()
 ```
 
-![](images/unnamed-chunk-8-1.png)<!-- -->
+![](images/unnamed-chunk-9-1.png)<!-- -->
+
+## References
+
+- [NSIDC Data Product
+  Description](https://nsidc.org/data/g02202/versions/4)
+- [NSIDC Data Product User Guide
+  (pdf)](https://nsidc.org/sites/default/files/g02202-v004-userguide_1_1.pdf)
+- [PolarWatch Data Catalog](https://polarwatch.noaa.gov/catalog/)
+- [What’s the difference between Sea ice area and
+  extent?](https://nsidc.org/learn/ask-scientist/what-difference-between-sea-ice-area-and-extent#:~:text=But%20NSIDC%20scientists%2C%20like%20most,the%20total%20in%20their%20entirety.&text=Calculating%20sea%20ice%20extent%20means,with%2015%20percent%20or%20more)
+- [NSIDC Arctic Sea Ice News &
+  Analysis](https://nsidc.org/arcticseaicenews/)
+- [Climate.gov Understanding Climate: sea ice
+  extent](https://www.climate.gov/news-features/understanding-climate/understanding-climate-antarctic-sea-ice-extent)
+- Several CoastWatch Node websites have data catalogs containing
+  documentation and links to all the datasets available:
+  - <https://oceanwatch.pifsc.noaa.gov/doc.html>
+  - <https://coastwatch.pfeg.noaa.gov/data.html>
