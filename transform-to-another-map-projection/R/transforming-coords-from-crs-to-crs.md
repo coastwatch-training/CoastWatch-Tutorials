@@ -196,8 +196,8 @@ install missing packages.
     ##         grid_mapping_straight_vertical_longitude_from_pole: 180
     ##         grid_mapping_units: meters
     ##         history: Tue Jan  5 13:40:25 2021: ncks -x -v goddard_merged_seaice_conc_monthly ./previous_blank_ncs/S_monthly_blank.nc ./S_monthly_blank.nc
-    ## 2023-09-13T19:21:37Z (local files)
-    ## 2023-09-13T19:21:37Z https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday.nc?cdr_seaice_conc_monthly[(2022-12-01T00:00:00Z):1:(2022-12-01T00:00:00Z)][(4350000.0):1:(-3950000.0)][(-3950000.0):1:(3950000.0)]
+    ## 2023-09-13T19:25:12Z (local files)
+    ## 2023-09-13T19:25:12Z https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday.nc?cdr_seaice_conc_monthly[(2022-12-01T00:00:00Z):1:(2022-12-01T00:00:00Z)][(4350000.0):1:(-3950000.0)][(-3950000.0):1:(3950000.0)]
     ##         id: https://doi.org/10.7265/sr8p-kc62
     ##         infoUrl: https://nsidc.org/data/g02202/versions/4/
     ##         institution: NSIDC > National Snow and Ice Data Center
@@ -292,10 +292,11 @@ Stereographic South) to EPSG: 4326 (geographic coordinate system)
     # plot sea ice concentration on an unprojected map
     ggplot(sic_sf) + geom_sf(aes(color = seaiceconc)) + labs(title = "Sea Ice Concentration of Antarctica")
 
-![](images/unnamed-chunk-5-1.png) Because the data were in the polar
-stereographic projection, mapping the data onto a different projection
-(global map projection) above, doesn’t make the data fit well on the
-map.
+![](images/unnamed-chunk-5-1.png)
+
+Because the data were in the polar stereographic projection, mapping the
+data onto a different projection (global map projection) above, doesn’t
+make the data fit well on the map.
 
 ## References
 

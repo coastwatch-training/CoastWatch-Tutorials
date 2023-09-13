@@ -147,6 +147,7 @@ ggplot(sic_sf) + geom_sf(aes(color = seaiceconc)) + labs(title = "Sea Ice Concen
 
 
 ```
+
 Because the data were in the polar stereographic projection, mapping the data onto a different projection (global map projection) above, doesn't make the data fit well on the map.
 
 ## References
