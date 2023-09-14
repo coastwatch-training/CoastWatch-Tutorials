@@ -3,39 +3,43 @@ title: "Transforming coordinates from crs to crs"
 output: md_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
-  fig.path = "images/"
+  fig.path = "images/",
+  warning = FALSE, message = FALSE
 )
 ```
+
+# Transforming satellite data from one map projection to another
 > history \| Create July 2023 \| Updated August 2023<br/>
 
+## Background
 
-<a href="https://polarwatch.noaa.gov/" target="_blank">NOAA PolarWatch</a> distributes gridded and tabular oceanographic data for polar regions.  Satellite data include geospatial information and most of them are in geographical coordinates (latitude and longitude).  Since the spatial coverage of many PolarWatch satellite data products, are within polar regions, the geospatial information is often represented in polar projected coordinates. (<a href="https://nsidc.org/data/user-resources/help-center/guide-nsidcs-polar-stereographic-projection" target="_blank">Polar Stereographic Projections</a>).  
+Map projections try to portray the earth's spherical surface on a flat surface. A coordinate reference system (CRS) defines how the two-dimensional, projected map relates to real places on the earth. Which map projection and CRS to use depends on the region in which you are working and the analysis you will do.
 
-When working with multiple satellite data sets from different crs coordinates, it makes it challenging to do data analysis and the coordinate transformation may be needed. 
+<a href="https://polarwatch.noaa.gov/" target="_blank">NOAA PolarWatch</a> distributes gridded and tabular oceanographic data for polar regions.  
 
-In this exercise, we will learn to transform coordinates of one projection to another.
+Most of the satellite data in the PolarWatch data catalog use a projection based on a Geographic Coordinate Reference System, where the X and Y coordinates are longitude and latitude, respectively. Geographical coordinates work well in many parts of the globe, but within polar regions, features tend to be very distorted. A Polar Stereographic projection often is a better choice for polar regions. For example, the NSIDC's Polar Stereographic Projections, which were developed to optimize mapping of sea ice, have only a 6% distortion of the grid at the poles and no distortion at 70º, a latitude close to where the marginal ice zones occur. The <a href="https://polarwatch.noaa.gov/catalog/ice-sq-sh-nsidc-cdr-v4/preview/?dataset=daily&var=cdr_seaice_conc">NOAA NSIDC Sea Ice Concentration Climate Data Record</a> dataset, for example, is in a polar stereographic projection. 
 
-**The exercise demonstrates the following techniques:**
--   Downloading and saving a netcdf file from PolarWatch ERDDAP data server
--   Accessing satellite data and metadata in polar stereographic projection 
--   Convert the netcdf data into data.frame
--   Transforming coordinates using EPSG codes
--   Mapping data using the transformed coordinates
+When working with satellite datasets with a mix of map projections, it is often necessary to transform all the data to a common projection. 
+In this exercise, we will learn to transform coordinates from one projection to another.
 
+## Objective
+In this tutorial, we will learn to transform dataset coordinates from one projection to another.
 
-**Datasets **
+## This tutorial demonstrates the following techniques
+- Downloading and saving a netCDF file from PolarWatch ERDDAP data server
+- Accessing satellite data and metadata in polar stereographic projection 
+- Convert the netcdf data into a dataframe
+- Transforming coordinates using EPSG codes
+- Mapping data using the transformed coordinates
+
+## Dataset used
     
-   *Sea Ice Concentration*, NOAA/NSIDC Climate Data Record V4, Southern Hemisphere, 25km, Science Quality, 1978-2022, Monthly
+*Sea Ice Concentration, NOAA/NSIDC Climate Data Record V4, Southern Hemisphere, 25km, Science Quality, 1978-2022, Monthly*
+The sea ice concentration (SIC) dataset used in this exercise is produced by NOAA NSIDC from passive microwave sensors as part of the Climate Data Record. It is a science quality dataset of monthly averages that extends from 1978-2022. SIC is reported as the fraction (0 to 1) of each grid cell that is covered by ice. The data are mapped in the Southern Polar Stereographic projection (EPSG:3031). The resolution is 25km, meaning each pixel in this data set represents a value that covers a 25km by 25km area. The dataset can be downloaded directly from the PolarWatch ERDDAP at the following link:  https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday
 
-
-**R Packages**
-
--   ncdf4 (reading data and metadata in netCDF format)
--   ggplot2, RColorBrewer, scales (mapping)
--   sf (projection)
 
 ### Install required packages
 
@@ -63,19 +67,6 @@ for (pk in list.of.packages) {
 
 ```
 
-## Antarctic Sea Ice Concentration Data
-
-The sea ice concentration data are used to calculate the spatical coverage of sea ice.  The data product in this exercise is sea ice concentration data of the southern hemisphere, and is produced by the NOAA/NSIDC from passive microwave sensors using the Climate Data Record (CDR).  The data are projected in the southern polarstereographic projection (**EPSG:3031**). 
-
-This sea ice concentration data values in the dataset are represented as proportions ranging from 0 to 1. The resolution is 25km, meaning each grid in this data set represents a value that covers a 25km by 25km area.  Please note that other values beyond 1 represents fill values.  More detailed information can be found in the NSIDC Data Product User Guide (linke below)
-
-**Userful links**
-
--   <a href="https://polarwatch.noaa.gov/catalog/ice-sq-nh-nsidc-cdr-v4/preview/?dataset=daily&var=cdr_seaice_conc&time_min=2022-05-31T00:00:00Z&time_max=2022-05-31T00:00:00Z&proj=epsg3413&colorBar=KT_ice|||0|1|" target="_blank">NOAA PolarWatch Data Product Page (download, preview)</a>
--   <a href="https://nsidc.org/data/g02202/versions/4" target="_blank">NSIDC Data Product Description</a>
--   <a href="https://nsidc.org/sites/default/files/g02202-v004-userguide_1_1.pdf" target="_blank">NSIDC Data Product User Guide (pdf)</a>
-
-
 ### Get data from ERDDAP 
 ```{r}
 # download the sea ice data NetCDF file
@@ -87,8 +78,11 @@ sic <- download.file(url, destfile="sic.nc", mode='wb')
 ds <- nc_open('sic.nc')
 
 # print metadata
-#print(ds)
+print(ds)
+```
 
+
+```{r}
 # get data into r variables 
 xgrid <- ncvar_get(ds, "xgrid")
 ygrid <- ncvar_get(ds, "ygrid")
@@ -99,7 +93,8 @@ dim(sic)
 # close 
 nc_close(ds)
 ```
-### Map polar stereographic projected data 
+### Map the polar stereographic projected data 
+
 ```{r}
 
 # create dataframe
@@ -115,7 +110,7 @@ ggplot(data = sicd, aes(x = xgrid, y = ygrid, fill=sic) ) +
        coord_fixed(ratio = 1) + 
        scale_y_continuous(labels=comma) + 
        scale_x_continuous(labels=comma) +
-       scale_fill_gradientn(colours=rev(brewer.pal(n = 3, name = "Blues")),na.value="tan")+       ggtitle("Sea Ice Concentration on Polar Steregraphic projection")
+       scale_fill_gradientn(colours=rev(brewer.pal(n = 3, name = "Blues")),na.value="tan")+ggtitle("Sea Ice Concentration in Polar Steregraphic projection")
 ```
 
 
@@ -140,7 +135,7 @@ head(na.omit(sicdf_latlon), 5)
 
 
 ```
-### Plot data with new coordinates on a gloal map
+### Plot data with new coordinates on a global map
 
 ```{r}
 sic_sf <- st_as_sf(sicdf_latlon, coords = c('Lat', 'Lon'))
@@ -152,5 +147,13 @@ ggplot(sic_sf) + geom_sf(aes(color = seaiceconc)) + labs(title = "Sea Ice Concen
 
 
 ```
+
+Because the data were in the polar stereographic projection, mapping the data onto a different projection (global map projection) above, doesn't make the data fit well on the map.
+
+## References
+
+- <a href="https://polarwatch.noaa.gov/catalog/ice-sq-nh-nsidc-cdr-v4/preview/?dataset=daily&var=cdr_seaice_conc&time_min=2022-05-31T00:00:00Z&time_max=2022-05-31T00:00:00Z&proj=epsg3413&colorBar=KT_ice|||0|1|" target="_blank">NOAA PolarWatch Data Product Page (download, preview)</a>
+- <a href="https://nsidc.org/data/g02202/versions/4" target="_blank">NSIDC Data Product Description</a>
+- <a href="https://nsidc.org/sites/default/files/g02202-v004-userguide_1_1.pdf" target="_blank">NSIDC Data Product User Guide (pdf)</a>
 
 

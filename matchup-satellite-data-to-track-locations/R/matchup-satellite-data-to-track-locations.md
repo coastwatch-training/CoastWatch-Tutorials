@@ -172,7 +172,7 @@ result = data.frame(turtle_df, tot)
 write.csv(result, 'turtle-track-chl.m.csv', row.names = FALSE)
 ```
 
-### Alternative method: Data request using \``rxtracto` function of the **rerddap** package
+### Alternative method: Data request using the \``rxtracto` function of the **rerddapXtracto** package
 
 The **rerddap** package was written to simplify data extraction from
 ERDDAP servers.
@@ -458,8 +458,6 @@ customizable.
 plotTrack(chl_grid, xcoords, ycoords, tcoords, size=3, plotColor = 'viridis')
 ```
 
-    ## Warning in latlon_adjust(table): Invalid longitude values
-
 ![](images/chloraplot-1.png)<!-- -->
 
 ## Animating the track
@@ -473,11 +471,6 @@ window once the encoding to gif is done.
 plotTrack(chl_grid, xcoords, ycoords, tcoords, plotColor = 'viridis',
                     animate = TRUE, cumulative = TRUE)
 ```
-
-    ## Warning in latlon_adjust(table): Invalid longitude values
-
-    ## Warning: No renderer available. Please install the gifski, av, or magick
-    ## package to create animated output
 
     ## NULL
 
