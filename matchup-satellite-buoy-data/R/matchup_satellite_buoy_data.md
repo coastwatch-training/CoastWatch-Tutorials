@@ -55,7 +55,7 @@ pkgTest <- function(x)
 list.of.packages <- c( "ncdf4", "rerddap", "plotdap", "httr",
                        "lubridate", "gridGraphics",  "mapdata",
                        "ggplot2", "RColorBrewer", "grid", "PBSmapping", 
-                       "rerddapXtracto","dplyr")
+                       "rerddapXtracto","dplyr","viridis","cmocean")
 
 # create list of installed packages
 pkges = installed.packages()[,"Package"]
@@ -102,7 +102,7 @@ n.sta <- length(unique.sta)
 n.sta
 ```
 
-    ## [1] 23
+    ## [1] 24
 
 **Plot the buoy data for the first 10 stations in buoy.df**
 
@@ -170,7 +170,7 @@ dataInfo
     ##  Base URL: https://coastwatch.pfeg.noaa.gov/erddap 
     ##  Dataset Type: griddap 
     ##  Dimensions (range):  
-    ##      time: (2019-07-22T12:00:00Z, 2023-09-11T12:00:00Z) 
+    ##      time: (2019-07-22T12:00:00Z, 2023-09-13T12:00:00Z) 
     ##      latitude: (-89.975, 89.975) 
     ##      longitude: (-179.975, 179.975) 
     ##  Variables:  
@@ -235,13 +235,14 @@ main="California coast, 8/1/23-8/10/23"
 p <- ggplot(goodbuoy, aes(temp.day, sst,color=lat)) + 
      coord_fixed(xlim=c(8,25),ylim=c(8,25)) 
 p + geom_point() + 
-  ylab('Blended SST')  + 
-  xlab('NDBC Buoy average daily SST') +
+  ylab('Satellite SST')  + 
+  xlab('Buoy average daily SST') +
   scale_x_continuous(minor_breaks = seq(8, 25)) + 
   scale_y_continuous(minor_breaks = seq(8, 25)) + 
   #geom_abline(a=fit[1],b=fit[2]) +
   #annotation_custom(my_grob) + 
-  scale_color_gradientn(colours = rev(rainbow(9)), name="Buoy\nLatitude") +
+  #scale_color_gradientn(colours = "viridis", name="Buoy\nLatitude") +
+  scale_color_viridis(discrete = FALSE, name="Buoy\nLatitude") +
   labs(title=main) + theme(plot.title = element_text(size=20, face="bold", vjust=2)) 
 ```
 
@@ -261,18 +262,18 @@ summary(lmHeight)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -2.21964 -0.48245  0.02077  0.41449  2.19809 
+    ## -2.21936 -0.47676  0.02142  0.40927  2.19949 
     ## 
     ## Coefficients:
     ##             Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)  3.65434    0.27805   13.14   <2e-16 ***
-    ## temp.day     0.71510    0.01997   35.81   <2e-16 ***
+    ## (Intercept)  3.65951    0.27549   13.28   <2e-16 ***
+    ## temp.day     0.71469    0.01976   36.17   <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.739 on 186 degrees of freedom
-    ## Multiple R-squared:  0.8733, Adjusted R-squared:  0.8726 
-    ## F-statistic:  1282 on 1 and 186 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 0.7322 on 195 degrees of freedom
+    ## Multiple R-squared:  0.8703, Adjusted R-squared:  0.8696 
+    ## F-statistic:  1309 on 1 and 195 DF,  p-value: < 2.2e-16
 
 ## Create a map of SST and overlay the buoy data
 
@@ -316,10 +317,10 @@ myplot<-ggplot(data = sstFrame, aes(x = x, y = y, fill = sst)) +
   geom_polygon(data = coast, aes(x=long, y = lat, group = group), fill = "grey80") +
   theme_bw(base_size = 15) + ylab("Latitude") + xlab("Longitude") +
   coord_fixed(1.3,xlim = xlim, ylim = ylim) +
-  scale_fill_gradientn(colours = rev(rainbow(12)),limits=c(10,25),na.value = NA) +
-  ggtitle(paste("Blended SST and NDBC buoy temperature \n", unique(as.Date(SST$time)))) +
+  scale_fill_cmocean(name = 'thermal',limits=c(10,25),na.value = NA) +
+  ggtitle(paste("Satellite SST and buoy temperature (circles) \n", unique(as.Date(SST$time)))) +
   geom_point(data=buoy2, aes(x=lon,y=lat,color=temp.day),size=3,shape=21,color="black") + 
-  scale_color_gradientn(colours = rev(rainbow(12)),limits=c(10,25),na.value ="grey20") 
+  scale_color_cmocean(name = 'thermal',limits=c(10,25),na.value ="grey20") 
   
 myplot
 ```
