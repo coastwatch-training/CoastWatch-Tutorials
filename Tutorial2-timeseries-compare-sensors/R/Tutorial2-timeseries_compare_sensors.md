@@ -81,7 +81,7 @@ water classification.
 
 First we define the longitude-latitude boundaries of the region:
 
-    xcoord <- c(-95,-90)
+    xcoord <- c(-85,-80)
     ycoord <- c(25,30)
 
 ## Use rerddap to download the data
@@ -129,7 +129,7 @@ while.
       geom_polygon(data = world, aes(x = long, y = lat, group = group),
                    fill = "lightgray",
                    colour = "white") + 
-      coord_fixed( xlim=c(-100,-80),ylim=c(15,35)) +
+      coord_fixed( xlim=c(xcoord[1]-5,xcoord[2]+5),ylim=c(ycoord[1]-5,ycoord[2]+5)) +
       geom_tile(aes(sw$data$longitude,sw$data$latitude,fill=log(sw$data$chlorophyll)))+
       theme_minimal() +
       labs(fill="log(Chl)") +
