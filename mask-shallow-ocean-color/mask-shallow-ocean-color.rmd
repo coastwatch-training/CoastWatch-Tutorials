@@ -2,7 +2,8 @@
 title: "Mask shallow water pixels for satellite ocean color datasets"
 author: "hui.shi@noaa.gov"
 date: "2023-11-21"
-output: html_document
+output: 
+  md_document:
 keep_md: true
 ---
 
