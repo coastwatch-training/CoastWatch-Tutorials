@@ -144,18 +144,18 @@ within each ocean color pixel is in shallow water (&lt;30m depth).
 
     # Build a raster of the chl-a grid, using the function to generate the shallow water area percentage to consider a pixel necessary to mask
     per_shallow =  rasterize(x = df_bathy,y=r_chl,fun=percent_shallow_pixels)[[2]]
-    plot(per_shallow,main="% Shallow Pixels", col=cmocean('amp')(50))
+    plot(per_shallow,main="% Shallow water", col=cmocean('amp')(50))
 
 ![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
 ## Create a mask for shallow pixels
 
-    # Set a percentage threshold to create the shallow water pixel mask
+    # Set a percentage threshold to create the shallow pixel mask
     percent_threshold = 0.05
     depth_mask = r_chl/r_chl
     depth_mask[,]= 1
     depth_mask[per_shallow>= percent_threshold]= NA
-    plot(depth_mask,main="Shallow water mask")
+    plot(depth_mask,main="Shallow pixel mask")
 
 ![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
@@ -189,7 +189,7 @@ within each ocean color pixel is in shallow water (&lt;30m depth).
 
 ![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
-## Output masked chl-a to netcdf file
+## Output masked chlorophyll-a data to a netCDF file
 
     # Grab var name and unit from unmasked nc file
     nc = nc_open(paste0(files))
