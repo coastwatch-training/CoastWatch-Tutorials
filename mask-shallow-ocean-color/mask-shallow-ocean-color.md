@@ -1,53 +1,89 @@
-## Tutorial: Mask shallow water pixels for satellite ocean color datasets
+# Mask shallow pixels for satellite ocean color datasets
 
-Satellite sensed ocean color data in the coastal shallow water can be
-contaminated by bottom reflectance. Here we use a high resolution
-bathymetry data to generate a mask to remove ocean color pixels that
-contain a portion (more than 5%) of shallow water area (less than 30m)
-(Couch et al., 2023).
+> Updated November 2023 <br/>
 
-The bathymetry data is the ETOPO Global Relief Model integrates
-topography, bathymetry, and shoreline data version 2022 in 15 arc-second
-resolution
-(<https://www.ncei.noaa.gov/products/etopo-global-relief-model>).
+Remotely sensed ocean color algorithms are calibrated for optically-deep
+waters, where the signal received by the satellite sensor originates
+from the water column without any bottom contribution.
 
-The ocean color data is the ESA CCI monthly chlorophyll-a concentration
-(<https://climate.esa.int/en/projects/ocean-colour>).
+Optically shallow waters are those in which light reflected off the
+seafloor contributes significantly to the water-leaving signal, such as
+coral reefs, atolls, lagoons. This is known to affect geophysical
+variables derived by ocean-color algorithms, often leading to biased
+values in chlorophyll-a concentration for example.
 
-Reference: Couch CS, Oliver TA, Dettloff K, Huntington B, Tanaka KR and
+In the tropical Pacific, optically-deep waters are typically deeper than
+15 – 30 m. It is recommended to remove shallow-pixels, i.e., ocean color
+pixels that contain a portion (e.g., more than 5%) of shallow water area
+(less than 30m depth), from the study area before computing ocean color
+metrics (Couch et al., 2023).
+
+## Objective
+
+In this tutorial, we demonstrate how to create a mask to remove ocean
+color pixels in the coastal shallow water that are contaminated by
+bottom reflectance.
+
+## The tutorial demonstrates the following techniques
+
+-   Accessing and Downloading satellite data from ERDDAP data server
+-   Visualizing the datasets
+-   Matching coarse-resolution ocean color data with fine-resolution
+    bathymetry data
+-   Calculating percentage of shallow water area in each ocean color
+    pixel
+-   Creating and applying value mask to datasets
+-   Calculating long-term climatology from monthly data
+-   Outputing dataset into netCDF format
+
+## Datasets used
+
+**Bathymetry data,**
+<a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model">
+**ETOPO Global Relief Model** </a> **integrates topography, bathymetry,
+and shoreline data, version 2022, 15 arc-second resolution**
+
+**Ocean color data,**
+<a href="https://climate.esa.int/en/projects/ocean-colour"> **ESA
+CCI**</a> **chlorophyll-a concentration, 1998-2022, monthly**
+
+## References
+
+Couch CS, Oliver TA, Dettloff K, Huntington B, Tanaka KR and
 Vargas-Ángel B (2023) Ecological and environmental predictors of
 juvenile coral density across the central and western Pacific. Front.
-Mar. Sci. 10:1192102. doi: 10.3389/fmars.2023.1192102
+Mar. Sci. 10:1192102.
+<a href="https://www.frontiersin.org/articles/10.3389/fmars.2023.1192102/full">
+doi: 10.3389/fmars.2023.1192102 </a>
 
-    ### Load libraries
+## Load libraries
+
+    # Load libraries
     library(rerddap)
     library(raster) 
-
-    ## Loading required package: sp
-
-    ## The legacy packages maptools, rgdal, and rgeos, underpinning the sp package,
-    ## which was just loaded, will retire in October 2023.
-    ## Please refer to R-spatial evolution reports for details, especially
-    ## https://r-spatial.org/r/2023/05/15/evolution4.html.
-    ## It may be desirable to make the sf package available;
-    ## package maintainers should consider adding sf to Suggests:.
-    ## The sp package is now running under evolution status 2
-    ##      (status 2 uses the sf package in place of rgdal)
-
     library(sp) 
     library(cmocean)
     library(here)
-
-    ## here() starts at /Users/daisyhuishi/github/coastwatch-training-modules
-
     library(ncdf4)
+
+## Set work directory
 
     # This is where the data are and where the plots will go
     Dir <- here()
 
-    # Thanks to Kisei Tanaka, the tutorial is modified based on the scripts he developed for the EDS. And part of the tutorial is modified based on the previous version developed by Melanie Abecassis and Thomas Oliver.
+## Access and Download satellite data
 
-    ### Load data
+We will access the ETOPO2022 bathymetry data and the monthly ESA CCI
+chlorophyll-a concentration data (1/1998-12/2022) for the island of Oahu
+from the OceanWatch ERDDAP server. We will also download the
+chlorophyll-a data and save it to local for future use.
+
+The data can be downloaded by sending a data request to the ERDDAP
+server via URL. The data request URL includes the dataset ID of interest
+and other query conditions if subset of the data product is of interest.
+
+To learn more about how to set up ERDDAP URL data requests, please go to
+the <a href="" target="_blank">ERDDAP module page</a>.
 
     # Bounding box for Oahu:
     lon_range = c(-158.39+360, -157.55+360)
@@ -71,7 +107,11 @@ Mar. Sci. 10:1192102. doi: 10.3389/fmars.2023.1192102
                        fields = var[1],
                        store=disk('chl_data'))
 
-    # Take a look at bathymetry data
+## Visualize bathymetry and chlorophyll-a data
+
+We convert bathymetry and chlorophyll-a data to rasters for
+visulization.
+
     r_bathy=raster(bathy$summary$filename)
 
     plot(r_bathy,main="ETOPO Bathymetry (m)")
@@ -79,7 +119,6 @@ Mar. Sci. 10:1192102. doi: 10.3389/fmars.2023.1192102
 
 ![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-4-1.png)
 
-    # Take a look at chlorophyll-a data
     r_chl=raster(chl$summary$filename,varname=var[1]) 
 
     plot(log(r_chl),main="ESA CCI Chl-a (log scale)",col=cmocean('algae')(50))
@@ -87,40 +126,41 @@ Mar. Sci. 10:1192102. doi: 10.3389/fmars.2023.1192102
 
 ![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
-    ### Create a mask for shallow water pixels
-    #Convert raster bathymetry to dataframe for counting
+## Match two datasets and calculate percentage of shallow water area in each ocean color pixel
+
+The ocean color data has coarser resolution (~4km) compared with the
+bathymetry data (~500m). We will calculate how much area (percentage)
+within each ocean color pixel is in shallow water (&lt;30m depth).
+
+    #Convert raster bathymetry to SpatialPoints dataframe for counting
     df_bathy = data.frame(rasterToPoints(r_bathy))
     coordinates(df_bathy) <- ~x+y
     crs(df_bathy) = crs(r_chl[[1]])
 
-    # Examine number of shallow water pixels in each chl-a grid point
-    count_shallow_pixels=function(depths,threshold=-30,na.rm=F){ 
-      return(length(which(depths>threshold))) 
-    } 
-    N_shallow = rasterize(x = df_bathy,y=r_chl,fun=count_shallow_pixels)[[2]]
-    plot(N_shallow,main="N Shallow Pixels", col=cmocean('balance')(50))
-
-![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-6-1.png)
-
-    # Examine percentage of shallow water pixels in each chl-a grid point
+    # Define a function to calculate the percentage of (smaller) bathymetry pixels in each (larger) Chl-a pixel that are shallow
     percent_shallow_pixels=function(depths,threshold=-30, na.rm=F){ 
       return(length(which(depths>threshold))/length(depths)) 
     } 
+
+    # Build a raster of the chl-a grid, using the function to generate the shallow water area percentage to consider a pixel necessary to mask
     per_shallow =  rasterize(x = df_bathy,y=r_chl,fun=percent_shallow_pixels)[[2]]
-    plot(per_shallow,main="% Shallow Pixels", col=cmocean('amp')(50))
+    plot(per_shallow,main="% Shallow water", col=cmocean('amp')(50))
 
-![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
-    # Set a percentage threshold to create the shallow water pixel mask
+## Create a mask for shallow pixels
+
+    # Set a percentage threshold to create the shallow pixel mask
     percent_threshold = 0.05
     depth_mask = r_chl/r_chl
     depth_mask[,]= 1
     depth_mask[per_shallow>= percent_threshold]= NA
-    plot(depth_mask,main="Shallow water mask")
+    plot(depth_mask,main="Shallow pixel mask")
 
-![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-8-1.png)
+![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
-    ### Apply created shallow water mask to chl-a data and compare unmasked and masked maps 
+## Calculate long-term climatology and compare unmasked and masked maps
+
     # Read in the files previousely downloaded
     files = list.files('chl_data/', full.names = T)
     # Read the file into R and make it to rasterstack
@@ -134,7 +174,7 @@ Mar. Sci. 10:1192102. doi: 10.3389/fmars.2023.1192102
     plot(log(r_chl_clim),main="Chl-a (log scale)",col=cmocean('algae')(50))
     contour(r_bathy,levels=c(-30,-1000,-2000),add=TRUE) 
 
-![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-9-1.png)
+![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-8-1.png)
 
     # Apply Mask, calculate climatology and map
     r_chl_masked = mask(x = stack_chl, mask = depth_mask)
@@ -147,9 +187,10 @@ Mar. Sci. 10:1192102. doi: 10.3389/fmars.2023.1192102
     plot(log(r_chl_masked_clim),main="Masked Chl-a (log scale)",col=cmocean('algae')(50))
     contour(r_bathy,levels=c(-30,-1000,-2000),add=TRUE) 
 
-![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-10-1.png)
+![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
-    ###Output masked chl-a to netcdf file
+## Output masked chlorophyll-a data to a netCDF file
+
     # Grab var name and unit from unmasked nc file
     nc = nc_open(paste0(files))
     variable_name = as.character(nc$var[[1]][2])
@@ -175,3 +216,9 @@ Mar. Sci. 10:1192102. doi: 10.3389/fmars.2023.1192102
                 yname = y_name,
                 zname = z_name,
                 zunit = z_unit)
+
+## Acknowledgements
+
+Thanks to Kisei Tanaka, the tutorial is modified based on the scripts he
+developed for the EDS. And part of the tutorial is modified based on the
+previous version developed by Melanie Abecassis and Thomas Oliver.
