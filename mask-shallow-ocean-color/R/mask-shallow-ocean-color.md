@@ -43,7 +43,7 @@ bottom reflectance.
 Global Relief Model</a> integrates topography, bathymetry, and shoreline
 data, version 2022, 15 arc-second resolution
 
-**Ocean color data**
+**Ocean color data**,
 <a href="https://climate.esa.int/en/projects/ocean-colour">ESA CCI</a>
 chlorophyll-a concentration, 1998-2022, monthly
 
