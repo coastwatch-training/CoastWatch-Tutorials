@@ -38,14 +38,14 @@ bottom reflectance.
 
 ## Datasets used
 
-**Bathymetry data,**
-<a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model">
-**ETOPO Global Relief Model** </a> **integrates topography, bathymetry,
-and shoreline data, version 2022, 15 arc-second resolution**
+**Bathymetry data**,
+<a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model">ETOPO
+Global Relief Model</a> integrates topography, bathymetry, and shoreline
+data, version 2022, 15 arc-second resolution
 
-**Ocean color data,**
-<a href="https://climate.esa.int/en/projects/ocean-colour"> **ESA
-CCI**</a> **chlorophyll-a concentration, 1998-2022, monthly**
+**Ocean color data**
+<a href="https://climate.esa.int/en/projects/ocean-colour">ESA CCI</a>
+chlorophyll-a concentration, 1998-2022, monthly
 
 ## References
 
@@ -117,14 +117,14 @@ visulization.
     plot(r_bathy,main="ETOPO Bathymetry (m)")
     contour(r_bathy,levels=c(-30,-1000,-2000),add=TRUE) 
 
-![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+![](images/unnamed-chunk-5-1.png)
 
     r_chl=raster(chl$summary$filename,varname=var[1]) 
 
     plot(log(r_chl),main="ESA CCI Chl-a (log scale)",col=cmocean('algae')(50))
     contour(r_bathy,levels=c(-30,-1000,-2000),add=TRUE) 
 
-![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+![](images/unnamed-chunk-6-1.png)
 
 ## Match two datasets and calculate percentage of shallow water area in each ocean color pixel
 
@@ -146,7 +146,7 @@ within each ocean color pixel is in shallow water (&lt;30m depth).
     per_shallow =  rasterize(x = df_bathy,y=r_chl,fun=percent_shallow_pixels)[[2]]
     plot(per_shallow,main="% Shallow water", col=cmocean('amp')(50))
 
-![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+![](images/unnamed-chunk-7-1.png)
 
 ## Create a mask for shallow pixels
 
@@ -157,7 +157,7 @@ within each ocean color pixel is in shallow water (&lt;30m depth).
     depth_mask[per_shallow>= percent_threshold]= NA
     plot(depth_mask,main="Shallow pixel mask")
 
-![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![](images/unnamed-chunk-8-1.png)
 
 ## Calculate long-term climatology and compare unmasked and masked maps
 
@@ -174,7 +174,7 @@ within each ocean color pixel is in shallow water (&lt;30m depth).
     plot(log(r_chl_clim),main="Chl-a (log scale)",col=cmocean('algae')(50))
     contour(r_bathy,levels=c(-30,-1000,-2000),add=TRUE) 
 
-![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-8-1.png)
+![](images/unnamed-chunk-9-1.png)
 
     # Apply Mask, calculate climatology and map
     r_chl_masked = mask(x = stack_chl, mask = depth_mask)
@@ -187,7 +187,7 @@ within each ocean color pixel is in shallow water (&lt;30m depth).
     plot(log(r_chl_masked_clim),main="Masked Chl-a (log scale)",col=cmocean('algae')(50))
     contour(r_bathy,levels=c(-30,-1000,-2000),add=TRUE) 
 
-![](mask-shallow-ocean-color_files/figure-markdown_strict/unnamed-chunk-9-1.png)
+![](images/unnamed-chunk-10-1.png)
 
 ## Output masked chlorophyll-a data to a netCDF file
 
