@@ -31,7 +31,19 @@ Download and examine a polar stereographic projected dataset, plot the data on a
 * [transform-to-another-map-projection](transform-to-another-map-projection)
   	Access satellite data with polar stereographic coordinates and transform it into a different coordinate system using EPSG code.
   
+### Acknowledgement
 
+The training materials for the CoastWatch Program have been developed, reviewed, and edited with the contributions of many dedicated individuals:
+
+- Melanie Abecassis - For code/content development, review
+- Sun Bak Hospital - For code/content development, review
+- Dale Robinson - For code/content development, review
+- Jennifer Sevadjian - For code/content development
+- Hui (Daisy) Shi - For code/content development, review
+- Victoria Wegman - For content review/edit
+- Cara Wilson - For code/content development
+
+We also extend our gratitude to other external contributors whose specific acknowledgements are included within the training materials they helped to create.
 ### Questions?
 
 If you need any further assistance, questions or error reporting, please submit an issue on github.
