@@ -219,6 +219,5 @@ within each ocean color pixel is in shallow water (&lt;30m depth).
 
 ## Acknowledgements
 
-Thanks to Kisei Tanaka, the tutorial is modified based on the scripts he
-developed for the EDS. And part of the tutorial is modified based on the
-previous version developed by Melanie Abecassis and Thomas Oliver.
+Special thanks to Kisei Tanaka from NOAA's Pacific Islands Fisheries Science Center (PIFSC) for his contributions to this tutorial, which is adapted from the scripts he developed. Additionally, portions of this tutorial have been revised based on a previous version created by Melanie Abecassis and Thomas Oliver.
+
