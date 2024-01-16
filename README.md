@@ -37,11 +37,12 @@ The training materials for the CoastWatch Program have been developed, reviewed,
 
 - Melanie Abecassis - For code/content development, review
 - Sun Bak Hospital - For code/content development, review
+- Roy Mendelssohn - For code/content development, review
 - Dale Robinson - For code/content development, review
 - Jennifer Sevadjian - For code/content development
 - Hui (Daisy) Shi - For code/content development, review
 - Victoria Wegman - For content review/edit
-- Cara Wilson - For code/content development
+- Cara Wilson - For code/content development, review
 
 We also extend our gratitude to other external contributors whose specific acknowledgements are included within the training materials they helped to create.
 ### Questions?
