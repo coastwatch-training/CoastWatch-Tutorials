@@ -3,3 +3,4 @@
 *.nc
 .ipynb_checkpoints/
 .Rproj.user
+.gitignore
