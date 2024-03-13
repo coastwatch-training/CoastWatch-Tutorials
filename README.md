@@ -36,6 +36,7 @@ Download and examine a polar stereographic projected dataset, plot the data on a
 The training materials for the CoastWatch Program have been developed, reviewed, and edited with the contributions of many dedicated individuals:
 
 - Melanie Abecassis - For code/content development, review
+- Peter Hollemans - For code/content development, review
 - Sun Bak Hospital - For code/content development, review
 - Roy Mendelssohn - For code/content development, review
 - Dale Robinson - For code/content development, review
