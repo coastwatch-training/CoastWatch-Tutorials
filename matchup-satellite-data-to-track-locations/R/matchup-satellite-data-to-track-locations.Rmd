@@ -1,12 +1,14 @@
 ---
 title: Matchup satellite data to track locations
 author: NOAA CoastWatch
-date: August 2023
+date: Mar 2024
 output:
   md_document:
     variant: gfm
+editor_options: 
+  markdown: 
+    wrap: sentence
 ---
-
 
 ```{r setup, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(
@@ -18,7 +20,7 @@ knitr::opts_chunk$set(
 
 # Matchup Satellite data to track locations
 
-history | Modified August 2023
+history \| Modified March 2024
 
 ## Objective
 
@@ -26,22 +28,27 @@ This tutorial will demonstrate how to extract satellite data around a set of poi
 
 ## The tutorial demonstrates the following techniques
 
-* Importing track data in csv file to data frame
-* Plotting the latitude/longitude points onto a map
-* Extracting satellite data from an ERDDAP data server along a track
-* Plotting the satellite data onto a map
+-   Importing track data in csv file to data frame
+-   Plotting the latitude/longitude points onto a map
+-   Extracting satellite data from an ERDDAP data server along a track
+-   Plotting the satellite data onto a map
 
 ## Datasets used
 
 **Chlorophyll a concentration, the European Space Agency's Ocean Colour Climate Change Initiative (OC-CCI) Monthly dataset v6.0**
 
-We'll use the European Space Agency's OC-CCI product (https://climate.esa.int/en/projects/ocean-colour/) to obtain chlorophyll data. This is a merged product combining data from many ocean color sensors to create a long time series (1997-present).
+We'll use the European Space Agency's OC-CCI product (<https://climate.esa.int/en/projects/ocean-colour/>) to obtain chlorophyll data.
+This is a merged product combining data from many ocean color sensors to create a long time series (1997-present).
 
 **Loggerhead turtle telemetry track data**
 
-The turtle was raised in captivity in Japan, then tagged and released on 05/04/2005 in the Central Pacific. Its tag transmitted for over 3 years and went all the way to the Southern tip of Baja California. This dataset has been subsampled to reduce the data requests needed for this tutorial from over 1200 to 25.  The track data are stored in the data folder in this project folder.
+The turtle was raised in captivity in Japan, then tagged and released on 05/04/2005 in the Central Pacific.
+Its tag transmitted for over 3 years and went all the way to the Southern tip of Baja California.
+This dataset has been subsampled to reduce the data requests needed for this tutorial from over 1200 to 25.
+The track data are stored in the data folder in this project folder.
 
 ## Install required packages and load libraries
+
 ```{r install,message=FALSE,warning=FALSE}
 
 # Function to check if pkgs are installed, and install any missing pkgs
@@ -68,6 +75,7 @@ for (pk in list.of.packages) {
 }
 
 ```
+
 ## Import the track data into a data frame
 
 ```{r track}
@@ -79,7 +87,7 @@ head(turtle_df,3)
 ```
 
 ## Plot the track on a map
- 
+
 ```{r trackplot}
 
 # Download world map
@@ -98,31 +106,33 @@ ggplot(turtle_df, aes(mean_lon,mean_lat)) +
 
 ```
 
-
 ## Extract data from a satellite dataset corresponding to points on the track
 
 We are going to download data from an ERDDAP data server using the following steps:
 
-* Select a dataset and ERDDAP data server
-* Get data information using <code>rerddap</code> package
-* Extract data using ERDDAP URL request with latitudes and longitudes of the turtle track data
-* Extract data using <code>rxtracto</code> function with latitudes and longitudes of the turtle track data
-* Create data frame with the satellite data and turtle tracks
+-   Select a dataset and ERDDAP data server
+-   Get data information using <code>rerddap</code> package
+-   Extract data using ERDDAP URL request with latitudes and longitudes of the turtle track data
+-   Extract data using <code>rxtracto</code> function with latitudes and longitudes of the turtle track data
+-   Create data frame with the satellite data and turtle tracks
 
 ## Select a dataset and get Data Info using erddap URL data request
 
-In this exercise, two different ways of downloading satellite data from ERDDAP data server are demonstrated:  
-  1. request data via ERDDAP URL 
-  2. request data by using `rerddap` R package
-  
+In this exercise, two different ways of downloading satellite data from ERDDAP data server are demonstrated:\
+1.
+request data via ERDDAP URL 2.
+request data by using `rerddap` R package
+
 ### Data request using ERDDAP URL
 
 First we need to set up the ERDDAP URL using the datasets ID and the name of the variable we are interested in.
 Note that we are requesting the data as .csv
 
-```data_url = "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/aqua_chla_1d_2018_0.csv?chlor_a"```
+`data_url = "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/aqua_chla_1d_2018_0.csv?chlor_a"`
 
-Ideally, we would work with daily data since we have one location per day. But chlorophyll data is severely affected by clouds (i.e. lots of missing data), so you might need to use weekly or even monthly data to get sufficient non-missing data. We will start with the monthly chl-a data since it contains fewer gaps.
+Ideally, we would work with daily data since we have one location per day.
+But chlorophyll data is severely affected by clouds (i.e. lots of missing data), so you might need to use weekly or even monthly data to get sufficient non-missing data.
+We will start with the monthly chl-a data since it contains fewer gaps.
 
 ```{r}
  
@@ -167,24 +177,25 @@ write.csv(result, 'turtle-track-chl.m.csv', row.names = FALSE)
 
 ```
 
+### Alternative method: Data request using the \``rxtracto` function of the **rerddapXtracto** package
 
-
-### Alternative method: Data request using the ```rxtracto`` function of the **rerddapXtracto** package
 The **rerddap** package was written to simplify data extraction from ERDDAP servers.
 
-__Let's use data from the monthly product of the OC-CCI datasets.__  
-The ERDDAP URL to the monthly product is below:    
-https://oceanwatch.pifsc.noaa.gov/erddap/griddap/esa-cci-chla-monthly-v6-0  
+**Let's use data from the monthly product of the OC-CCI datasets.**\
+The ERDDAP URL to the monthly product is below:\
+<https://oceanwatch.pifsc.noaa.gov/erddap/griddap/esa-cci-chla-monthly-v6-0>
 
-__A note on dataset selection__  
-We have preselected the dataset because we know it will work with this exercise. If you were selecting datasets on your own, you would want to check out the dataset to determine if its spatial and temporal coverages are suitable for your application. Following the link above you will find:  
+**A note on dataset selection**\
+We have preselected the dataset because we know it will work with this exercise.
+If you were selecting datasets on your own, you would want to check out the dataset to determine if its spatial and temporal coverages are suitable for your application.
+Following the link above you will find:
 
-The latitude range is -89.97916 to 89.97916 and the longitude range is 0.020833 to 359.97916, which covers the track latitude range of 23.72 to 41.77 and longitude range of 175.86 to 248.57.  
+The latitude range is -89.97916 to 89.97916 and the longitude range is 0.020833 to 359.97916, which covers the track latitude range of 23.72 to 41.77 and longitude range of 175.86 to 248.57.
 
-The time range is 1997-09-04 to 2023-03-01 (at the day of this writing), which covers the track time range of 2005-05-04 to 2008-08-16.  
+The time range is 1997-09-04 to 2023-03-01 (at the day of this writing), which covers the track time range of 2005-05-04 to 2008-08-16.
 
-You should also note the name of the variable you will be downloading. For this dataset it is "__chlor_a__"
-
+You should also note the name of the variable you will be downloading.
+For this dataset it is "**chlor_a**"
 
 ```{r datainfo}
 
@@ -198,11 +209,13 @@ dataset <- 'esa-cci-chla-monthly-v6-0'
 dataInfo <- rerddap::info(dataset, url= "https://oceanwatch.pifsc.noaa.gov/erddap")
 
 ```
-## Examine metadata 
 
-```rerddap::info``` returns the metadata of the requested dataset.  We can first understand the attributes dataInfo includes then examine each attribute.
+## Examine metadata
 
-```{r}
+`rerddap::info` returns the metadata of the requested dataset.
+We can first understand the attributes dataInfo includes then examine each attribute.
+
+```{r metadata}
 # Display the metadata
 dataInfo
 
@@ -219,8 +232,11 @@ names(dataInfo$alldata)
 
 ### Extract data using the rxtracto function
 
-First we need to define the bounding box within which to search for coordinates.  The **rxtracto** function allows you to set the size of the box used to collect data around the track points using the xlen and ylen arguments. The values for xlen and ylen are in degrees. For our example, we can use 0.2 degrees for both arguments. Note: You can also submit vectors for xlen and ylen, as long as they are the same length as xcoord, ycoord, and tcoord if you want to set a different search radius around each track point.
-
+First we need to define the bounding box within which to search for coordinates.
+The **rxtracto** function allows you to set the size of the box used to collect data around the track points using the xlen and ylen arguments.
+The values for xlen and ylen are in degrees.
+For our example, we can use 0.2 degrees for both arguments.
+Note: You can also submit vectors for xlen and ylen, as long as they are the same length as xcoord, ycoord, and tcoord if you want to set a different search radius around each track point.
 
 ```{r rxtracto, message=FALSE}
 
@@ -254,7 +270,8 @@ chl_grid <- rxtracto(dataInfo,
 chl_grid
 ```
 
-**rxtracto** computes statistics using all the pixels found in the search radius around each track point. Because chl-a concentration tends to have very high values and very low values, we will work with the median value around each track point, **median chlor_a**
+**rxtracto** computes statistics using all the pixels found in the search radius around each track point.
+Because chl-a concentration tends to have very high values and very low values, we will work with the median value around each track point, **median chlor_a**
 
 ### Plot a histogram of median chlor_a
 
@@ -272,7 +289,9 @@ hist(chlora,
 )
 
 ```
-The distribution of chlorophll values is lognormal, with lots of very low values, and a few very high values. This could skew a linear color bar so that most lower values have the same color.
+
+The distribution of chlorophll values is lognormal, with lots of very low values, and a few very high values.
+This could skew a linear color bar so that most lower values have the same color.
 
 For this reason we often plot the log or log10 of chlorophyll.
 
@@ -293,10 +312,12 @@ hist(log(chlora),
 
 The range of log chlorophyll is about -2.9 to -0.3 but most of the values are between -2.5 and -0.8.
 
-
 ## Plotting the results using plotTrack
-We will use the "plotTrack" function to plot the results.  "plotTrack" is a function of the "rerddapXtracto" package designed specifically to plot the results of the "rxtracto" function.  However it's not very customizable.
-  
+
+We will use the "plotTrack" function to plot the results.
+"plotTrack" is a function of the "rerddapXtracto" package designed specifically to plot the results of the "rxtracto" function.
+However it's not very customizable.
+
 ```{r chloraplot}
 
 # Plot tracks with color: algae specifically designed for chlorophyll
@@ -306,7 +327,9 @@ plotTrack(chl_grid, xcoords, ycoords, tcoords, size=3, plotColor = 'viridis')
 
 ## Animating the track
 
-Make a cumulative animation of the track. This will take a minute to run. It creates an animated gif that will display in the Rstudio viewer window once the encoding to gif is done.
+Make a cumulative animation of the track.
+This will take a minute to run.
+It creates an animated gif that will display in the Rstudio viewer window once the encoding to gif is done.
 
 ```{r animatetrack, message=FALSE}
 
@@ -314,11 +337,11 @@ Make a cumulative animation of the track. This will take a minute to run. It cre
 plotTrack(chl_grid, xcoords, ycoords, tcoords, plotColor = 'viridis',
                     animate = TRUE, cumulative = TRUE)
 ```
-     
 
 ## Plotting the results using ggplot
 
 ### Create a data frame with the turtle track and the output of rxtracto
+
 We will first create a data frame that contains longitudes and latitudes from the turtle and associated satellite chlor-a values.
 
 ```{r dataframe}
@@ -353,24 +376,21 @@ ggplot(new_df) +
 ## On your own!
 
 ##### Exercise 1:
-Repeat the steps above with a different dataset.
-For example, extract sea surface temperature data using the following dataset:
-https://coastwatch.pfeg.noaa.gov/erddap/griddap/nesdisGeoPolarSSTN5NRT_Lon0360.html  
-* This dataset is a different ERDDAP, so remember to change the base URL.
-* Set the new dataset ID and variable name.
 
+Repeat the steps above with a different dataset.
+For example, extract sea surface temperature data using the following dataset: <https://coastwatch.pfeg.noaa.gov/erddap/griddap/nesdisGeoPolarSSTN5NRT_Lon0360.html>\
+\* This dataset is a different ERDDAP, so remember to change the base URL.
+\* Set the new dataset ID and variable name.
 
 ##### Exercise 2:
+
 Go to an ERDDAP of your choice, find a dataset of interest, generate the URL, copy it and edit the script above to run a match up on that dataset.
-To find other ERDDAP servers, you can use this search engine:
-http://erddap.com/  
-* This dataset will likely be on a different ERDDAP, so remember to change the base URL.
-* Set the new dataset ID and variable name.
-* Check the metadata to make sure the dataset covers the spatial and temporal range of the track dataset. 
+To find other ERDDAP servers, you can use this search engine: <http://erddap.com/>\
+\* This dataset will likely be on a different ERDDAP, so remember to change the base URL.
+\* Set the new dataset ID and variable name.
+\* Check the metadata to make sure the dataset covers the spatial and temporal range of the track dataset.
 
 ##### Optional
-Repeat the steps above with a daily version of the OC-CCI dataset to see how cloud cover can reduce the data you retrieve. 
-https://coastwatch.pfeg.noaa.gov/erddap/griddap/pmlEsaCCI60OceanColorDaily_Lon0360.html
 
-
- 
+Repeat the steps above with a daily version of the OC-CCI dataset to see how cloud cover can reduce the data you retrieve.
+<https://coastwatch.pfeg.noaa.gov/erddap/griddap/pmlEsaCCI60OceanColorDaily_Lon0360.html>
