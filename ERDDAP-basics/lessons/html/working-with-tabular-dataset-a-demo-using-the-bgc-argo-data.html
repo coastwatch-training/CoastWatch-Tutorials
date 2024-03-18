@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Chapter 7 Working with Tabular Dataset, a demo using the BGC-Argo data | NOAA Satellite Course: Introduction to ERDDAP</title>
+  <meta name="description" content="A introduction to using the ERDDAP data server.">
+  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+
+  <meta property="og:title" content="Chapter 7 Working with Tabular Dataset, a demo using the BGC-Argo data | NOAA Satellite Course: Introduction to ERDDAP" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="http://coastwatch.pfeg.noaa.gov/" />
+  
+  <meta property="og:description" content="A introduction to using the ERDDAP data server." />
+  <meta name="github-repo" content="dhr-sc" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 7 Working with Tabular Dataset, a demo using the BGC-Argo data | NOAA Satellite Course: Introduction to ERDDAP" />
+  
+  <meta name="twitter:description" content="A introduction to using the ERDDAP data server." />
+  
+
+<meta name="author" content="Cara Wilson and Dale Robinson">
+
+
+<meta name="date" content="2019-05-16">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="vectors.html">
+<link rel="next" href="resources.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CoastWatch ERDDAP Introduction</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a><ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#noaa-coastwatchoceanwatch-program"><i class="fa fa-check"></i>NOAA CoastWatch/OceanWatch Program</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="introduction.html"><a href="introduction.html#what-is-erddap"><i class="fa fa-check"></i><b>1.1</b> What is ERDDAP</a></li>
+<li class="chapter" data-level="1.2" data-path="introduction.html"><a href="introduction.html#list-of-erddap-servers"><i class="fa fa-check"></i><b>1.2</b> List of ERDDAP servers</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="catalog.html"><a href="catalog.html"><i class="fa fa-check"></i><b>2</b> Exploring the data catalog</a><ul>
+<li class="chapter" data-level="2.1" data-path="catalog.html"><a href="catalog.html#finding-datasets-on-erddap"><i class="fa fa-check"></i><b>2.1</b> Finding datasets on ERDDAP</a></li>
+<li class="chapter" data-level="2.2" data-path="catalog.html"><a href="catalog.html#gather-information-about-a-dataset"><i class="fa fa-check"></i><b>2.2</b> Gather information about a dataset</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="visualize.html"><a href="visualize.html"><i class="fa fa-check"></i><b>3</b> Visualization and download data</a><ul>
+<li class="chapter" data-level="3.1" data-path="visualize.html"><a href="visualize.html#errdap-make-a-graph-feature"><i class="fa fa-check"></i><b>3.1</b> ERRDAP “Make A Graph” feature</a></li>
+<li class="chapter" data-level="3.2" data-path="visualize.html"><a href="visualize.html#subsetting-the-area-and-selecting-a-date"><i class="fa fa-check"></i><b>3.2</b> Subsetting the area and selecting a date</a></li>
+<li class="chapter" data-level="3.3" data-path="visualize.html"><a href="visualize.html#setting-the-file-format"><i class="fa fa-check"></i><b>3.3</b> Setting the file format</a></li>
+<li class="chapter" data-level="3.4" data-path="visualize.html"><a href="visualize.html#download-the-image"><i class="fa fa-check"></i><b>3.4</b> Download the image</a></li>
+<li class="chapter" data-level="3.5" data-path="visualize.html"><a href="visualize.html#refining-the-data-request"><i class="fa fa-check"></i><b>3.5</b> Refining the data request</a></li>
+<li class="chapter" data-level="3.6" data-path="visualize.html"><a href="visualize.html#try-this-on-you-own"><i class="fa fa-check"></i><b>3.6</b> Try this on you own</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="erddapurl.html"><a href="erddapurl.html"><i class="fa fa-check"></i><b>4</b> Automating ERDDAP requests</a><ul>
+<li class="chapter" data-level="4.1" data-path="erddapurl.html"><a href="erddapurl.html#deconstructing-the-url"><i class="fa fa-check"></i><b>4.1</b> Deconstructing the URL</a></li>
+<li class="chapter" data-level="4.2" data-path="erddapurl.html"><a href="erddapurl.html#adjust-the-area-in-the-url"><i class="fa fa-check"></i><b>4.2</b> Adjust the area in the URL</a></li>
+<li class="chapter" data-level="4.3" data-path="erddapurl.html"><a href="erddapurl.html#adjust-the-time-in-the-url"><i class="fa fa-check"></i><b>4.3</b> Adjust the time in the URL</a></li>
+<li class="chapter" data-level="4.4" data-path="erddapurl.html"><a href="erddapurl.html#changing-the-file-type-in-the-url"><i class="fa fa-check"></i><b>4.4</b> Changing the file type in the URL</a></li>
+<li class="chapter" data-level="4.5" data-path="erddapurl.html"><a href="erddapurl.html#pull-data-into-a-scripting-language"><i class="fa fa-check"></i><b>4.5</b> Pull data into a scripting language</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="hovmoller.html"><a href="hovmoller.html"><i class="fa fa-check"></i><b>5</b> Timeseries and Hovmoller diagrams</a><ul>
+<li class="chapter" data-level="5.1" data-path="hovmoller.html"><a href="hovmoller.html#visualize-the-blob-with-sst"><i class="fa fa-check"></i><b>5.1</b> Visualize the Blob with SST</a></li>
+<li class="chapter" data-level="5.2" data-path="hovmoller.html"><a href="hovmoller.html#visualize-the-blob-with-an-sst-anomaly"><i class="fa fa-check"></i><b>5.2</b> Visualize the Blob with an SST Anomaly</a></li>
+<li class="chapter" data-level="5.3" data-path="hovmoller.html"><a href="hovmoller.html#creating-a-timeseries"><i class="fa fa-check"></i><b>5.3</b> Creating a timeseries</a></li>
+<li class="chapter" data-level="5.4" data-path="hovmoller.html"><a href="hovmoller.html#creating-a-2d-timeseries-hovmoller-plot"><i class="fa fa-check"></i><b>5.4</b> Creating a 2D timeseries (Hovmoller) plot</a></li>
+<li class="chapter" data-level="5.5" data-path="hovmoller.html"><a href="hovmoller.html#try-this-on-your-own"><i class="fa fa-check"></i><b>5.5</b> Try this on your own</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="vectors.html"><a href="vectors.html"><i class="fa fa-check"></i><b>6</b> Mapping Hurricane Jose with winds</a><ul>
+<li class="chapter" data-level="6.1" data-path="vectors.html"><a href="vectors.html#visualize-hurricane-jose-with-scalar-winds"><i class="fa fa-check"></i><b>6.1</b> Visualize Hurricane Jose with scalar winds</a></li>
+<li class="chapter" data-level="6.2" data-path="vectors.html"><a href="vectors.html#visualize-hurricane-jose-with-vector-winds"><i class="fa fa-check"></i><b>6.2</b> Visualize Hurricane Jose with vector winds</a></li>
+<li class="chapter" data-level="6.3" data-path="vectors.html"><a href="vectors.html#continue-tracking-hurricanes"><i class="fa fa-check"></i><b>6.3</b> Continue tracking Hurricanes</a></li>
+<li class="chapter" data-level="6.4" data-path="vectors.html"><a href="vectors.html#try-this-on-your-own-1"><i class="fa fa-check"></i><b>6.4</b> Try this on your own</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="working-with-tabular-dataset-a-demo-using-the-bgc-argo-data.html"><a href="working-with-tabular-dataset-a-demo-using-the-bgc-argo-data.html"><i class="fa fa-check"></i><b>7</b> Working with Tabular Dataset, a demo using the BGC-Argo data</a><ul>
+<li class="chapter" data-level="7.1" data-path="working-with-tabular-dataset-a-demo-using-the-bgc-argo-data.html"><a href="working-with-tabular-dataset-a-demo-using-the-bgc-argo-data.html#subsetting-the-area-and-selecting-a-date-1"><i class="fa fa-check"></i><b>7.1</b> Subsetting the area and selecting a date</a></li>
+<li class="chapter" data-level="7.2" data-path="working-with-tabular-dataset-a-demo-using-the-bgc-argo-data.html"><a href="working-with-tabular-dataset-a-demo-using-the-bgc-argo-data.html#subsetting-the-data"><i class="fa fa-check"></i><b>7.2</b> Subsetting the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="resources.html"><a href="resources.html"><i class="fa fa-check"></i><b>8</b> Additional training and resources</a><ul>
+<li class="chapter" data-level="8.1" data-path="resources.html"><a href="resources.html#exercises-written-in-r"><i class="fa fa-check"></i><b>8.1</b> Exercises written in R</a></li>
+<li class="chapter" data-level="8.2" data-path="resources.html"><a href="resources.html#noaa-coastwatch-ocean-satellite-data-courses"><i class="fa fa-check"></i><b>8.2</b> NOAA CoastWatch Ocean Satellite Data Courses</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://coastwatch.pfeg.noaa.gov" target="blank">Created by CoastWatch West Coast</a></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">NOAA Satellite Course: Introduction to ERDDAP</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="working-with-tabular-dataset-a-demo-using-the-bgc-argo-data" class="section level1">
+<h1><span class="header-section-number">Chapter 7</span> Working with Tabular Dataset, a demo using the BGC-Argo data</h1>
+<p>There are two types of data in ERDDAP, gridded data and tabular data. So far all of our examples have been with gridded data. Working with tabular data is a little different. Here we will explore the Biogeochemical-Argo (BGC-Argo) dataset that is on the PolarWatch ERDDAP.</p>
+<ul>
+<li><p>Enter the following URL into your browser: <code>https://polarwatch.noaa.gov/erddap/</code></p></li>
+<li><p>In the search box type “SOCCOM” and click the “Search’ button</p></li>
+</ul>
+<p><a href="https://polarwatch.noaa.gov/erddap/search/index.html?page=1&amp;itemsPerPage=1000&amp;searchFor=soccom" class="uri">https://polarwatch.noaa.gov/erddap/search/index.html?page=1&amp;itemsPerPage=1000&amp;searchFor=soccom</a></p>
+<p>There are two datasets, a near-real-time one, and a science quality one that is updated quarterly. We will work with the near-real-time dataset.</p>
+<div class="figure">
+<img src="images/BGCDataListing.png" alt="SOCCOM search result" />
+<p class="caption">SOCCOM search result</p>
+</div>
+<ul>
+<li>We will work with the near-real time dataset, so click <code>&quot;graph&quot;</code> to the left of the near real-time dataset.</li>
+</ul>
+<div class="figure">
+<img src="images/BGCmap1.png" alt="BGC Graph result" />
+<p class="caption">BGC Graph result</p>
+</div>
+<p>Displayed are all the float locations for the last 10 days. By default they are color coded by their Nitrate concentration.</p>
+<p>The “Make A Graph” page works slightly differently for tabular data than it does for gridded data. For tabular data all subsetting is done by the widgets listed under “Constraints” (for gridded datasets they are classified under “Dimensions”).</p>
+<div id="subsetting-the-area-and-selecting-a-date-1" class="section level2">
+<h2><span class="header-section-number">7.1</span> Subsetting the area and selecting a date</h2>
+<p>Lets make a map of all floats in Antarctica which have pCO2 data and that have reported in the last month. This dataset has ‘“Region”’ as a parameter, and we can use that to get just data from Antarctica:</p>
+<ul>
+<li>Change the parameter selected next to ‘“Color”’ at the top of the page from ‘“nitrate”’ to ‘“pCO2_LIAR”’</li>
+<li>Select ‘“time”’ as a constraint and enter last month’s date in “Optional Constraint #1, &gt;=”</li>
+<li>Select ‘“region”’ as a constraint and slect ‘“Antartica”’ from teh dropdown widget menu</li>
+<li>Select ‘“pCO2_LIAR”’ as a constraint and enter ‘“0”’ in “Optional Constraint #1, &gt;=”</li>
+<li>Then click the <code>&quot;Redraw the Graph&quot;</code> button.</li>
+</ul>
+<div class="figure">
+<img src="images/BGCmap2.png" alt="Recent Floats in Antarctica" />
+<p class="caption">Recent Floats in Antarctica</p>
+</div>
+<p>The map above shows data from May 25- June 25, 2019. Your map probably looks slightly different since you are probably looking at a different time period.</p>
+<p>Now lets zoom in on the region around Australia.</p>
+<ul>
+<li>Select longitude as a constraint and ‘100’ as “Optional Constraint #1, &gt;=” and ‘180’ as “Optional Constraint #2, &lt;=”</li>
+<li>Click the <code>&quot;Redraw the Graph&quot;</code> button.</li>
+</ul>
+<div class="figure">
+<img src="BGCmap3.png" alt="Recent Floats near Australia" />
+<p class="caption">Recent Floats near Australia</p>
+</div>
+</div>
+<div id="subsetting-the-data" class="section level2">
+<h2><span class="header-section-number">7.2</span> Subsetting the Data</h2>
+<p>What floats are we seeing? We can find this out by looking at the data itself.</p>
+<ul>
+<li>Click the <code>&quot;Data Access Form&quot;</code> above the map</li>
+</ul>
+<p>This brings us to a new page which shows all the variables in the dataset, and allows contraints to be set on all of them. Constrints from the previous page have been retained.</p>
+<ul>
+<li>Check the boxes next to ‘“WMO_ID”’ and ‘“mbariID”’ at the top of the list.</li>
+<li><p>Check the boxes next to ‘“depth”’ and add &lt;=10 as an as ‘“Optional Constraint”’ for depth to limit the number of results per profile.</p></li>
+<li><p>Click the <code>&quot;Sumbit&quot;</code> button at the bottom of the page.</p></li>
+</ul>
+<div class="figure">
+<img src="images/FloatListing.png" alt="Listing of Floats near Australia" />
+<p class="caption">Listing of Floats near Australia</p>
+</div>
+<p>Now lets make a map of the complete trajectory for one of these floats, color coded by time.</p>
+<ul>
+<li>Use the browser back button to return to the ‘“Data Access Page”’</li>
+<li>Click on the ‘“Make a graph”’ link under the dataset title</li>
+<li>Select ‘“WMO_ID”’ as a constraint and selcect ‘“5904675”’ from the dropdown box</li>
+<li>Change the parameter selected next to ‘“Color”’ at the top of the page from ‘“pCO2_LIAR”’ to ‘“time”’</li>
+<li>Remove the minimum (300) and maximum (500) values from underneth the ‘“color bar”’ in ’“Graph Settings’”</li>
+</ul>
+<div class="figure">
+<img src="images/BGCmap4.png" alt="Float Trajectory" />
+<p class="caption">Float Trajectory</p>
+</div>
+<p>Let’s make a section of Nitrate for this float.</p>
+<ul>
+<li>Under ‘“Graph Type’” at the top of the page select’“time”‘as the’“X Axis”‘,’“depth”‘as the’“Y Axis”‘and’“Nitrate”‘as the’“Color”’</li>
+<li>Then click the <code>&quot;Redraw the Graph&quot;</code> button.</li>
+</ul>
+<div class="figure">
+<img src="images/BGCSection1.png" alt="Nitrate Section" />
+<p class="caption">Nitrate Section</p>
+</div>
+<p>The data is upside-down and not much detail can be seen in the surface so lets fix those issues.</p>
+<ul>
+<li>Under ‘“Graph Settings’” set the <code>&quot;Y Axis Minimum&quot;</code> to’“0”‘, the <code>&quot;Y Axis Maximum&quot;</code> to’“350”’ and change <code>&quot;Ascending&quot;</code> to <code>&quot;descending&quot;</code></li>
+<li>Change the Marker Size to ‘“10”’</li>
+</ul>
+<div class="figure">
+<img src="images/BGCSection2.png" alt="Nitrate Section, fixed up" />
+<p class="caption">Nitrate Section, fixed up</p>
+</div>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="vectors.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="resources.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
