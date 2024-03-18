@@ -10,6 +10,10 @@ The repository is structured into directories, categorized by specific topics. W
 
 ### Tutorial Module Descriptions
 
+* [ERDDAP-basics](ERDDAP-basics)
+An introduction to what ERDDAP is and an overview of the different CoastWatch ERDDAP servers.  Learn how to visualize and download data from ERDDAP, and how to interpret an ERDDAP url.
+* [netcdf-and-panoply-tutorial](netcdf-and-panoply-tutorial)
+Learn how to use NASA's Panoply software to open and view netCDF data 
 * [Tutorial1-basics](Tutorial1-basics) 
 Learn to access satellite data from CoastWatch ERDDAP data server and to work with NetCDF files.  Visualize sea surface temperature on a map and plot time series data.
 * [Tutorial2-timeseries-compare-sensors](Tutorial2-timeseries-compare-sensors)
