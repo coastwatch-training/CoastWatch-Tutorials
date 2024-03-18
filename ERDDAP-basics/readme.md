@@ -20,7 +20,7 @@ Japan Aerospace Exploration Agency
 
 The goal behind ERDDAP is to make it easier for you to get scientific data. To accomplish that goal, ERDDAP acts as a middleman, selectively channeling datasets from remote and local data sources to a single data portal. With ERDDAP as the single-source portal, you have access to a simple, consistent way to download subsets of gridded and tabular scientific datasets in common file formats, with options and make graphs and maps.
 
- ![Schematic of ERDDAP functionality](images/erddap.png) 
+ ![Schematic of ERDDAP functionality](lessons/images/erddap.png) 
 
 *Features of ERDDAP*  
 
