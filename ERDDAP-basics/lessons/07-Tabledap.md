@@ -1,6 +1,4 @@
-# Tabular Datasets, BGC-Argo data {#tabledap}   
-
->notebook filename | 07-Tabledap.Rmd  
+# Tabular Datasets, BGC-Argo data 
 
 There are two types of data in ERDDAP, gridded data and tabular data. So far all of our examples have been with gridded data.  Working with tabular data is a little different.  Here we will explore the Biogeochemical-Argo (BGC-Argo) dataset, which is hosted on the PolarWatch ERDDAP.
 
