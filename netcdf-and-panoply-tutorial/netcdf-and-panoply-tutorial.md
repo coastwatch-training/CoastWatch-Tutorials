@@ -1,5 +1,5 @@
 # NetCDF and Panoply tutorial  
-> Updated January 2022 
+> Updated March 2024
 
 ## NetCDF <a id="netcdf"></a>
 
