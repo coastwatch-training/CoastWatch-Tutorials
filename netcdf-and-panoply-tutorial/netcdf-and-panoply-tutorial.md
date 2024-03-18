@@ -30,9 +30,9 @@ Panoply is available for download at: [https://www.giss.nasa.gov/tools/panoply/]
 A set of "how to" instructions can be found to the following URL   
 [https://www.giss.nasa.gov/tools/panoply/help/](https://www.giss.nasa.gov/tools/panoply/help/)  
 Below are a few examples to try out to get you used to visualizing data with the Panoply Viewer.
-:::{.callout-warning title="Panoply Version"}
-The examples shown are based on Panoply Verion 5.3.3, and the interface may differ baed on the version downloaded.
-:::
+
+> :bulb: **Panoply Version:** 
+The examples provided here are based on Panoply Version 5.3.3.  Please note that the interface may vary depending on the version you have installed. 
 
 ## Example #1. Make a map of global chlorophyll a concentration <a id="example-1-make-a-map-of-global-chlorophyll-a-concentration"></a>
 
@@ -56,16 +56,15 @@ The examples shown are based on Panoply Verion 5.3.3, and the interface may diff
 * View the Data
   * Above the image, click on the “Array 1” tab. This shows you all the values of chlorophyll concentration contained in the file for each longitude/latitude pixel.
 
-* Adjust the Plot Scale:
+* Adjust the Plot Scale
   * Navigate back to the "Plot" tab.
   * Within the Plot Controls popup window, proceed to the "Show" section and select "Scale"
   * Modify the "Units" setting, changing it from "scalar" to "log10."
   * Update the "Range" settings to a minimum of 0.02 and a maximum of 2.0.
   * Under the "Color Table" section, you can explore various color palettes. For visualizing chlorophyll concentration, the "MPL_viridis.rgb" palette is recommended, but feel free to select any palette.
 
-:::{.callout-tip}
+>:bulb: **Plot Controls Window**
 In case the "Plot Controls" popup window is not visible, navigate to the "Windows" option in the top menu. There select "Plot Controls" to bring the window back into view. 
-:::
 
 * Modify the Map projection
   * Within the Plot Controls, proceed to the "Show" and select "Map Projection"
@@ -83,9 +82,9 @@ In case the "Plot Controls" popup window is not visible, navigate to the "Window
 
 ![](images/viirs_global_map.png)
 
-:::{.callout-tip title="Additional Color Palettes"}
-You can also go to: [https://www.giss.nasa.gov/tools/panoply/colorbars/](https://www.giss.nasa.gov/tools/panoply/colorbars/) to download additional color palettes. Download another palette for chlorophyll, open it in Panoply, then change the color palette for your image to this new one. Save the image to your computer.
-:::
+>:bulb: **Additional Color Palettes**
+Additional Panoply color palettes are available to download at  [https://www.giss.nasa.gov/tools/panoply/colorbars/](https://www.giss.nasa.gov/tools/panoply/colorbars/) 
+
 
 ## Example #2. Make a map of global SST <a id="example-2-make-a-map-of-global-sst"></a>
 
