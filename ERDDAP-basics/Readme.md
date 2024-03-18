@@ -1,5 +1,5 @@
 # Introduction
->notebook filename | 01-Introduction.Rmd  
+> Updated March, 2024
 
 ## What is ERDDAP
 
@@ -35,13 +35,13 @@ The goal behind ERDDAP is to make it easier for you to get scientific data. To a
 * RESTful web services for machine-to-machine data exchange and downloading data directly into your software applications (e.g.Matlab, R, Python...) and even into web pages.
 
 ## Tuturials on how to use ERDDAP servers  
-* [Using the ERDDAP data catalog](lessons/md/02-Catalog.md)  
-* [Visualize data](lessons/md/03-Visualize.md)  
-* [Understanding the ERDDAP URL](lessons/md/04-Erddapurl.md)  
-* [Creating a Hovmoller plot](lessons/md/05-Hovmoller.md)  
-* [Working with wind vectors](lessons/md/06-Vectors.md)  
-* [Using tabular data](lessons/md/07-Tabledap.md)  
-* [Additional resources](lessons/md/08-Resources.md)   
+* [Using the ERDDAP data catalog](lessons/02-Catalog.md)  
+* [Visualize data](lessons/03-Visualize.md)  
+* [Understanding the ERDDAP URL](lessons/04-Erddapurl.md)  
+* [Creating a Hovmoller plot](lessons/05-Hovmoller.md)  
+* [Working with wind vectors](lessons/06-Vectors.md)  
+* [Using tabular data](lessons/07-Tabledap.md)  
+* [Additional resources](lessons//08-Resources.md)   
 
 ## List of ERDDAP servers  
 
