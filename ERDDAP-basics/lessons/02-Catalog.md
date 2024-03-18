@@ -1,5 +1,5 @@
-# Exploring the data catalog {#catalog}
->notebook filename | 02-Catalog,Rmd  
+# Exploring the data catalog 
+ 
 
 
 There are many ERDDAP servers to chose from. For this example, we will use the ERDDAP operative by the CoastWatch West Coast Node.  
