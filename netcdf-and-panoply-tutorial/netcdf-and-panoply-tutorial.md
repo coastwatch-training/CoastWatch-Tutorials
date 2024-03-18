@@ -31,8 +31,10 @@ A set of "how to" instructions can be found to the following URL
 [https://www.giss.nasa.gov/tools/panoply/help/](https://www.giss.nasa.gov/tools/panoply/help/)  
 Below are a few examples to try out to get you used to visualizing data with the Panoply Viewer.
 
+
 > :bulb: **Panoply Version:** 
 The examples provided here are based on Panoply Version 5.3.3.  Please note that the interface may vary depending on the version you have installed. 
+
 
 ## Example #1. Make a map of global chlorophyll a concentration <a id="example-1-make-a-map-of-global-chlorophyll-a-concentration"></a>
 
@@ -63,8 +65,10 @@ The examples provided here are based on Panoply Version 5.3.3.  Please note that
   * Update the "Range" settings to a minimum of 0.02 and a maximum of 2.0.
   * Under the "Color Table" section, you can explore various color palettes. For visualizing chlorophyll concentration, the "MPL_viridis.rgb" palette is recommended, but feel free to select any palette.
 
+
 >:bulb: **Plot Controls Window**
 In case the "Plot Controls" popup window is not visible, navigate to the "Windows" option in the top menu. There select "Plot Controls" to bring the window back into view. 
+
 
 * Modify the Map projection
   * Within the Plot Controls, proceed to the "Show" and select "Map Projection"
@@ -88,20 +92,20 @@ Additional Panoply color palettes are available to download at  [https://www.gis
 
 ## Example #2. Make a map of global SST <a id="example-2-make-a-map-of-global-sst"></a>
 
-* In a browser, go to the FTP server for the global Sea Surface Temperature from the CoastWatch : ​[ftp://ftp.star.nesdis.noaa.gov/pub/socd2/coastwatch/sst_blended/sst5km/night/ghrsst/2020/](ftp://ftp.star.nesdis.noaa.gov/pub/socd2/coastwatch/sst_blended/sst5km/night/ghrsst/2020/)​
-* Download any file.
+* Download data from the West Coast ERDDAP 
+https://coastwatch.pfeg.noaa.gov/erddap/griddap/nesdisBLENDEDsstDNDaily.nc?analysed_sst%5B(2024-03-16T12:00:00Z):1:(2024-03-16T12:00:00Z)%5D%5B(-89.975):1:(89.975)%5D%5B(-179.975):1:(179.975)%5D 
+​
 * Open the file in Panoply. Scroll down the list of metadata. You can see it looks different from the metadata for the previous file.
 
-This is a blended product. Identify the name of the instruments and satellites the data come from. How many satellites were used to create this gap-free SST dataset?
+  * This is a blended product. Identify the name of the instruments and satellites the data come from. How many satellites were used to create this gap-free SST dataset?
 
-Following the same steps as above, create an image of the “analysed_sst” variable with an appropriate color scale. (You do not need to use a log scale for SST though).
+* Following the same steps as above, create an image of the “analysed_sst” variable with an appropriate color scale. (You do not need to use a log scale for SST though).
+  * Change the units to ºC or ºF.
+  * Click on “Fit to Data” to adjust the color scale or adjust the range of values manually.
+  * Adjust the title with the file’s date.
+  * Save to your computer.
 
-* Change the units to ºC or ºF.
-* Click on “Fit to Data” to adjust the color scale or adjust the range of values manually.
-* Adjust the title with the file’s date.
-* Save to your computer.
-
-![](images/sst_globe.png)
+![](images/sst_geoblended.png)
 
 ## Example #3. Zooming in on a region <a id="example-3-zooming-in-on-a-region"></a>
 
@@ -111,14 +115,17 @@ Following the same steps as above, create an image of the “analysed_sst” var
 
 ![](images/sst.png)
 
-## Files with multiple time steps <a id="files-with-multiple-time-steps"></a>
+##  Example #4: Working with time series data <a id="files-with-multiple-time-steps"></a>
 
-* Download wind data for several months using the following URL: [https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdQBdivmodmday.nc?mod[(2020-09-16T00:00:00Z):1:(2020-12-16T00:00:00Z)][(10.0):1:(10.0)][(17.75):1:(68.75)][(188.0):1:(239.0)]](https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdQBdivmodmday.nc?mod[%282020-09-16T00:00:00Z%29:1:%282020-12-16T00:00:00Z%29][%2810.0%29:1:%2810.0%29][%2817.75%29:1:%2868.75%29][%28188.0%29:1:%28239.0%29])
-* Open it in Panoply 
-* This is monthly wind speed data from the ASCAT instrument on the MetOps satellite for the Alaska region during September through December, 2020.
-* Double click on the "mod" variable ("Modulus of Wind Speed). Keep the default settings and click "Create" to create the global map. 
+* Download monthly wind speed data from the ASCAT instrument on the MetOps satellite for the Alaska region during September through December, 2020.
+
+  * Download data from the West Coast ERDDAP using the following URL: [https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdQBdivmodmday.nc?mod[(2020-09-16T00:00:00Z):1:(2020-12-16T00:00:00Z)][(10.0):1:(10.0)][(17.75):1:(68.75)][(188.0):1:(239.0)]](https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdQBdivmodmday.nc?mod[%282020-09-16T00:00:00Z%29:1:%282020-12-16T00:00:00Z%29][%2810.0%29:1:%2810.0%29][%2817.75%29:1:%2868.75%29][%28188.0%29:1:%28239.0%29])
+* Open the downloaded file in Panoply 
+
+* Create the global map by double clicking on the "mod" variable ("Modulus of Wind Speed). Keep the default settings and click "Create" to create the map.
 * Zoom in on the region with data by holding down the “Ctrl” key with Windows and the "command" key on Mac. While keeping the “Ctrl” key down, click and drag over the data region in the Gulf of Alaska. 
-* Click on the “Array(s)” tab. There you can select a specific time step. Try repeatedly clicking on the up arrow next to "Centered time" to animate the Gulf of Alaska entering the windy season. 
+* Within the Plot Controls, proceed to Show and select "Array". 
+  * Select a specific date/time to view the data.  Try repeatedly clicking on the up arrow next to "Centered time" to animate the Gulf of Alaska entering the windy season. 
 
 ![Four months of wind speed data of Gulf of Alaska](images/panoply_winds.png)
 
