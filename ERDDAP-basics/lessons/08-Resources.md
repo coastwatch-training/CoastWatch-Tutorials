@@ -1,5 +1,4 @@
-# Additional training and resources {#resources}  
->notebook filename | 07-Resources.Rmd  
+# Additional training and resources
 
 
 ## Exercises written in R  

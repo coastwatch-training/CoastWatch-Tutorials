@@ -34,7 +34,7 @@ The goal behind ERDDAP is to make it easier for you to get scientific data. To a
 
 * RESTful web services for machine-to-machine data exchange and downloading data directly into your software applications (e.g.Matlab, R, Python...) and even into web pages.
 
-## Tuturials on how to use ERDDAP servers  
+## Tutorials on how to use ERDDAP servers  
 * [Using the ERDDAP data catalog](lessons/02-Catalog.md)  
 * [Visualize data](lessons/03-Visualize.md)  
 * [Understanding the ERDDAP URL](lessons/04-Erddapurl.md)  
