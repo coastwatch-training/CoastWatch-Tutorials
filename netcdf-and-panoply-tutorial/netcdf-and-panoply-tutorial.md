@@ -1,5 +1,5 @@
 # NetCDF and Panoply tutorial  
-> Updated January 2022 
+> Updated March 2024
 
 ## NetCDF <a id="netcdf"></a>
 
@@ -31,73 +31,81 @@ A set of "how to" instructions can be found to the following URL
 [https://www.giss.nasa.gov/tools/panoply/help/](https://www.giss.nasa.gov/tools/panoply/help/)  
 Below are a few examples to try out to get you used to visualizing data with the Panoply Viewer.
 
+
+> :bulb: **Panoply Version:** 
+The examples provided here are based on Panoply Version 5.3.3.  Please note that the interface may vary depending on the version you have installed. 
+
+
 ## Example #1. Make a map of global chlorophyll a concentration <a id="example-1-make-a-map-of-global-chlorophyll-a-concentration"></a>
 
 * Download the a global netCDF file of the NOAA VIIRS, Science Quality Chlorophyll dataset from the West Coast Node ERDDAP by clicking on the link below. The link will open in your default browser and begin the download for the monthly average for March 2021. [https://coastwatch.pfeg.noaa.gov/erddap/griddap/nesdisVHNSQchlaMonthly.nc?chlor_a[(2021-03-01T12:00:00Z)][(0.0)][(89.75625):(-89.75626)][(-179.9812):(179.9813)]&.draw=surface&.vars=longitude|latitude|chlor_a](https://coastwatch.pfeg.noaa.gov/erddap/griddap/nesdisVHNSQchlaMonthly.nc?chlor_a[%282021-03-01T12:00:00Z%29][%280.0%29][%2889.75625%29:%28-89.75626%29][%28-179.9812%29:%28179.9813%29]&.draw=surface&.vars=longitude|latitude|chlor_a)
 * Launch Panoply.
 * When Panoply opens, it prompts you to open a file. Open the file you just downloaded.
+  * __On the left side__, Panoply displays a list of the variables contained within the file, including time, altitude, longitude, latitude, and chlorophyll-a (chlor_a).
+  * __On the right side__, the file's metadata is presented when you select a variable name from the list on the left. Scroll down to explore additional details about the selected variable. 
+
 
 ![Panoply interface](images/panoply_interface.png)
 
-On the left side, Panoply lists the variables contained in the file (time, altitude, longitude, latitude, chlor_a).
+* You can visualize the chlor_a variable data.
+  * On the leftside of the screen, double-click on the chlor_a variable.  Keep the default settings and click Create.(this will take a minute, it’s a big file)
+  * Panoply generates an image of the chlorophyll data contained in the file, and opens a popup window "Plot Controls".
 
-On the right side, it displays the file’s metadata. You can scroll down to get more details. For example, in the global attributes, you will find the platform (this is data from the Suomi-NPP satellite), the instrument (VIIRS), the processing version (2018.0), the time coverage (2002 to 2018). Some additional information that might help you use the dataset are: 
+![Panoply Create Plot interface](images/createPlot_interface.png)
 
-* the summary, which briefly describes the dataset:
+![Panoply generated an image of the chlorophyll data contained in the file.](images/chlor_a.png)
 
-> summary = Level-3 Standard Mapped Image (SMI), Global, 4km, Chlorophyll, Monthly composite data from the Visible and Infrared Imager/Radiometer Suite (VIIRS). These are science quality data with a 15-day latency. The data, processed by the NOAA/STAR Ocean Color Team, are produced from MSL12 v1.2 using OC-SDR v04 and were release by CoastWatch as of 2017-08-07. VIIRS is a multi-disciplinary instrument that flies on the Suomi-NPP (National Polar-orbiting Partnership) satellite and is the successor to MODIS. Suomi-NPP is the initial spacecraft in the JPSS (Joint Polar Satellite Systems) series of spacecraft. JPSS is our Nation's next generation polar-orbiting operational environmental satellite system. JPSS is a collaborative program between NOAA and its acquisition agent NASA.
+* View the Data
+  * Above the image, click on the “Array 1” tab. This shows you all the values of chlorophyll concentration contained in the file for each longitude/latitude pixel.
 
-* and the license, which tell you how the data may be used and how the acknowledge the data provider.
+* Adjust the Plot Scale
+  * Navigate back to the "Plot" tab.
+  * Within the Plot Controls popup window, proceed to the "Show" section and select "Scale"
+  * Modify the "Units" setting, changing it from "scalar" to "log10."
+  * Update the "Range" settings to a minimum of 0.02 and a maximum of 2.0.
+  * Under the "Color Table" section, you can explore various color palettes. For visualizing chlorophyll concentration, the "MPL_viridis.rgb" palette is recommended, but feel free to select any palette.
 
-> license = [https://science.nasa.gov/earth-science/earth-science-data/data-information-policy/](https://science.nasa.gov/earth-science/earth-science-data/data-information-policy/nThe)   
-> The data may be used and redistributed for free but is not intended for legal use, since it may contain inaccuracies. Neither the datanContributor, ERD, NOAA, nor the United States Government, nor any of their employees or contractors, makes any warranty, express or implied, including warranties of merchantability and fitness for a particular purpose, or assumes any legal liability for the accuracy, completeness, or usefulness, of this information. Please acknowledge the use of these data with the following statement: "These data were provided by NOAA's Center for Satellite Applications & Research (STAR) and the CoastWatch program and distributed by NOAA/NMFS/SWFSC/ERD." To reference these data as a citation in a paper, please follow the instructions in the license and at this link: [https://coastwatch.pfeg.noaa.gov/erddap/information.html#citeDataset](https://coastwatch.pfeg.noaa.gov/erddap/information.html#citeDataset)"; :map_projection = "geographic";
 
-The metadata may also contain a Digital Object Identifier (DOI ), which is a persistent identifier used to identify objects uniquely, that typically links to a webpage the contains extra information about the data. This dataset file has no DOI in the metadata. Metadata varies from file to file depending on how much information is provided by the person/institution who generated the file.
+>:bulb: **Plot Controls Window**
+In case the "Plot Controls" popup window is not visible, navigate to the "Windows" option in the top menu. There select "Plot Controls" to bring the window back into view. 
 
-* Next, on the left side of the screen, double click on the chlor_a variable. Keep the default settings and click Create. (this will take a minute, it’s a big file)
 
-![](images/chlor_a.png)
+* Modify the Map projection
+  * Within the Plot Controls, proceed to the "Show" and select "Map Projection"
+  * Select "Mollweide (Oblique)".
+  * Modify the "Center on": Lon to 180, and Lat to 0 to center the map on the Pacific ocean. 
 
-Panoply generated an image of the chlorophyll data contained in the file.
+* Modify the Map Label
+  * Within the Plot Controls, proceed to the "Show" and select "Labels"
+  * Modify the Title to “VIIRS SNPP Chlorophyll Concentration, March 2021”
 
-* Above the image, click on the “Array 1” tab. This shows you all the values of chlorophyll concentration contained in the file for each longitude/latitude pixel.
+* Save the image to your computer 
+  * Go to the top menu and choose the "File" option.
+  * From the dropdown menu, select "Save Image" (File > Save Image).
 
-We now need to adjust the color scale and tweak some of the image options. Note: There may be a lag between clicking or adjusting values, and results. It’s a big file.
-
-* Above the image, click back to the the “Plot” tab. 
-* Below the image, click on the “scale” submenu.
-  * Change the “Units” from “scalar” to “log10”.
-  * Adjust the color scale to 0.02 to 2.0.
-  * In “Color Table” you have many options of color palettes. Try the “MPL_viridis.rgb” for chlorophyll concentration, but you can choose whichever one you prefer.
-* Next click on the “Map” submenu and
-  * change the map projection to “Mollweide Oblique”.
-  * change “Center on: Lon.” to 180º to center the map on the Pacific.
-  * change “Grid: style” to none if you want to remove the longitude/latitude grid.
-* Click on the “Labels” submenu
-  * uncheck the “Center footnote” box.
-  * edit the Title to “VIIRS SNPP Chlorophyll Concentration, March 2021”
-* Finally, save the image to your computer (File &gt; Save image).
 
 ![](images/viirs_global_map.png)
 
-You can also go to: [https://www.giss.nasa.gov/tools/panoply/colorbars/](https://www.giss.nasa.gov/tools/panoply/colorbars/) to download additional color palettes. Download another palette for chlorophyll, open it in Panoply, then change the color palette for your image to this new one. Save the image to your computer.
+>:bulb: **Additional Color Palettes**
+Additional Panoply color palettes are available to download at  [https://www.giss.nasa.gov/tools/panoply/colorbars/](https://www.giss.nasa.gov/tools/panoply/colorbars/) 
+
 
 ## Example #2. Make a map of global SST <a id="example-2-make-a-map-of-global-sst"></a>
 
-* In a browser, go to the FTP server for the global Sea Surface Temperature from the CoastWatch : ​[ftp://ftp.star.nesdis.noaa.gov/pub/socd2/coastwatch/sst_blended/sst5km/night/ghrsst/2020/](ftp://ftp.star.nesdis.noaa.gov/pub/socd2/coastwatch/sst_blended/sst5km/night/ghrsst/2020/)​
-* Download any file.
+* Download data from the West Coast ERDDAP 
+https://coastwatch.pfeg.noaa.gov/erddap/griddap/nesdisBLENDEDsstDNDaily.nc?analysed_sst%5B(2024-03-16T12:00:00Z):1:(2024-03-16T12:00:00Z)%5D%5B(-89.975):1:(89.975)%5D%5B(-179.975):1:(179.975)%5D 
+​
 * Open the file in Panoply. Scroll down the list of metadata. You can see it looks different from the metadata for the previous file.
 
-This is a blended product. Identify the name of the instruments and satellites the data come from. How many satellites were used to create this gap-free SST dataset?
+  * This is a blended product. Identify the name of the instruments and satellites the data come from. How many satellites were used to create this gap-free SST dataset?
 
-Following the same steps as above, create an image of the “analysed_sst” variable with an appropriate color scale. (You do not need to use a log scale for SST though).
+* Following the same steps as above, create an image of the “analysed_sst” variable with an appropriate color scale. (You do not need to use a log scale for SST though).
+  * Change the units to ºC or ºF.
+  * Click on “Fit to Data” to adjust the color scale or adjust the range of values manually.
+  * Adjust the title with the file’s date.
+  * Save to your computer.
 
-* Change the units to ºC or ºF.
-* Click on “Fit to Data” to adjust the color scale or adjust the range of values manually.
-* Adjust the title with the file’s date.
-* Save to your computer.
-
-![](images/sst_globe.png)
+![](images/sst_geoblended.png)
 
 ## Example #3. Zooming in on a region <a id="example-3-zooming-in-on-a-region"></a>
 
@@ -107,14 +115,17 @@ Following the same steps as above, create an image of the “analysed_sst” var
 
 ![](images/sst.png)
 
-## Files with multiple time steps <a id="files-with-multiple-time-steps"></a>
+##  Example #4: Working with time series data <a id="files-with-multiple-time-steps"></a>
 
-* Download wind data for several months using the following URL: [https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdQBdivmodmday.nc?mod[(2020-09-16T00:00:00Z):1:(2020-12-16T00:00:00Z)][(10.0):1:(10.0)][(17.75):1:(68.75)][(188.0):1:(239.0)]](https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdQBdivmodmday.nc?mod[%282020-09-16T00:00:00Z%29:1:%282020-12-16T00:00:00Z%29][%2810.0%29:1:%2810.0%29][%2817.75%29:1:%2868.75%29][%28188.0%29:1:%28239.0%29])
-* Open it in Panoply 
-* This is monthly wind speed data from the ASCAT instrument on the MetOps satellite for the Alaska region during September through December, 2020.
-* Double click on the "mod" variable ("Modulus of Wind Speed). Keep the default settings and click "Create" to create the global map. 
+* Download monthly wind speed data from the ASCAT instrument on the MetOps satellite for the Alaska region during September through December, 2020.
+
+  * Download data from the West Coast ERDDAP using the following URL: [https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdQBdivmodmday.nc?mod[(2020-09-16T00:00:00Z):1:(2020-12-16T00:00:00Z)][(10.0):1:(10.0)][(17.75):1:(68.75)][(188.0):1:(239.0)]](https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdQBdivmodmday.nc?mod[%282020-09-16T00:00:00Z%29:1:%282020-12-16T00:00:00Z%29][%2810.0%29:1:%2810.0%29][%2817.75%29:1:%2868.75%29][%28188.0%29:1:%28239.0%29])
+* Open the downloaded file in Panoply 
+
+* Create the global map by double clicking on the "mod" variable ("Modulus of Wind Speed). Keep the default settings and click "Create" to create the map.
 * Zoom in on the region with data by holding down the “Ctrl” key with Windows and the "command" key on Mac. While keeping the “Ctrl” key down, click and drag over the data region in the Gulf of Alaska. 
-* Click on the “Array(s)” tab. There you can select a specific time step. Try repeatedly clicking on the up arrow next to "Centered time" to animate the Gulf of Alaska entering the windy season. 
+* Within the Plot Controls, proceed to Show and select "Array". 
+  * Select a specific date/time to view the data.  Try repeatedly clicking on the up arrow next to "Centered time" to animate the Gulf of Alaska entering the windy season. 
 
 ![Four months of wind speed data of Gulf of Alaska](images/panoply_winds.png)
 
