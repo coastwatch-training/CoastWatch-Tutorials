@@ -1,7 +1,7 @@
 ---
 title: Match up satellite to buoy data
 author: NOAA CoastWatch
-date: August 2023
+date: March 2024
 output:
   md_document:
     variant: gfm
@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```  
   
 # Match up satellite and buoy data
-> history | Updated August 2023 
+> history | Updated March 2024
 
 ## Background
 There are buoys in many locations around the world that provide data streams of oceanic and atmospheric parameters. The data are often available through data centers like the National Data Buoy Center (NDBC https://www.ndbc.noaa.gov) and the ARGO floats program (http://www.argo.ucsd.edu). In situ buoy data are widely used to monitor environmental conditions.
@@ -83,8 +83,13 @@ for (pk in list.of.packages) {
 
 ```{r tabledap}
 # Subset and download tabular data from ERDDAP 
-buoy <- rerddap::tabledap(
-  'cwwcNDBCMet', 
+
+ERDDAP_Node = "https://coastwatch.pfeg.noaa.gov/erddap"
+
+NDBC_id = 'cwwcNDBCMet'
+NDBC_info=info(datasetid = NDBC_id,url = ERDDAP_Node)
+
+buoy <- rerddap::tabledap( url = ERDDAP_Node, NDBC_id,
   fields=c('station', 'latitude',  'longitude', 'time', 'wtmp'), 
   'time>=2023-08-01',   'time<=2023-08-10', 
   'latitude>=35','latitude<=40', 'longitude>=-125','longitude<=-120',
@@ -95,15 +100,16 @@ buoy <- rerddap::tabledap(
 buoy.df <-data.frame(station=buoy$station,
                      longitude=as.numeric(buoy$longitude),
                      latitude=as.numeric(buoy$latitude),
-                     time=strptime(buoy$time, "%Y-%m-%dT%H:%M:%S"),
+                     time = buoy$time,
                      temp=as.numeric(buoy$wtmp))
 
 # Check for unique stations
 unique.sta <- unique(buoy$sta)
 n.sta <- length(unique.sta)
 n.sta
-
+ 
 ```
+
 
 **Plot the buoy data for the first 10 stations in buoy.df**
   
@@ -112,6 +118,8 @@ n.sta
 ```{r buoy_plot}
 
 plot(buoy.df$time,buoy.df$temp,type='n', xlab='Date', ylab='SST (ºC)',main='SST from the first 10 stations')
+
+
 for (i in 1:10){
   I=which(buoy.df$station==unique.sta[i])
   lines(buoy.df$time[I],buoy.df$temp[I])
@@ -163,6 +171,15 @@ We will extract satellite data for each buoy station.
 1. get coordinates of each buoy station
 2. use the rxtracto function and the buoy coordinates to download satellite data closest to each station
 
+```{r}
+# Set the variable name of interest from the satellite data
+parameter <- 'analysed_sst'
+
+# Set x,y,t,z coordinates based on buoy data
+xcoord <- buoy.df.day$lon
+ycoord <- buoy.df.day$lat
+tcoord <- buoy.df.day$date
+```
 
 ```{r matchups}
 
@@ -174,11 +191,11 @@ xcoord <- buoy.df.day$lon
 ycoord <- buoy.df.day$lat
 tcoord <- buoy.df.day$date
 
-
 # Extract satellite data 
 extract <- rxtracto(dataInfo, parameter=parameter, 
                     tcoord=tcoord,
-                    xcoord=xcoord,ycoord=ycoord,
+                    xcoord=xcoord,
+                    ycoord=ycoord,
                     xlen=.01,ylen=.01)
                      
 buoy.df.day$sst<-extract$`mean analysed_sst`
