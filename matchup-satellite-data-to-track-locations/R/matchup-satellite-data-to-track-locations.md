@@ -1,6 +1,6 @@
 # Matchup Satellite data to track locations
 
-history \| Modified August 2023
+history \| Modified March 2024
 
 ## Objective
 
@@ -13,7 +13,8 @@ track.
 
 - Importing track data in csv file to data frame
 - Plotting the latitude/longitude points onto a map
-- Extracting satellite data from an ERDDAP data server along a track
+- Using rerddapXtraco function to extract satellite data from an ERDDAP
+  data server along a track
 - Plotting the satellite data onto a map
 
 ## Datasets used
@@ -67,7 +68,6 @@ for (pk in list.of.packages) {
 ``` r
 # Import csv file into a data frame
 turtle_df <- read.csv("../data/25317_05_subsampled.dat")
-
 # Show 3 rows from the data frame
 head(turtle_df,3)
 ```
@@ -97,85 +97,17 @@ ggplot(turtle_df, aes(mean_lon,mean_lat)) +
 
 ![](images/trackplot-1.png)<!-- -->
 
-## Extract data from a satellite dataset corresponding to points on the track
+In this exercise, two different ways of extracting data from ERDDAP data
+server along a track of xyt points are demonstrated:
 
-We are going to download data from an ERDDAP data server using the
-following steps:
+1.  Using the **rerddapXtracto** package which was written specifically
+    for this task
+2.  By manually constructing a URL with the data data request
 
-- Select a dataset and ERDDAP data server
-- Get data information using <code>rerddap</code> package
-- Extract data using ERDDAP URL request with latitudes and longitudes of
-  the turtle track data
-- Extract data using <code>rxtracto</code> function with latitudes and
-  longitudes of the turtle track data
-- Create data frame with the satellite data and turtle tracks
+### Extracting XYT data using the **rerddapXtracto** package
 
-## Select a dataset and get Data Info using erddap URL data request
-
-In this exercise, two different ways of downloading satellite data from
-ERDDAP data server are demonstrated:  
-1. request data via ERDDAP URL 2. request data by using `rerddap` R
-package
-
-### Data request using ERDDAP URL
-
-First we need to set up the ERDDAP URL using the datasets ID and the
-name of the variable we are interested in. Note that we are requesting
-the data as .csv
-
-`data_url = "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/aqua_chla_1d_2018_0.csv?chlor_a"`
-
-Ideally, we would work with daily data since we have one location per
-day. But chlorophyll data is severely affected by clouds (i.e. lots of
-missing data), so you might need to use weekly or even monthly data to
-get sufficient non-missing data. We will start with the monthly chl-a
-data since it contains fewer gaps.
-
-``` r
-# Set erddap address
-erddap <- "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/aqua_chla_monthly_2018_0.csv?chlor_a"
-
-# Get longitude and latitude from turtle track data
-lon = turtle_df$mean_lon
-lat = turtle_df$mean_lat
-
-# Get time from turtle track data and convert into ERDDAP date format
-dates=mdy.date(turtle_df$month,turtle_df$day,turtle_df$year)
-dates2 = format(as.Date(dates), "%Y-%m-%d")
-
-# Initatilize tot variable where data will be downloaded to
-tot = rep(NA, 4)
-
-# Loop through each turtle track data
-for (i in 1:dim(turtle_df)[1]) {
-
-   # Create erddap URL by adding lat, lon, dates of each track point 
-   url = paste(erddap, "[(", dates2[i], "):1:(", dates2[i], ")][(", lat[i], "):1:(", lat[i], ")][(", lon[i], "):1:(", lon[i], ")]", sep = "")  
-   
-   # Request and load satelite data from ERDDAP
-   new = read.csv(url, skip=2, header = FALSE) 
-   
-   # Append the data
-   tot = rbind(tot, new)   
-}
-
-# Delete the first row (default column names)
-tot = tot[-1, ]
-
-# Rename columns
-names(tot) = c("chlo_date", "matched_lat", "matched_lon", "matched_chl.m")
-
-# Create data frame combining turtle track data and the chlo-a data
-result = data.frame(turtle_df, tot)
-
-# Write the data frame to csv file
-write.csv(result, 'turtle-track-chl.m.csv', row.names = FALSE)
-```
-
-### Alternative method: Data request using the \``rxtracto` function of the **rerddapXtracto** package
-
-The **rerddap** package was written to simplify data extraction from
-ERDDAP servers.
+We will use the \``rxtracto` function of the **rerddapXtracto** package,
+which was written to simplify data extraction from ERDDAP servers.
 
 **Let’s use data from the monthly product of the OC-CCI datasets.**  
 The ERDDAP URL to the monthly product is below:  
@@ -192,16 +124,13 @@ The latitude range is -89.97916 to 89.97916 and the longitude range is
 0.020833 to 359.97916, which covers the track latitude range of 23.72 to
 41.77 and longitude range of 175.86 to 248.57.
 
-The time range is 1997-09-04 to 2023-03-01 (at the day of this writing),
+The time range is 1997-09-04 to 2023-12-01 (at the day of this writing),
 which covers the track time range of 2005-05-04 to 2008-08-16.
 
 You should also note the name of the variable you will be downloading.
 For this dataset it is “**chlor_a**”
 
 ``` r
-# Deleting all cached files
-rerddap::cache_delete_all(force = TRUE)
-
 # Set dataset ID
 dataset <- 'esa-cci-chla-monthly-v6-0'
 
@@ -224,7 +153,7 @@ dataInfo
     ##  Base URL: https://oceanwatch.pifsc.noaa.gov/erddap 
     ##  Dataset Type: griddap 
     ##  Dimensions (range):  
-    ##      time: (1997-09-04T00:00:00Z, 2023-03-01T00:00:00Z) 
+    ##      time: (1997-09-04T00:00:00Z, 2023-12-01T00:00:00Z) 
     ##      latitude: (-89.97916666666666, 89.97916666666667) 
     ##      longitude: (0.020833333333314386, 359.97916666666663) 
     ##  Variables:  
@@ -303,7 +232,7 @@ ycoords <- turtle_df$mean_lat
 tcoords <- turtle_df$date
 
 # Extract satellite data using x, y, t coordinates from turtle track data
-chl_grid <- rxtracto(dataInfo, 
+chl_track <- rxtracto(dataInfo, 
                   parameter=parameter, 
                   xcoord=xcoords, ycoord=ycoords, 
                   tcoord=tcoords, xlen=xlen, ylen=ylen)
@@ -313,7 +242,7 @@ chl_grid <- rxtracto(dataInfo,
 
 ``` r
 # Check all variables extracted using rxtracto
-chl_grid
+chl_track
 ```
 
     ## $`mean chlor_a`
@@ -402,88 +331,74 @@ chl_grid
     ## [1] "list"          "rxtractoTrack"
 
 **rxtracto** computes statistics using all the pixels found in the
-search radius around each track point. Because chl-a concentration tends
-to have very high values and very low values, we will work with the
-median value around each track point, **median chlor_a**
-
-### Plot a histogram of median chlor_a
-
-``` r
-chlora <- chl_grid$"median chlor_a"
-
-# Histogram of Chlor_a
-hist(chlora,
-    main="Histogram of Chlorophyll-a",
-    xlab="Chlorophyll",
-    breaks = 40,
-    col="lightblue",
-    freq=FALSE
-)
-```
-
-![](images/hist-1.png)<!-- --> The distribution of chlorophll values is
-lognormal, with lots of very low values, and a few very high values.
-This could skew a linear color bar so that most lower values have the
-same color.
-
-For this reason we often plot the log or log10 of chlorophyll.
-
-## Plot a histogram of the log of the chlorophyll data
-
-``` r
-# Histogram of Log of Chlor_a
-hist(log(chlora),
-    main="Histogram of Log(Chlorophyll-a)",
-    xlab="Chlorophyll",
-    breaks = 30,
-    col="lightblue",
-    freq=FALSE
-)
-```
-
-![](images/loghist-1.png)<!-- -->
-
-The range of log chlorophyll is about -2.9 to -0.3 but most of the
-values are between -2.5 and -0.8.
+search radius around each track point.
 
 ## Plotting the results using plotTrack
 
 We will use the “plotTrack” function to plot the results. “plotTrack” is
 a function of the “rerddapXtracto” package designed specifically to plot
-the results of the “rxtracto” function. However it’s not very
-customizable.
+the results of the “rxtracto” function. It provides an easy way to make
+a quick plot, however it’s not very customizable.
 
 ``` r
 # Plot tracks with color: algae specifically designed for chlorophyll
-plotTrack(chl_grid, xcoords, ycoords, tcoords, size=3, plotColor = 'viridis')
+plotTrack(chl_track, xcoords, ycoords, tcoords, size=3, plotColor = 'viridis')
 ```
 
-![](images/chloraplot-1.png)<!-- -->
+![](images/chl%20track%20map%201-1.png)<!-- -->
 
 ## Animating the track
 
-Make a cumulative animation of the track. This will take a minute to
+One of the nice features of the “plotTrack” function is that it is very
+easy to make an animation of the track data. This will take a minute to
 run. It creates an animated gif that will display in the Rstudio viewer
 window once the encoding to gif is done.
 
 ``` r
 # Animate tracks
-plotTrack(chl_grid, xcoords, ycoords, tcoords, plotColor = 'viridis',
+
+make180 <- function(lon) {
+    ind <- which(lon > 180)
+    lon[ind] <- lon[ind] - 360
+   return(lon)
+}
+
+plotTrack(chl_track, make180(xcoords), ycoords, tcoords, plotColor = 'viridis',
                     animate = TRUE, cumulative = TRUE)
 ```
 
-    ## NULL
+    ## # A tibble: 25 × 7
+    ##    format width height colorspace matte filesize density
+    ##    <chr>  <int>  <int> <chr>      <lgl>    <int> <chr>  
+    ##  1 gif      672    480 sRGB       TRUE         0 72x72  
+    ##  2 gif      672    480 sRGB       TRUE         0 72x72  
+    ##  3 gif      672    480 sRGB       TRUE         0 72x72  
+    ##  4 gif      672    480 sRGB       TRUE         0 72x72  
+    ##  5 gif      672    480 sRGB       TRUE         0 72x72  
+    ##  6 gif      672    480 sRGB       TRUE         0 72x72  
+    ##  7 gif      672    480 sRGB       TRUE         0 72x72  
+    ##  8 gif      672    480 sRGB       TRUE         0 72x72  
+    ##  9 gif      672    480 sRGB       TRUE         0 72x72  
+    ## 10 gif      672    480 sRGB       TRUE         0 72x72  
+    ## # ℹ 15 more rows
 
 ## Plotting the results using ggplot
 
 ### Create a data frame with the turtle track and the output of rxtracto
 
-We will first create a data frame that contains longitudes and latitudes
-from the turtle and associated satellite chlor-a values.
+If we to do an customization of the plot, its better to plot the dat
+ausing ggplot. We will first create a data frame that contains
+longitudes and latitudes from the turtle and associated satellite
+chlor-a values.
 
 ``` r
-# Create a data frame of coords from turtle and chlora values 
-new_df <- as.data.frame(cbind(xcoords, ycoords,  chl_grid$`requested lon min`, chl_grid$`requested lon max`, chl_grid$`requested lat min`, chl_grid$`requested lon max`,  chlora))
+# Create a data frame of coords from turtle and chlor_a values 
+new_df <- as.data.frame(cbind(xcoords, ycoords,  
+                              chl_track$`requested lon min`, 
+                              chl_track$`requested lon max`, 
+                              chl_track$`requested lat min`, 
+                              chl_track$`requested lon max`,  
+                              chl_track$`mean chlor_a`))
 
 # Set variable names
 names(new_df) <- c("Lon", "Lat", "Matchup_Lon_Lower", "Matchup_Lon_Upper", "Matchup_Lat_Lower", "Matchup_Lat_Upper",  "Chlor_a")
@@ -508,26 +423,140 @@ ggplot(new_df) +
 
 ![](images/ggplot_track-1.png)<!-- -->
 
-## On your own!
+### Extracting XYT data by constructing the URL data requests manually
+
+First we need to set up the ERDDAP URL using the datasets ID and the
+name of the variable we are interested in. Note that we are requesting
+the data as .csv
+
+`data_url = "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/aqua_chla_1d_2018_0.csv?chlor_a"`
+
+Ideally, we would work with daily data since we have one location per
+day. But chlorophyll data is severely affected by clouds (i.e. lots of
+missing data), so you might need to use weekly or even monthly data to
+get sufficient non-missing data. We will start with the monthly chl-a
+data since it contains fewer gaps.
+
+``` r
+# Set erddap address
+erddap <- "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/aqua_chla_monthly_2018_0.csv?chlor_a"
+
+# Get longitude and latitude from turtle track data
+lon <- turtle_df$mean_lon
+lat <- turtle_df$mean_lat
+
+# Get time from turtle track data and convert into ERDDAP date format
+dates <- mdy.date(turtle_df$month,turtle_df$day,turtle_df$year)
+dates2 <- format(as.Date(dates), "%Y-%m-%d")
+
+# Initatilize tot variable where data will be downloaded to
+tot <- rep(NA, 4)
+
+# Loop through each turtle track data
+for (i in 1:dim(turtle_df)[1]) {
+
+   # Create erddap URL by adding lat, lon, dates of each track point 
+   url <-  paste(erddap, "[(", dates2[i], "):1:(", dates2[i], ")][(", lat[i], "):1:(", lat[i], ")][(", lon[i], "):1:(", lon[i], ")]", sep = "")  
+   
+   # Request and load satelite data from ERDDAP
+   new <- read.csv(url, skip=2, header = FALSE) 
+   
+   # Append the data
+   tot <- rbind(tot, new)   
+}
+
+# Delete the first row (default column names)
+tot <- tot[-1, ]
+
+# Rename columns
+names(tot) <- c("chlo_date", "matched_lat", "matched_lon", "matched_chl.m")
+
+# Create data frame combining turtle track data and the chlo-a data
+chl_track2 <- data.frame(turtle_df, tot)
+
+# Write the data frame to csv file
+write.csv(chl_track2, 'turtle-track-chl.m.csv', row.names = FALSE)
+```
+
+### Make a map of the data extracted using the second method
+
+``` r
+# Draw the track positions with associated chlora values
+ggplot(chl_track2) +
+  geom_point(aes(mean_lon,mean_lat,color=log(matched_chl.m))) +
+  geom_polygon(data = mapWorld, aes(x=long, y = lat, group = group)) + 
+  coord_fixed(xlim = c(120,260),ylim = c(15,60)) +
+  scale_color_viridis(discrete = FALSE) +
+  labs(x="Longitude (deg)", y="Latitude (deg)", title="Turtle Track with chlor-a values")+
+  theme(plot.title=element_text(hjust=0.5))
+```
+
+![](images/ggplot_track%202-1.png)<!-- -->
+
+### Plot histogram of chlorophyll
+
+How do the chlorophyll values of the turtle track compare to values in
+the surrounding environment? Meaning does the turtle seem to have a
+preference for certain chlorophyll values? To look at this we will plot
+a histograms of the track chl valuesand those of the surrounding area.
+
+First we will get a 3D block of chl data from the region and of the
+turtle track over the span of time the turtle was in that area. We will
+use the ‘xtracto_3d’ function of rerddapXtracto to get the data. This
+data call will take a few minutes.
+
+``` r
+chl_grid <- rxtracto_3D(dataInfo, 
+                  parameter=parameter, 
+                  xcoord=c(min(xcoords),max(xcoords)), 
+                  ycoord=c(min(ycoords),max(ycoords)), 
+                  tcoord=c(min(tcoords),max(tcoords)))
+
+chl_area <- as.vector(chl_grid$chlor_a) 
+
+# remove NA values 
+chl_area <- chl_area[!is.na(chl_area)]
+
+# vector or turtle chlorophyll 
+
+chl_turtle <- chl_track$`mean chlor_a`
+```
+
+Now we we plot histograms of all the chlorphyll values in the area, and
+those of the turtle track. Since we subset the turtletrack, and only
+have 25 points for this subsampopled dataset the turtle histogram isn’t
+as useful as it would be with a larger dataset.
+
+``` r
+ggplot(as.data.frame(chl_area)) + 
+      geom_histogram(aes(x=chl_area,y=after_stat(density),color = "darkgray",fill='Area'),color='black', bins=50) + 
+      geom_histogram(data=as.data.frame(chl_turtle), aes(x=chl_turtle,y=after_stat(density),color='green', fill='Turtle'),color='black',bins=50, alpha=.4) + 
+      scale_x_continuous(limits = c(0,.9), expand = c(0, 0)) + 
+      scale_y_continuous(limits = c(0,15), expand = c(0, 0)) +
+      labs(x='Chlorophyll values',y='Density') + 
+      theme_bw() + 
+      scale_fill_manual(values=c("darkgray","green"),'')
+```
+
+![](images/Plot%20histogram%20of%20chlorophyll-1.png)<!-- -->
 
 ##### Exercise 1:
 
 Repeat the steps above with a different dataset. For example, extract
 sea surface temperature data using the following dataset:
-<https://coastwatch.pfeg.noaa.gov/erddap/griddap/nesdisGeoPolarSSTN5NRT_Lon0360.html>  
-\* This dataset is a different ERDDAP, so remember to change the base
-URL. \* Set the new dataset ID and variable name.
+<https://coastwatch.pfeg.noaa.gov/erddap/griddap/nesdisGeoPolarSSTN5NRT_Lon0360.html>
+\\ This dataset is a different ERDDAP, so remember to change the base
+URL. \\ Set the new dataset ID and variable name.
 
 ##### Exercise 2:
 
 Go to an ERDDAP of your choice, find a dataset of interest, generate the
 URL, copy it and edit the script above to run a match up on that
 dataset. To find other ERDDAP servers, you can use this search engine:
-<http://erddap.com/>  
-\* This dataset will likely be on a different ERDDAP, so remember to
-change the base URL. \* Set the new dataset ID and variable name. \*
-Check the metadata to make sure the dataset covers the spatial and
-temporal range of the track dataset.
+<http://erddap.com/> \\ This dataset will likely be on a different
+ERDDAP, so remember to change the base URL. \\ Set the new dataset ID
+and variable name. \\ Check the metadata to make sure the dataset covers
+the spatial and temporal range of the track dataset.
 
 ##### Optional
 
