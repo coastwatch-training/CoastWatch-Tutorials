@@ -1,6 +1,6 @@
 # Mask shallow pixels for satellite ocean color datasets
 
-> Updated November 2023 <br/>
+> Updated March 2023 <br/>
 
 Remotely sensed ocean color algorithms are calibrated for optically-deep
 waters, where the signal received by the satellite sensor originates

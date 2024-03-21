@@ -1,7 +1,7 @@
 ---
 title: Mask shallow pixels for satellite ocean color datasets
 author: NOAA CoastWatch
-date: November 2023
+date: March 2023
 output: 
   md_document
 ---
@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-> Updated November 2023 <br/>
+> Updated March 2023 <br/>
 
 Remotely sensed ocean color algorithms are calibrated for optically-deep waters, where the signal received by the satellite sensor originates from the water column without any bottom contribution.
 
