@@ -1,6 +1,6 @@
 # Match up satellite and buoy data
 
-> history \| Updated August 2023
+> history \| Updated March 2024
 
 ## Background
 
@@ -81,8 +81,13 @@ the following specifications:
 
 ``` r
 # Subset and download tabular data from ERDDAP 
-buoy <- rerddap::tabledap(
-  'cwwcNDBCMet', 
+
+ERDDAP_Node = "https://coastwatch.pfeg.noaa.gov/erddap"
+
+NDBC_id = 'cwwcNDBCMet'
+NDBC_info=info(datasetid = NDBC_id,url = ERDDAP_Node)
+
+buoy <- rerddap::tabledap( url = ERDDAP_Node, NDBC_id,
   fields=c('station', 'latitude',  'longitude', 'time', 'wtmp'), 
   'time>=2023-08-01',   'time<=2023-08-10', 
   'latitude>=35','latitude<=40', 'longitude>=-125','longitude<=-120',
@@ -93,7 +98,7 @@ buoy <- rerddap::tabledap(
 buoy.df <-data.frame(station=buoy$station,
                      longitude=as.numeric(buoy$longitude),
                      latitude=as.numeric(buoy$latitude),
-                     time=strptime(buoy$time, "%Y-%m-%dT%H:%M:%S"),
+                     time = buoy$time,
                      temp=as.numeric(buoy$wtmp))
 
 # Check for unique stations
@@ -110,6 +115,8 @@ Let’s see what the buoy data looks like for our time period.
 
 ``` r
 plot(buoy.df$time,buoy.df$temp,type='n', xlab='Date', ylab='SST (ºC)',main='SST from the first 10 stations')
+
+
 for (i in 1:10){
   I=which(buoy.df$station==unique.sta[i])
   lines(buoy.df$time[I],buoy.df$temp[I])
@@ -170,7 +177,7 @@ dataInfo
     ##  Base URL: https://coastwatch.pfeg.noaa.gov/erddap 
     ##  Dataset Type: griddap 
     ##  Dimensions (range):  
-    ##      time: (2019-07-22T12:00:00Z, 2023-09-13T12:00:00Z) 
+    ##      time: (2019-07-22T12:00:00Z, 2024-03-20T12:00:00Z) 
     ##      latitude: (-89.975, 89.975) 
     ##      longitude: (-179.975, 179.975) 
     ##  Variables:  
@@ -196,12 +203,22 @@ parameter <- 'analysed_sst'
 xcoord <- buoy.df.day$lon
 ycoord <- buoy.df.day$lat
 tcoord <- buoy.df.day$date
+```
 
+``` r
+# Set the variable name of interest from the satellite data
+parameter <- 'analysed_sst'
+
+# Set x,y,t,z coordinates based on buoy data
+xcoord <- buoy.df.day$lon
+ycoord <- buoy.df.day$lat
+tcoord <- buoy.df.day$date
 
 # Extract satellite data 
 extract <- rxtracto(dataInfo, parameter=parameter, 
                     tcoord=tcoord,
-                    xcoord=xcoord,ycoord=ycoord,
+                    xcoord=xcoord,
+                    ycoord=ycoord,
                     xlen=.01,ylen=.01)
                      
 buoy.df.day$sst<-extract$`mean analysed_sst`
