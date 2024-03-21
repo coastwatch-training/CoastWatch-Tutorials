@@ -1,6 +1,6 @@
 # Mask shallow pixels for satellite ocean color datasets
 
-> Updated November 2023 <br/>
+> Updated March 2023 <br/>
 
 Remotely sensed ocean color algorithms are calibrated for optically-deep
 waters, where the signal received by the satellite sensor originates
@@ -83,21 +83,29 @@ server via URL. The data request URL includes the dataset ID of interest
 and other query conditions if subset of the data product is of interest.
 
 To learn more about how to set up ERDDAP URL data requests, please go to
-the <a href="" target="_blank">ERDDAP module page</a>.
+the
+<a href="https://github.com/coastwatch-training/CoastWatch-Tutorials/tree/main/ERDDAP-basics" target="_blank">ERDDAP
+module page</a>.
+
+We will utilize the ’‘’rerddap’’’ R package to engage with the ERDDAP
+data server. The ’‘’rerddap’’’ package, created by Roy Mendelssohn
+(SWFSC) and Scott Chamberlain, is designed to simplify the process of
+importing data into R.
 
     # Bounding box for Oahu:
     lon_range = c(-158.39+360, -157.55+360)
     lat_range = c(21.14, 21.8)
 
-    # Access bathymetry and chl-a data from OceanWatch ERDDAP server
+    # Set ERDDAP URL
     ERDDAP_Node = "https://oceanwatch.pifsc.noaa.gov/erddap/"
 
+    # Download bathymetry data with its unique ID 
     ETOPO_id = 'ETOPO_2022_v1_15s'
     ETOPO_info=info(datasetid = ETOPO_id,url = ERDDAP_Node)
     bathy =  griddap(url = ERDDAP_Node, ETOPO_id, 
                      latitude = lat_range, longitude = lon_range)
 
-    # Download ocean color to local as a netCDF file
+    # Download ocean color data with its unique ID
     CCI_id = 'esa-cci-chla-monthly-v6-0'
     CCI_info=info(datasetid = CCI_id,url = ERDDAP_Node)
     var=CCI_info$variable$variable_name
@@ -112,6 +120,7 @@ the <a href="" target="_blank">ERDDAP module page</a>.
 We convert bathymetry and chlorophyll-a data to rasters for
 visulization.
 
+    # Convert the data into a raster layer
     r_bathy=raster(bathy$summary$filename)
 
     plot(r_bathy,main="ETOPO Bathymetry (m)")
@@ -119,6 +128,7 @@ visulization.
 
 ![](images/unnamed-chunk-5-1.png)
 
+    # Convert the data into a raster layer
     r_chl=raster(chl$summary$filename,varname=var[1]) 
 
     plot(log(r_chl),main="ESA CCI Chl-a (log scale)",col=cmocean('algae')(50))
@@ -141,7 +151,7 @@ within each ocean color pixel is in shallow water (&lt;30m depth).
     percent_shallow_pixels=function(depths,threshold=-30, na.rm=F){ 
       return(length(which(depths>threshold))/length(depths)) 
     } 
-
+      
     # Build a raster of the chl-a grid, using the function to generate the shallow water area percentage to consider a pixel necessary to mask
     per_shallow =  rasterize(x = df_bathy,y=r_chl,fun=percent_shallow_pixels)[[2]]
     plot(per_shallow,main="% Shallow water", col=cmocean('amp')(50))
@@ -219,5 +229,8 @@ within each ocean color pixel is in shallow water (&lt;30m depth).
 
 ## Acknowledgements
 
-Special thanks to Kisei Tanaka from NOAA's Pacific Islands Fisheries Science Center (PIFSC) for his contributions to this tutorial, which is adapted from the scripts he developed. Additionally, portions of this tutorial have been revised based on a previous version created by Melanie Abecassis and Thomas Oliver.
-
+Special thanks to Kisei Tanaka from NOAA’s Pacific Islands Fisheries
+Science Center (PIFSC) for his contributions to this tutorial, which is
+adapted from the scripts he developed. Additionally, portions of this
+tutorial have been revised based on a previous version created by
+Melanie Abecassis and Thomas Oliver.
