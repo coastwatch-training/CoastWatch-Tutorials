@@ -107,7 +107,8 @@ buoy.df <-data.frame(station=buoy$station,
 unique.sta <- unique(buoy$sta)
 n.sta <- length(unique.sta)
 n.sta
- 
+summary(buoy.df)
+
 ```
 
 
@@ -117,7 +118,7 @@ n.sta
 
 ```{r buoy_plot}
 
-plot(buoy.df$time,buoy.df$temp,type='n', xlab='Date', ylab='SST (ºC)',main='SST from the first 10 stations')
+plot(buoy.df$time, buoy.df$temp, type='n', xlab='Date', ylab='SST (ºC)',main='SST from the first 10 stations')
 
 
 for (i in 1:10){
@@ -171,15 +172,7 @@ We will extract satellite data for each buoy station.
 1. get coordinates of each buoy station
 2. use the rxtracto function and the buoy coordinates to download satellite data closest to each station
 
-```{r}
-# Set the variable name of interest from the satellite data
-parameter <- 'analysed_sst'
 
-# Set x,y,t,z coordinates based on buoy data
-xcoord <- buoy.df.day$lon
-ycoord <- buoy.df.day$lat
-tcoord <- buoy.df.day$date
-```
 
 ```{r matchups}
 
@@ -190,6 +183,7 @@ parameter <- 'analysed_sst'
 xcoord <- buoy.df.day$lon
 ycoord <- buoy.df.day$lat
 tcoord <- buoy.df.day$date
+
 
 # Extract satellite data 
 extract <- rxtracto(dataInfo, parameter=parameter, 
