@@ -98,7 +98,7 @@ buoy <- rerddap::tabledap( url = ERDDAP_Node, NDBC_id,
 buoy.df <-data.frame(station=buoy$station,
                      longitude=as.numeric(buoy$longitude),
                      latitude=as.numeric(buoy$latitude),
-                     time = buoy$time,
+                     time=strptime(buoy$time, "%Y-%m-%dT%H:%M:%S"),
                      temp=as.numeric(buoy$wtmp))
 
 # Check for unique stations
@@ -109,12 +109,31 @@ n.sta
 
     ## [1] 24
 
+``` r
+summary(buoy.df)
+```
+
+    ##    station            longitude         latitude    
+    ##  Length:28725       Min.   :-124.0   Min.   :35.18  
+    ##  Class :character   1st Qu.:-123.1   1st Qu.:36.79  
+    ##  Mode  :character   Median :-122.2   Median :37.81  
+    ##                     Mean   :-122.3   Mean   :37.40  
+    ##                     3rd Qu.:-121.9   3rd Qu.:38.06  
+    ##                     Max.   :-120.8   Max.   :39.20  
+    ##       time                             temp      
+    ##  Min.   :2023-08-01 00:00:00.00   Min.   : 9.10  
+    ##  1st Qu.:2023-08-03 03:48:00.00   1st Qu.:11.90  
+    ##  Median :2023-08-05 09:18:00.00   Median :13.90  
+    ##  Mean   :2023-08-05 10:14:05.06   Mean   :14.95  
+    ##  3rd Qu.:2023-08-07 16:36:00.00   3rd Qu.:16.60  
+    ##  Max.   :2023-08-10 00:00:00.00   Max.   :23.90
+
 **Plot the buoy data for the first 10 stations in buoy.df**
 
 Let’s see what the buoy data looks like for our time period.
 
 ``` r
-plot(buoy.df$time,buoy.df$temp,type='n', xlab='Date', ylab='SST (ºC)',main='SST from the first 10 stations')
+plot(buoy.df$time, buoy.df$temp, type='n', xlab='Date', ylab='SST (ºC)',main='SST from the first 10 stations')
 
 
 for (i in 1:10){
@@ -203,16 +222,7 @@ parameter <- 'analysed_sst'
 xcoord <- buoy.df.day$lon
 ycoord <- buoy.df.day$lat
 tcoord <- buoy.df.day$date
-```
 
-``` r
-# Set the variable name of interest from the satellite data
-parameter <- 'analysed_sst'
-
-# Set x,y,t,z coordinates based on buoy data
-xcoord <- buoy.df.day$lon
-ycoord <- buoy.df.day$lat
-tcoord <- buoy.df.day$date
 
 # Extract satellite data 
 extract <- rxtracto(dataInfo, parameter=parameter, 

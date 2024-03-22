@@ -100,7 +100,7 @@ buoy <- rerddap::tabledap( url = ERDDAP_Node, NDBC_id,
 buoy.df <-data.frame(station=buoy$station,
                      longitude=as.numeric(buoy$longitude),
                      latitude=as.numeric(buoy$latitude),
-                     time = buoy$time,
+                     time=strptime(buoy$time, "%Y-%m-%dT%H:%M:%S"),
                      temp=as.numeric(buoy$wtmp))
 
 # Check for unique stations
