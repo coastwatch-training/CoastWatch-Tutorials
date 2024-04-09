@@ -18,17 +18,21 @@ Below each of these errors is explained in more detail, showing examples of the 
 ### 1.  Dataset not found
 The rerddapXtracto package uses the info function in the rerddap package to obtain the basic metadata about a dataset. The default erddap used by rerddap::info is  https://upwell.pfeg.noaa.gov/erddap/.  If the dataset ID passed to rerddap::info is not on this erddap then an error will be given as in the example below. 
 
-> dataInfo <- rerddap::info('hawaii_soest_5687_3d16_a6d4')
+``` dataInfo <- rerddap::info('hawaii_soest_5687_3d16_a6d4')
 Error: 'Error {
     code=404;
     message="Not Found: Currently unknown datasetID=hawaii_soest_5687_3d16_a6d4";
 }
-' does not exist in current working directory ('C:/Users/CaraWilson/Documents').
+```
+
+ does not exist in current working directory ('C:/Users/CaraWilson/Documents').
 
 To fix this error identify the url of the erddap with this dataset in the call.  
 
+```
 dataInfo <- rerddap::info('hawaii_soest_5687_3d16_a6d4',
                       url='https://oceanwatch.pifsc.noaa.gov/erddap/')
+```
 
 This error can also arise if you have a typo in the datasetID, so make sure that is not the case. Occasionally ERDDAP servers are restarted and when this happens it can take a few hours for the datasets to all get reloaded.  When this is happening you will also encounter this error.  If you are sure you are pointing to the correct ERDDAP, and there are no typos in the call, wait a few hours and see if the error gets resolved.  
 
@@ -117,7 +121,7 @@ chlMODIS <- rxtracto_3D(dataInfo,parameter=parameter,
 
 To fix this error remove the “zcoord=c(0,0)” from the call. 
 
-4.  Coordinates out of bounds 
+### 4.  Coordinates out of bounds 
 Asking for dates outside of the timespan of a dataset is the most common example of the ‘coordinates out of bounds’ error, but it can also happen for latitude and longitude if you are not using a global dataset. The example below requests satellite data for times that are not within the temporal span of the satellite dataset. The error message says there is a problem with the bounds of the time dimension, and lists the bounds requested, and the bounds of the dataset. Data was requested for Feb 2015 but the dataset only starts in March 2015.  
 
 ```
@@ -173,7 +177,7 @@ Then run the extraction with the dataset without any NA values.
 
 Another common error that can occur when running rxtracto is requesting data for time values that are not within the dataset bounds (see error example #4). In this case you would want to subset your data to remove any points not within the temporal span of the dataset being used.  
 
-### 6. error in the url call, perhaps a time out
+### 6. Error in the url call, perhaps a time out
 This example is a little harder to troubleshoot.  Here’s an example trying to request a 3D block of MUR SST data.
 
 ```
