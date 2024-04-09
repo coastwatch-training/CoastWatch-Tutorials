@@ -283,5 +283,5 @@ This error is actually quite rare.  Some datasets have an altitude dimension tha
 [4] "Dataset coordinate names: longitude"
 ```
 
-The error message lists the coordinate names of the datasets and the names of the requested coordinate and there is a mismatch for one of them.  The dataset has a coordinate of 'zlev' but the coordinate name requested was ‘altitude’, which is the default name for this dimension. Inserting "zName = 'zlev'" in the rxtracto_3D call will eliminate this error.
+The error message lists the coordinate names of the datasets and the names of the requested coordinate and there is a mismatch for one of them.  The dataset has a coordinate of 'zlev' but the coordinate name requested was ‘altitude’, which is the default name for this dimension. Inserting ```"zName = 'zlev'"``` in the rxtracto_3D call will eliminate this error.
 
