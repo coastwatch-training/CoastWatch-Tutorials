@@ -271,7 +271,7 @@ chl_track <- rxtracto(dataInfo,
 
 ```{r check_extracto}
 # Check all variables extracted using rxtracto
-chl_track
+str(chl_track)
 ```
 
 **rxtracto** computes statistics using all the pixels found in the search radius around each track point.
@@ -293,7 +293,8 @@ plotTrack(chl_track, xcoords, ycoords, tcoords, size=3, plotColor = 'viridis')
 
 One of the nice features of the "plotTrack" function is that it is very easy to make an animation of the track data.
 This will take a minute to run.
-It creates an animated gif that will display in the Rstudio viewer window once the encoding to gif is done.
+It creates an animated gif that will display in the Rstudio viewer window once the encoding to gif is done. 
+Note: this works with but doesn't require the latest versions of R Studio or rerddapXtracto package (e.g., it works with R Studio Version 2023.12.1+402 and rerddapXtracto version 1.1.5).
 
 ```{r animatetrack, message=FALSE}
 
