@@ -1,0 +1,44 @@
+---
+title: "subset-polar-data-with-shapefile"
+author: "Sunny Hospital"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### The tutorial demonstrates the following techniques
+* Download sea ice satellite data from the PolarWatch ERDDAP data server
+* Import geographical features of Lake Iliamna from a shapefile
+* Transform data from one projection to another
+* Subset the satellite data for Lake Iliamna
+* Visualize data in different projection
+
+```{r read_shapefile}
+# Set directory path for shapefile
+dir_path <- '../resources/'
+
+# Import shape files (Longhurst coordinates)
+shapes <- read_sf(dsn = dir_path, layer = "Longhurst_world_v4_2010")
+
+# Example List of all the province names
+shapes$ProvCode
+
+# Get boundary coordinates for Gulf Stream region (GFST)
+GFST <- shapes[shapes$ProvCode == "GFST",]
+
+xcoord <- st_coordinates(GFST)[,1]
+ycoord <- st_coordinates(GFST)[,2]
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

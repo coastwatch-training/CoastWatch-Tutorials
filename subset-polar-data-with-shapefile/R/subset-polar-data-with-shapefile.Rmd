@@ -1,0 +1,70 @@
+---
+title: "subset-polar-data-with-shapefile"
+author: "Sunny Hospital"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### The tutorial demonstrates the following techniques
+* Download sea ice satellite data from the PolarWatch ERDDAP data server
+* Import geographical features of Lake Iliamna from a shapefile
+* Transform data from one projection to another
+* Subset the satellite data for Lake Iliamna
+* Visualize data in different projection
+
+
+```{r}
+library(terra)
+library(sf)
+library(ggplot2)
+library(rerddap)
+
+```
+
+```{r read_shapefile}
+# Set directory path for shapefile
+dir_path <- '../resources/World_Lakes_shapes/World_Lakes.shp'
+
+
+# Load the shape file
+shapes <- st_read(dsn = dir_path)
+
+# View
+print(shapes)
+# Example List of all the province names
+
+
+# Get boundary coordinates for Lake Iliamna
+lake <- shapes[shapes$Lake_name == "Iliamna", ]
+head(lake)
+ggplot(data = shapes) +
+  geom_sf() +
+  theme_minimal() +
+  labs(title = "Map of Lake Iliamna", 
+       caption = "Source: shapefile")
+nrow(shapes)
+
+
+```
+
+
+
+```{r erddap_data}
+
+pw_url = "https://polarwatch.noaa.gov/erddap/"
+dataset_id = "usnic_ims_4km"
+var_name = "IMS_Surface_Values"
+dat_info <- info(datasetid = dataset_id, url = pw_url)
+dat
+
+dat <- griddap(dat_info,  time = c('2019-11-01','2019-11-03'), fields = var_name)
+
+```
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
