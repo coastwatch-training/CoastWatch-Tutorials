@@ -1,7 +1,7 @@
 ---
 title: Mask shallow pixels for satellite ocean color datasets
 author: NOAA CoastWatch
-date: March 2023
+date: March 2024
 output: 
   md_document
 ---
@@ -62,15 +62,9 @@ library(rerddap)
 library(raster) 
 library(sp) 
 library(cmocean)
-library(here)
 library(ncdf4)
 ```
 
-## Set work directory
-```{r}
-# This is where the data are and where the plots will go
-Dir <- here()
-```
 
 ## Access and Download satellite data
 
@@ -207,7 +201,7 @@ z_unit = nc$dim$time$units
 nc_close(nc)
 # Set a file name and output path for the masked data
 masked_fln = 'esa_cci_monthly_chl-a_masked.nc'
-mask_path = paste0(Dir,  "/output/")
+mask_path = paste0("./output/")
 if (!dir.exists(mask_path)) {
   dir.create(mask_path)
 }
