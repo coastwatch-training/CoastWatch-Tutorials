@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+.vscode/
 **/*.nc
 RDataTmp
 **/.DS_Store
