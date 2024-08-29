@@ -7,4 +7,5 @@
 .vscode/
 **/*.nc
 **/.DS_Store
+**/*.Rproj
 
