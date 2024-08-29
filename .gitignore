@@ -1,9 +1,10 @@
+.DS_Store
+.RDataTmp
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 .vscode/
 **/*.nc
-RDataTmp
 **/.DS_Store
 
