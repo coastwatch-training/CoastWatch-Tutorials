@@ -1,0 +1,142 @@
+---
+title: "subset-polar-data-with-shapefile"
+author: "Sunny Hospital"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# https://rspatial.org/spatial/index.html
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# Function to check if pkgs are installed, install missing pkgs, and load
+
+pkgTest <- function(x)
+{
+  if (!require(x,character.only = TRUE))
+  {
+    install.packages(x,dep=TRUE,repos='http://cran.us.r-project.org')
+    if(!require(x,character.only = TRUE)) stop(x, " :Package not found")
+  }
+}
+
+list.of.packages <- c("sp", "ggplot2" , "rerddap", "RColorBrewer", "scales", "reshape2")
+
+# create list of installed packages
+pkges = installed.packages()[,"Package"]
+for (pk in list.of.packages) {
+  pkgTest(pk)
+}
+```
+
+
+### The exercise demonstrates the following techniques:
+- Loading twice daily sea ice thickness data of the year 2023 from ERDDAP using `xarray` and compute monthly average
+- Loading multi-year monthly average sea ice thickness data from netCDF file
+- Calculating the trend of monthly sea ice thickness means for the climatological reference period of 2006 to 2020 (15 years)
+- Calculating historical average of the reference period (2006-2020)
+- Calculating anomalies (departures from the historical mean)
+- Visualizing the data 
+
+
+```{r}
+library(terra)
+library(sf)
+library(ggplot2)
+library(rerddap)
+```
+
+
+## Load IMS Sea ice data 
+
+```{r erddap_data}
+
+pw_url = "https://polarwatch.noaa.gov/erddap/"
+dataset_id = "usnic_ims_4km"
+var_name = "IMS_Surface_Values"
+dat_info <- info(datasetid = dataset_id, url = pw_url)
+dat_info
+```
+
+```{r}
+dat <- griddap(dat_info,  time = c('2019-11-01','2019-11-01'), fields = var_name)
+ims <- dat$data
+
+```
+
+
+# Visualize the IMS satellite data
+
+```{r, eval=FALSE }
+# Visualize the data (warning: this takes awhile to )
+ggplot(data = ims, aes(x = x, y = y, fill=IMS_Surface_Values)) +
+         geom_tile() + 
+         coord_fixed(ratio = 1) + 
+         scale_y_continuous() + 
+         scale_x_continuous() +
+         scale_fill_gradientn(colours=rev(brewer.pal(n = 3, name = "Blues")),na.value="tan") +
+         ggtitle("IMS Data")
+
+```
+
+## Convert IMS data to raster S4 object
+
+```{r}
+
+# convert ims to raster S3 obj
+ims_ras <- terra::rast(ims)
+
+# plot the raster data
+plot(ims_ras)
+
+# get CRS of the ims data
+data_crs <- crs(ims_ras)
+```
+# Load the lake shapefile
+
+```{r read_shapefile}
+# Set directory path for shapefile
+dir_path <- '../resources/Iliamna/Iliamna.shp'
+
+
+# Load the shape file
+shapes <- st_read(dsn = dir_path)
+
+# View
+print(shapes)
+
+# Get boundary coordinates for Lake Iliamna
+lake_shp <- shapes[shapes$Lake_name == "Iliamna", ]
+ggplot(data = lake_shp) +
+  geom_sf() +
+  theme_minimal() +
+  labs(title = "Lake Iliamna", 
+       caption = "Source: shapefile")
+
+```
+## Convert the lake shape to raster S4 object
+
+```{r}
+
+shapes_polar <- st_transform(lake_shp, data_crs)
+lake_ras <- terra::vect(shapes_polar)
+plot(lake_ras)
+```
+
+
+## Crop the IMS data
+
+```{r}
+
+# crop to the bounding box of the lake
+cropped_lake <- crop(ims_ras, lake_ras)
+
+# mask data with the lake shape
+masked_lake <- mask(cropped_lake, lake_ras)
+plot(masked_lake)
+
+```
