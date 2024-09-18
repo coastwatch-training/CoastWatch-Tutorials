@@ -34,7 +34,7 @@ Download and examine a polar stereographic projected dataset, plot the data on a
   Extract satellite data along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track.
 * [transform-to-another-map-projection](transform-to-another-map-projection)
   	Access satellite data with polar stereographic coordinates and transform it into a different coordinate system using EPSG code.
-* [calculate-departures-and-trends-from-timeseries-polar-data](calculate-departures-and-trends-from-timeseries-polar-data)
+* [calculate-departures-and-trends-from-polar-data](calculate-departures-and-trends-from-timeseries-polar-data)
 
 * [calculate-climatology-with-polar-data](calculate-departures-and-trends-from-timeseries-polar-data)
 
