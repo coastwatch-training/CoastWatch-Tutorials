@@ -35,11 +35,9 @@ Download and examine a polar stereographic projected dataset, plot the data on a
 * [transform-to-another-map-projection](transform-to-another-map-projection)
   	Access satellite data with polar stereographic coordinates and transform it into a different coordinate system using EPSG code.
 * [calculate-departures-and-trends-from-polar-data](calculate-departures-and-trends-from-timeseries-polar-data)
-
-* [calculate-climatology-with-polar-data](calculate-departures-and-trends-from-timeseries-polar-data)
-
+  Compuate historical means and trends and anomalies of sea ice thickness from the current state
 * [subset-polar-data-with-shapefile]([subset-polar-data-with-shapefile)
-
+  Access satellite data with polar stereographic coordinates and clip the data with shape geometries in latitudes and longitudes
 * [matchup-polar-data-to-animal-track-locations](matchup-seaice-data-to-animal-track-locations)
 
 * [matchup-polar-data-to-buoy-data](matchup-polar-data-to-buoy-data)
