@@ -5,9 +5,9 @@ history \| Modified July 2024
 ## Objective
 
 This tutorial will demonstrate how to extract satellite data around a
-set of points defined by longitude, latitude, and time coordinates, like
-those produced by an animal telemetry tag, and ship track, or a glider
-track.
+set of points defined by longitude, latitude, and time coordinates from
+ab animal telemetry tag that was acquired from the Animal Telemetry
+Network (<https://ioos.noaa.gov/project/atn/>).
 
 ## The tutorial demonstrates the following techniques
 
@@ -17,7 +17,7 @@ track.
   data server along a track
 - Plotting the satellite data onto a map
 
-## Datasets used
+## Datasets used in this exercise
 
 **Chlorophyll a concentration, the European Space Agency’s Ocean Colour
 Climate Change Initiative (OC-CCI) Monthly dataset v6.0**
@@ -60,7 +60,7 @@ pkgTest <- function(x)
 
 # Create list of required packages
 list.of.packages <- c("rerddap", "plotdap", "parsedate", "ggplot2", "rerddapXtracto",
-                       "date", "maps", "mapdata", "RColorBrewer","viridis")
+                       "date", "maps", "mapdata", "RColorBrewer","viridis", "stringr")
 
 # Create list of installed packages
 pkges = installed.packages()[,"Package"]
@@ -71,14 +71,76 @@ for (pk in list.of.packages) {
 }
 ```
 
+## Download animal track data from the ATN website
+
+- **The data you need for this exercise are already in the GitHub
+  repository**
+
+- **The following step are show you how to download the data yourself**
+
+### ATN Portal
+
+- Follow the link to the ATN website:
+  <https://portal.atn.ioos.us/?ls=O6vlufm7#map>  
+- On the right navigational panel, look for the “Palmyra Bluewater
+  Research (PBR) Megafauna Movement Ecology Project, 2022-2023” tab.
+- Within the tab, scroll to find the telemetry tag labeled “Yellowfin
+  tuna (233568)”.
+- Click the search icon (maginifying glass) label next to the label to
+  zoom into the area the area of the animal track.
+
+<figure>
+<img src="images_ATN/atn_map.png"
+alt="Image of the ATN portal webpage" />
+<figcaption aria-hidden="true">Image of the ATN portal
+webpage</figcaption>
+</figure>
+
+### Detail page for the Yellowfin tuna (233568)
+
+- Next click the tag icon to the right of the search icon.
+- This page shows you details about the animal and the track.
+
+<figure>
+<img src="images_ATN/atn_detail.png"
+alt="Image of the detail page for the Yellowfin Tuna #233568" />
+<figcaption aria-hidden="true">Image of the detail page for the
+Yellowfin Tuna #233568</figcaption>
+</figure>
+
+### Data Download Page
+
+- Press the “Project Data” tab near the top of the webpage to bring up
+  the data file list.
+- Search for the animal id number (233568).
+- Click on the link “THUALB_2022_04-PTT_233568.zip (8.6 MB)” to download
+  the data.
+
+<figure>
+<img src="images_ATN/atn_data.png" alt="Data download page" />
+<figcaption aria-hidden="true">Data download page</figcaption>
+</figure>
+
+### The Downloaded Data File
+
+- The download will be a zip file. You will need to unzip it.
+- The unzipped file folder contains many ancillary data files, but the
+  one you are looking for is the CSV file
+  (THUALB_2022_04-233568-4-GPE3.csv).
+- You don’t have to move this file into the data folder for this
+  exercise. It is already there.  
+- But if you download the file for a different animal track you would
+  need to put the CSV file into the folder.
+
 ## Import the track data into a data frame
 
 ``` r
 # Import csv file into a data frame
 file = "../data/THUALB_2022_04-233568-5-GPE3.csv"
-tuna_df <- read.csv(file, skip = 5)
+pre_tuna_df <- read.csv(file, skip = 5)
+
 # Show 3 rows from the data frame
-head(tuna_df,3)
+head(pre_tuna_df, 3)
 ```
 
     ##         DeployID    Ptt                 Date Most.Likely.Latitude
@@ -99,10 +161,10 @@ head(tuna_df,3)
     ## 3
 
 ``` r
-# Convert lontitudes to 0~360 (Re-center map to the dateline)
-tuna_df['Most.Likely.Longitude'] <- tuna_df['Most.Likely.Longitude']+360
+# Convert longitudes to 0~360 (Re-center map to the dateline)
+pre_tuna_df['Most.Likely.Longitude'] <- pre_tuna_df['Most.Likely.Longitude'] + 360
 # Show converted data frame
-head(tuna_df,3)
+head(pre_tuna_df, 3)
 ```
 
     ##         DeployID    Ptt                 Date Most.Likely.Latitude
@@ -121,6 +183,81 @@ head(tuna_df,3)
     ## 1                                          
     ## 2 01-Jun-2022 16:33:04 02-Jun-2022 04:59:36
     ## 3
+
+## Convert date string to a date object
+
+``` r
+pre_tuna_df$Date <- as.Date(pre_tuna_df$Date, format = "%d-%b-%Y")
+head(pre_tuna_df)
+```
+
+    ##         DeployID    Ptt       Date Most.Likely.Latitude Most.Likely.Longitude
+    ## 1 THUALB_2022_04 233568 2022-05-31                5.875               197.875
+    ## 2 THUALB_2022_04 233568 2022-06-01                5.875               197.900
+    ## 3 THUALB_2022_04 233568 2022-06-01                5.850               198.025
+    ## 4 THUALB_2022_04 233568 2022-06-01                5.900               198.025
+    ## 5 THUALB_2022_04 233568 2022-06-01                5.900               198.025
+    ## 6 THUALB_2022_04 233568 2022-06-01                5.900               198.025
+    ##   Observation.Type Observed.SST Satellite.SST Observed.Depth Bathymetry.Depth
+    ## 1             User           NA            NA             NA               NA
+    ## 2             None           NA            NA             NA               NA
+    ## 3     Light - Dusk           NA            NA            144             2908
+    ## 4             None           NA            NA             NA               NA
+    ## 5              SST         28.2      28.32458              1             2908
+    ## 6     Light - Dawn           NA            NA            112             2908
+    ##   Observation.LL..MSS. Observation.Score              Sunrise
+    ## 1                   NA          68.60585                     
+    ## 2                   NA                NA 01-Jun-2022 16:33:04
+    ## 3                   NA          43.16747                     
+    ## 4                   NA                NA                     
+    ## 5                   NA          76.62995                     
+    ## 6                   NA          54.92253                     
+    ##                 Sunset
+    ## 1                     
+    ## 2 02-Jun-2022 04:59:36
+    ## 3                     
+    ## 4                     
+    ## 5                     
+    ## 6
+
+## Bin multiple observations from each day into daily mean values
+
+The track data has multiple longitude/latitude/time points for each
+date. That temporal resolution is much higher than the daily and month
+satellite datasets that are available. So, let’s reduce the multiple
+daily values for the animal track data to a single value for each day.
+The code below creates a new dataframe that bins data for each date and
+calculates the mean for selected columns.
+
+``` r
+library(dplyr)
+tuna_df <- pre_tuna_df %>% group_by(Date) %>% summarize(Most.Likely.Latitude = mean(Most.Likely.Latitude),
+                                         Most.Likely.Longitude = mean(Most.Likely.Longitude),
+                                         Satellite.SST = mean(Satellite.SST, na.rm=TRUE),
+                                         Observed.SST = mean(Observed.SST, na.rm=TRUE),
+                                         Observed.Depth = mean(Observed.Depth, na.rm=TRUE),
+                                         Bathymetry.Depth = mean(Bathymetry.Depth, na.rm=TRUE),
+                                         )
+
+tuna_df
+```
+
+    ## # A tibble: 177 × 7
+    ##    Date       Most.Likely.Latitude Most.Likely.Longitude Satellite.SST
+    ##    <date>                    <dbl>                 <dbl>         <dbl>
+    ##  1 2022-05-31                 5.88                  198.         NaN  
+    ##  2 2022-06-01                 5.88                  198           28.3
+    ##  3 2022-06-02                 5.92                  198.          28.3
+    ##  4 2022-06-03                 5.92                  198.          28.3
+    ##  5 2022-06-04                 5.98                  198.          28.3
+    ##  6 2022-06-05                 6.11                  198.          28.4
+    ##  7 2022-06-06                 6.28                  198.          28.3
+    ##  8 2022-06-07                 6.45                  197.          28.3
+    ##  9 2022-06-08                 6.51                  197.          28.2
+    ## 10 2022-06-09                 6.78                  197.          28.2
+    ## # ℹ 167 more rows
+    ## # ℹ 3 more variables: Observed.SST <dbl>, Observed.Depth <dbl>,
+    ## #   Bathymetry.Depth <dbl>
 
 ## Plot the track on a map
 
@@ -147,7 +284,9 @@ server along a track of xyt points are demonstrated:
 
 1.  Using the **rerddapXtracto** package which was written specifically
     for this task
-2.  By manually constructing a URL with the data data request
+2.  For those who want to know what goes on “under the hood”, we will
+    show how to manually construct ERDDAP data-request URLs to download
+    the data.
 
 ### Extracting XYT data using the **rerddapXtracto** package
 
@@ -155,6 +294,13 @@ We will use the \``rxtracto` function of the **rerddapXtracto** package,
 which was written to simplify data extraction from ERDDAP servers.
 
 **Let’s use data from the monthly product of the OC-CCI datasets.**  
+
+Ideally, we would work with daily data since we have one location per
+day. But chlorophyll data are severely affected by clouds (i.e. lots of
+missing data), so you might need to use weekly or even monthly data to
+get sufficient non-missing data. We will start with the monthly chl-a
+data since it contains fewer data gaps.
+
 The ERDDAP URL to the monthly product is below:  
 <https://oceanwatch.pifsc.noaa.gov/erddap/griddap/esa-cci-chla-monthly-v6-0>
 
@@ -269,12 +415,12 @@ xlen <- 0.2
 ylen <- 0.2
 
 # Create date column using year, month and day in a format ERDDAP will understand (eg. 2008-12-15)
-tuna_df$date <-as.Date(tuna_df$Date, format = "%d-%b-%Y")
+#tuna_df$date <-as.Date(tuna_df$Date, format = "%d-%b-%Y")
 
 # Get variables x, y, t coordinates from tuna track data
 xcoords <- tuna_df$Most.Likely.Longitude
 ycoords <- tuna_df$Most.Likely.Latitude
-tcoords <- tuna_df$date
+tcoords <- tuna_df$Date
 
 # Extract satellite data using x, y, t coordinates from tuna track data
 chl_track <- rxtracto(dataInfo, 
@@ -291,20 +437,20 @@ str(chl_track)
 ```
 
     ## List of 13
-    ##  $ mean chlor_a     : num [1:837] 0.35 0.373 0.327 0.351 0.351 ...
-    ##  $ stdev chlor_a    : num [1:837] 0.373 0.406 0.391 0.426 0.426 ...
-    ##  $ n                : int [1:837] 36 30 30 25 25 25 36 36 36 36 ...
-    ##  $ satellite date   : chr [1:837] "2022-06-01T00:00:00Z" "2022-06-01T00:00:00Z" "2022-06-01T00:00:00Z" "2022-06-01T00:00:00Z" ...
-    ##  $ requested lon min: num [1:837] 198 198 198 198 198 ...
-    ##  $ requested lon max: num [1:837] 198 198 198 198 198 ...
-    ##  $ requested lat min: num [1:837] 5.78 5.78 5.75 5.8 5.8 ...
-    ##  $ requested lat max: num [1:837] 5.97 5.97 5.95 6 6 ...
-    ##  $ requested z min  : logi [1:837] NA NA NA NA NA NA ...
-    ##  $ requested z max  : logi [1:837] NA NA NA NA NA NA ...
-    ##  $ requested date   : chr [1:837] "2022-05-31" "2022-06-01" "2022-06-01" "2022-06-01" ...
-    ##  $ median chlor_a   : num [1:837] 0.235 0.236 0.222 0.226 0.226 ...
-    ##  $ mad chlor_a      : num [1:837] 0.01702 0.01504 0.00988 0.01341 0.01341 ...
-    ##  - attr(*, "row.names")= chr [1:837] "1" "2" "3" "4" ...
+    ##  $ mean chlor_a     : num [1:177] 0.35 0.34 0.349 0.367 0.276 ...
+    ##  $ stdev chlor_a    : num [1:177] 0.373 0.372 0.373 0.407 0.154 ...
+    ##  $ n                : int [1:177] 36 36 36 30 25 36 30 36 36 30 ...
+    ##  $ satellite date   : chr [1:177] "2022-06-01T00:00:00Z" "2022-06-01T00:00:00Z" "2022-06-01T00:00:00Z" "2022-06-01T00:00:00Z" ...
+    ##  $ requested lon min: num [1:177] 198 198 198 198 198 ...
+    ##  $ requested lon max: num [1:177] 198 198 198 198 198 ...
+    ##  $ requested lat min: num [1:177] 5.78 5.79 5.83 5.83 5.88 ...
+    ##  $ requested lat max: num [1:177] 5.97 5.98 6.02 6.02 6.08 ...
+    ##  $ requested z min  : logi [1:177] NA NA NA NA NA NA ...
+    ##  $ requested z max  : logi [1:177] NA NA NA NA NA NA ...
+    ##  $ requested date   : chr [1:177] "2022-05-31" "2022-06-01" "2022-06-02" "2022-06-03" ...
+    ##  $ median chlor_a   : num [1:177] 0.235 0.227 0.232 0.236 0.232 ...
+    ##  $ mad chlor_a      : num [1:177] 0.017 0.0148 0.0172 0.0151 0.0192 ...
+    ##  - attr(*, "row.names")= chr [1:177] "1" "2" "3" "4" ...
     ##  - attr(*, "class")= chr [1:2] "list" "rxtractoTrack"
     ##  - attr(*, "base_url")= chr "https://oceanwatch.pifsc.noaa.gov/erddap/"
     ##  - attr(*, "datasetid")= chr "esa-cci-chla-monthly-v6-0"
@@ -345,8 +491,12 @@ make180 <- function(lon) {
    return(lon)
 }
 
-plotTrack(chl_track, make180(xcoords), ycoords, tcoords, plotColor = 'viridis',
-                    animate = TRUE, cumulative = TRUE)
+plotTrack(chl_track,
+          make180(xcoords),
+          ycoords, tcoords,
+          plotColor = 'viridis',
+          animate = TRUE,
+          cumulative = TRUE)
 ```
 
     ## # A tibble: 177 × 7
@@ -368,10 +518,9 @@ plotTrack(chl_track, make180(xcoords), ycoords, tcoords, plotColor = 'viridis',
 
 ### Create a data frame with the tuna track and the output of rxtracto
 
-If we to do an customization of the plot, its better to plot the dat
-ausing ggplot. We will first create a data frame that contains
-longitudes and latitudes from the tuna and associated satellite chlor-a
-values.
+If we to do an customization of the plot, its better to plot the data
+using ggplot. We will first create a data frame that contains longitudes
+and latitudes from the tuna and associated satellite chlor-a values.
 
 ``` r
 # Create a data frame of coords from tuna and chlor_a values 
@@ -380,10 +529,18 @@ new_df <- as.data.frame(cbind(xcoords, ycoords,
                               chl_track$`requested lon max`, 
                               chl_track$`requested lat min`, 
                               chl_track$`requested lon max`,  
-                              chl_track$`mean chlor_a`))
+                              chl_track$`mean chlor_a`)
+                        )
 
 # Set variable names
-names(new_df) <- c("Lon", "Lat", "Matchup_Lon_Lower", "Matchup_Lon_Upper", "Matchup_Lat_Lower", "Matchup_Lat_Upper",  "Chlor_a")
+names(new_df) <- c("Lon", 
+                   "Lat", 
+                   "Matchup_Lon_Lower",
+                   "Matchup_Lon_Upper",
+                   "Matchup_Lat_Lower",
+                   "Matchup_Lat_Upper", 
+                   "Chlor_a")
+
 write.csv(new_df, "tuna_matchup_df.csv")
 ```
 
@@ -399,7 +556,7 @@ ggplot(new_df) +
   geom_polygon(data = mapWorld, aes(x=long, y = lat, group = group)) + 
   coord_fixed(xlim = c(180,220),ylim = c(0,26)) +
   scale_color_viridis(discrete = FALSE) +
-  labs(x="Longitude (deg)", y="Latitude (deg)", title="Yellowfin Tuna Track with chlor-a values")+
+  labs(x="Longitude (deg)", y="Latitude (deg)", title="Yellowfin Tuna Track with chlor-a values") +
   theme(plot.title=element_text(hjust=0.5))
 ```
 
@@ -413,15 +570,13 @@ the data as .csv
 
 `data_url = "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/esa-cci-chla-monthly-v6-0.csv?chlor_a"`
 
-Ideally, we would work with daily data since we have one location per
-day. But chlorophyll data is severely affected by clouds (i.e. lots of
-missing data), so you might need to use weekly or even monthly data to
-get sufficient non-missing data. We will start with the monthly chl-a
-data since it contains fewer gaps.
+For a refresher of how to construct an ERDDAP data-request URL, please
+review the ERDDAP tutorial “04-Erddapurl.md” at the following link:
+<https://github.com/coastwatch-training/CoastWatch-Tutorials/blob/main/ERDDAP-basics/lessons/>
 
 ``` r
 # Set erddap address
-erddap <- "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/esa-cci-chla-monthly-v6-0.csv?chlor_a"
+erddap_base_url <- "https://oceanwatch.pifsc.noaa.gov/erddap/griddap/esa-cci-chla-monthly-v6-0.csv?chlor_a"
 
 # Get longitude and latitude from tuna track data
 lon <- tuna_df$Most.Likely.Longitude
@@ -436,16 +591,28 @@ tot <- rep(NA, 4)
 # Loop through each tuna track data
 for (i in 1:dim(tuna_df)[1]) {
 
-   # Create erddap URL by adding lat, lon, dates of each track point 
-   url <-  paste(erddap, "[(", dates2[i], "):1:(", dates2[i], ")][(", lat[i], "):1:(", lat[i], ")][(", lon[i], "):1:(", lon[i], ")]", sep = "")  
+  # follow the progress of the loop
+  cat("\014")
+  cat(" Loop ", i, " of ", dim(tuna_df)[1])
+  
+  # Create erddap URL by adding lat, lon, dates of each track point 
+   url <-  paste(erddap_base_url,
+                 "[(", dates2[i], "):1:(", dates2[i],
+                 ")][(", lat[i], "):1:(", lat[i],
+                 ")][(", lon[i], "):1:(", lon[i], ")]", sep = "")  
    
    # Request and load satelite data from ERDDAP
    new <- read.csv(url, skip=2, header = FALSE) 
    
    # Append the data
    tot <- rbind(tot, new)   
+   
 }
+```
 
+    ##  Loop  1  of  177 Loop  2  of  177 Loop  3  of  177 Loop  4  of  177 Loop  5  of  177 Loop  6  of  177 Loop  7  of  177 Loop  8  of  177 Loop  9  of  177 Loop  10  of  177 Loop  11  of  177 Loop  12  of  177 Loop  13  of  177 Loop  14  of  177 Loop  15  of  177 Loop  16  of  177 Loop  17  of  177 Loop  18  of  177 Loop  19  of  177 Loop  20  of  177 Loop  21  of  177 Loop  22  of  177 Loop  23  of  177 Loop  24  of  177 Loop  25  of  177 Loop  26  of  177 Loop  27  of  177 Loop  28  of  177 Loop  29  of  177 Loop  30  of  177 Loop  31  of  177 Loop  32  of  177 Loop  33  of  177 Loop  34  of  177 Loop  35  of  177 Loop  36  of  177 Loop  37  of  177 Loop  38  of  177 Loop  39  of  177 Loop  40  of  177 Loop  41  of  177 Loop  42  of  177 Loop  43  of  177 Loop  44  of  177 Loop  45  of  177 Loop  46  of  177 Loop  47  of  177 Loop  48  of  177 Loop  49  of  177 Loop  50  of  177 Loop  51  of  177 Loop  52  of  177 Loop  53  of  177 Loop  54  of  177 Loop  55  of  177 Loop  56  of  177 Loop  57  of  177 Loop  58  of  177 Loop  59  of  177 Loop  60  of  177 Loop  61  of  177 Loop  62  of  177 Loop  63  of  177 Loop  64  of  177 Loop  65  of  177 Loop  66  of  177 Loop  67  of  177 Loop  68  of  177 Loop  69  of  177 Loop  70  of  177 Loop  71  of  177 Loop  72  of  177 Loop  73  of  177 Loop  74  of  177 Loop  75  of  177 Loop  76  of  177 Loop  77  of  177 Loop  78  of  177 Loop  79  of  177 Loop  80  of  177 Loop  81  of  177 Loop  82  of  177 Loop  83  of  177 Loop  84  of  177 Loop  85  of  177 Loop  86  of  177 Loop  87  of  177 Loop  88  of  177 Loop  89  of  177 Loop  90  of  177 Loop  91  of  177 Loop  92  of  177 Loop  93  of  177 Loop  94  of  177 Loop  95  of  177 Loop  96  of  177 Loop  97  of  177 Loop  98  of  177 Loop  99  of  177 Loop  100  of  177 Loop  101  of  177 Loop  102  of  177 Loop  103  of  177 Loop  104  of  177 Loop  105  of  177 Loop  106  of  177 Loop  107  of  177 Loop  108  of  177 Loop  109  of  177 Loop  110  of  177 Loop  111  of  177 Loop  112  of  177 Loop  113  of  177 Loop  114  of  177 Loop  115  of  177 Loop  116  of  177 Loop  117  of  177 Loop  118  of  177 Loop  119  of  177 Loop  120  of  177 Loop  121  of  177 Loop  122  of  177 Loop  123  of  177 Loop  124  of  177 Loop  125  of  177 Loop  126  of  177 Loop  127  of  177 Loop  128  of  177 Loop  129  of  177 Loop  130  of  177 Loop  131  of  177 Loop  132  of  177 Loop  133  of  177 Loop  134  of  177 Loop  135  of  177 Loop  136  of  177 Loop  137  of  177 Loop  138  of  177 Loop  139  of  177 Loop  140  of  177 Loop  141  of  177 Loop  142  of  177 Loop  143  of  177 Loop  144  of  177 Loop  145  of  177 Loop  146  of  177 Loop  147  of  177 Loop  148  of  177 Loop  149  of  177 Loop  150  of  177 Loop  151  of  177 Loop  152  of  177 Loop  153  of  177 Loop  154  of  177 Loop  155  of  177 Loop  156  of  177 Loop  157  of  177 Loop  158  of  177 Loop  159  of  177 Loop  160  of  177 Loop  161  of  177 Loop  162  of  177 Loop  163  of  177 Loop  164  of  177 Loop  165  of  177 Loop  166  of  177 Loop  167  of  177 Loop  168  of  177 Loop  169  of  177 Loop  170  of  177 Loop  171  of  177 Loop  172  of  177 Loop  173  of  177 Loop  174  of  177 Loop  175  of  177 Loop  176  of  177 Loop  177  of  177
+
+``` r
 # Delete the first row (default column names)
 tot <- tot[-1, ]
 
@@ -459,7 +626,7 @@ chl_track2 <- data.frame(tuna_df, tot)
 write.csv(chl_track2, 'tuna-track-chl.m.csv', row.names = FALSE)
 ```
 
-### Make a map of the data extracted using the second method
+### Make a map of the data extracted using ggplot
 
 ``` r
 # Draw the track positions with associated chlora values
@@ -521,8 +688,8 @@ ggplot(as.data.frame(chl_area)) +
 
 ##### Exercise 1:
 
-Repeat the steps above with a different dataset. For example, extract
-sea surface temperature data using the following dataset:
+Repeat the steps above with a different satellite dataset. For example,
+extract sea surface temperature data using the following dataset:
 <https://coastwatch.pfeg.noaa.gov/erddap/griddap/nesdisGeoPolarSSTN5NRT_Lon0360.html>
 \\ This dataset is a different ERDDAP, so remember to change the base
 URL. \\ Set the new dataset ID and variable name.
