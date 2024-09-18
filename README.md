@@ -44,20 +44,9 @@ Download and examine a polar stereographic projected dataset, plot the data on a
 
 ### Acknowledgement
 
-The training materials for the CoastWatch Program have been developed, reviewed, and edited with the contributions of many dedicated individuals:
+The training materials for the CoastWatch Program have been developed, reviewed, and edited with the contributions of many dedicated individuals.
 
-- Melanie Abecassis 
-- Peter Hollemans 
-- Sun Bak Hospital 
-- Roy Mendelssohn 
-- Dale Robinson 
-- Jennifer Sevadjian 
-- Hui (Daisy) Shi  
-- Michael Soracco  
-- Shelly Tomlinson
-- Ron Vogel
-- Victoria Wegman  
-- Cara Wilson  
+__Contributors__: Melanie Abecassis, Peter Hollemans, Sun Bak Hospital, Roy Mendelssohn, Dale Robinson, Jennifer Sevadjian, Hui (Daisy) Shi, Michael Soracco, Shelly Tomlinson, Ron Vogel, Victoria Wegman, Cara Wilson  
 
 We also extend our gratitude to other external contributors whose specific acknowledgements are included within the training materials they helped to create.
 ### Questions?
