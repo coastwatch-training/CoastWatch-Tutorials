@@ -24,7 +24,7 @@ pkgTest <- function(x)
   }
 }
 
-list.of.packages <- c("sp", "ggplot2" , "rerddap", "RColorBrewer", "scales", "reshape2")
+list.of.packages <- c("sp", "ggplot2" , "rerddap", "RColorBrewer", "scales", "reshape2", "ncdf4")
 
 # create list of installed packages
 pkges = installed.packages()[,"Package"]
@@ -48,6 +48,13 @@ library(terra)
 library(sf)
 library(ggplot2)
 library(rerddap)
+library(RColorBrewer)
+library(scales)
+library(ncdf4)
+library(lubridate)
+library(dplyr)
+
+
 ```
 
 
@@ -56,87 +63,125 @@ library(rerddap)
 ```{r erddap_data}
 
 pw_url = "https://polarwatch.noaa.gov/erddap/"
-dataset_id = "usnic_ims_4km"
-var_name = "IMS_Surface_Values"
+dataset_id = "ncei_polarAPPX20_nhem"
+var_name = "cdr_sea_ice_thickness"
 dat_info <- info(datasetid = dataset_id, url = pw_url)
 dat_info
 ```
 
 ```{r}
-dat <- griddap(dat_info,  time = c('2019-11-01','2019-11-01'), fields = var_name)
-ims <- dat$data
+dat <- griddap(dat_info,  time = c('2023-01-01','2023-12-23'), fields = var_name)
+seaice <- dat$data
 
+seaice$time <- ymd_hms(seaice$time)
+
+seaice <- seaice %>%
+  mutate(year = year(time),
+         month = month(time))
+
+monthly_seaice <- seaice %>%
+  group_by(year, month, rows, columns) %>%
+  summarise(cdr_sea_ice_thickness = mean(cdr_sea_ice_thickness, na.rm = TRUE))
+monthly_seaice
+monthly_seaice[monthly_seaice$month == 1,]
 ```
 
 
-# Visualize the IMS satellite data
+# Visualize the sea ice thickness 2023, January satellite data
 
 ```{r, eval=FALSE }
 # Visualize the data (warning: this takes awhile to )
-ggplot(data = ims, aes(x = x, y = y, fill=IMS_Surface_Values)) +
+ggplot(data = monthly_seaice[monthly_seaice$month == 1,], aes(x = columns, y = rows, fill=cdr_sea_ice_thickness)) +
          geom_tile() + 
          coord_fixed(ratio = 1) + 
          scale_y_continuous() + 
          scale_x_continuous() +
          scale_fill_gradientn(colours=rev(brewer.pal(n = 3, name = "Blues")),na.value="tan") +
-         ggtitle("IMS Data")
+         ggtitle("Seaice thickness")
 
 ```
 
-## Convert IMS data to raster S4 object
+## Loading 20 year monthly average sea ice thickness 
 
 ```{r}
 
-# convert ims to raster S3 obj
-ims_ras <- terra::rast(ims)
+library(ncdf4)
 
-# plot the raster data
-plot(ims_ras)
+his_monthly <- nc_open('../hist_clm_15_20.nc')
+his_monthly
 
-# get CRS of the ims data
-data_crs <- crs(ims_ras)
+mon <- ncvar_get(his_monthly, "month")
+yr <- ncvar_get(his_monthly, "year")
+rows <- ncvar_get(his_monthly, "rows")
+columns <- ncvar_get(his_monthly, "columns")
+sit <- ncvar_get(his_monthly, "cdr_sea_ice_thickness")
+nc_close(his_monthly)            
+sit_aug_2016 <- sit[, , 8, 2]
+sit_aug_2016
+
+rows <- 1:length(rows)
+columns <- 1:length(columns)
+grid <- expand.grid(row = rows, column = columns)
+
+his_month_df <- data.frame(
+  rows = grid$rows,
+  columns = grid$columns,
+  cdr_sea_ice_thickness = as.vector(sit_aug_2016)
+)              
+            
+dim(sit)
+
+his_jan <-his_month_df[his_month_df$year == 2016 & his_month_df$month == 8,]
+
+unique(his_jan$month)
+# Visualize the data (warning: this takes awhile to )
+ggplot(data = his_jan, aes(x = columns, y = rows, fill=cdr_sea_ice_thickness)) +
+         geom_tile() + 
+         coord_fixed(ratio = 1) + 
+         scale_y_continuous() + 
+         scale_x_continuous() +
+         scale_fill_gradientn(colours=rev(brewer.pal(n = 3, name = "Blues")),na.value="tan") +
+         ggtitle("Seaice thickness")
+
 ```
-# Load the lake shapefile
+# Visualize loaded historical mean data
 
-```{r read_shapefile}
-# Set directory path for shapefile
-dir_path <- '../resources/Iliamna/Iliamna.shp'
-
-
-# Load the shape file
-shapes <- st_read(dsn = dir_path)
-
-# View
-print(shapes)
-
-# Get boundary coordinates for Lake Iliamna
-lake_shp <- shapes[shapes$Lake_name == "Iliamna", ]
-ggplot(data = lake_shp) +
-  geom_sf() +
-  theme_minimal() +
-  labs(title = "Lake Iliamna", 
-       caption = "Source: shapefile")
+```{r, eval=FALSE }
+# Visualize the data (warning: this takes awhile to )
+ggplot(data = his_jan, aes(x = columns, y = rows, fill=cdr_sea_ice_thickness)) +
+         geom_tile() + 
+         coord_fixed(ratio = 1) + 
+         scale_y_continuous() + 
+         scale_x_continuous() +
+         scale_fill_gradientn(colours=rev(brewer.pal(n = 3, name = "Blues")),na.value="tan") +
+         ggtitle("Seaice thickness")
 
 ```
-## Convert the lake shape to raster S4 object
 
-```{r}
+# Compute the 20 year historical mean
 
-shapes_polar <- st_transform(lake_shp, data_crs)
-lake_ras <- terra::vect(shapes_polar)
-plot(lake_ras)
+```{r compute_historical_mean}
+
+clm_mean <- his_month_df %>%
+  group_by(month, rows, columns) %>%
+  summarise(cdr_sea_ice_thickness = mean(cdr_sea_ice_thickness, na.rm = TRUE))
+
+clm_mean
+
 ```
 
+# Visualize the 20 year historical mean (Jan)
 
-## Crop the IMS data
 
-```{r}
+```{r, eval=FALSE }
+# Visualize the data (warning: this takes awhile to )
+ggplot(data = clm_mean[clm_mean$month == 1,], aes(x = columns, y = rows, fill=cdr_sea_ice_thickness)) +
+         geom_tile() + 
+         coord_fixed(ratio = 1) + 
+         scale_y_continuous() + 
+         scale_x_continuous() +
+         scale_fill_gradientn(colours=rev(brewer.pal(n = 3, name = "Blues")),na.value="tan") +
+         ggtitle("Seaice thickness")
 
-# crop to the bounding box of the lake
-cropped_lake <- crop(ims_ras, lake_ras)
-
-# mask data with the lake shape
-masked_lake <- mask(cropped_lake, lake_ras)
-plot(masked_lake)
-
+nrow(clm_mean[clm_mean$month==1,])
 ```
