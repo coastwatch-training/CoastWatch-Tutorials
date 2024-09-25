@@ -126,25 +126,8 @@ ggplot(data = monthly_mean[monthly_mean$month == 1,], aes(x = columns, y = rows,
 
 To do climate analysis such as computing climatology and trend analysis, we will use sea ice thickness monthly average from 2005 to 2020. The monthly averages are already computed and are available in netcdf file.
 
-
 ```{r}
 
-library(furrr)
-library(lubridate)
-library(dplyr)
-
-# Define the time range to split
-start_date <- as.Date('2016-01-01')
-end_date <- as.Date('2020-12-23')
-
-# Create a sequence of time intervals (for example, split by year)
-time_ranges <- seq(start_date, end_date, by = "1 year") #2015-01-01 to 2022-01-01
-
-# Create pairs of start and end dates (subsequent years)
-time_intervals <- data.frame(
-  start = time_ranges[-length(time_ranges)], # time_range except for the last item
-  end = time_ranges[-1] - days(1)   # time_range of item + 1 then subtract 1 day  
-)
 
 ```
 
