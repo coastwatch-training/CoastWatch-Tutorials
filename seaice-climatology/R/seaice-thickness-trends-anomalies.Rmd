@@ -62,6 +62,8 @@ library(scales)
 library(ncdf4)
 library(lubridate)
 library(dplyr)
+library(ncdf4)
+library(lattice)
 ```
 
 
@@ -99,12 +101,12 @@ seaice <- seaice %>%
          month = month(time))
 
 # Compute monthly mean for each grid
-monthly_mean<- seaice %>%
+monthly_mean23<- seaice %>%
   group_by(year, month, rows, columns) %>%
   summarise(cdr_sea_ice_thickness = mean(cdr_sea_ice_thickness, na.rm = TRUE))
 
 # Display monthly mean for Jan
-monthly_mean[monthly_mean$month == 1,]
+monthly_mean23[monthly_mean23$month == 1,]
 ```
 
 
@@ -128,9 +130,72 @@ To do climate analysis such as computing climatology and trend analysis, we will
 
 ```{r}
 
+fname <- "../data/combined_climatology_2006_2020.nc"
+ncin <- nc_open(fname)
+print(ncin)
+```
+
+Dimensions: year, month, rows, columns
+variable: cdr_sea_ice_thickness
+```{r}
+
+cols = ncvar_get(ncin, "columns")
+rows = ncvar_get(ncin, "rows")
+sit <- ncvar_get(ncin,"cdr_sea_ice_thickness")
+```
+
+
+### Visualize the monthly data
+
+```{r}
+
+# View dimension of the data
+dim(sit)  # [columns,rows,month,year]
+
+# Subset first month of first year
+onestep <- sit[,,1,1]
+
+# You can also visualize data array using terra:image function  
+image(cols, rows, onestep, col=c(rgb(1,1,1),brewer.pal(9,"Blues"))  )
 
 ```
 
+### Compute the 15 year historical mean
+```{r}
+library(reshape2) 
+# Compute monthly average over years
+hist_monthly_means <- apply(sit, c(1, 2, 3), mean, na.rm = TRUE )
+
+# Check dimension
+dim(hist_monthly_means)
+
+# Visualize historical monthly average using ggplot
+# First convert to data.frame
+df <- melt(hist_monthly_means[,,1], varnames = c("cols", "rows"), value.name = "sit")
+
+# Visualize 
+ggplot(data = df , aes(x = cols, y = rows, fill=sit)) +
+         geom_tile() + 
+         coord_fixed(ratio = 1) + 
+         scale_y_continuous() + 
+         scale_x_continuous() +
+         scale_fill_gradientn(colours=rev(brewer.pal(n = 3, name = "Blues")),na.value="tan") +
+         ggtitle("2023 Seaice thickness monthly mean (Januarary)")
+
+image(cols, rows, hist_monthly_means[,,9] , col=c(rgb(1,1,1),brewer.pal(9,"Blues"))  )
+
+```
+
+### Compute anomaly
+
+To understand the recent change in the sea ice thickness, we can compare the current state (year 2021) to the historical mean. Anomaly is a commonly used metric representing the difference (or departure).
+
+```{r}
+
+```
+
+
+## Climatology
 
 ```{r}
 # Function to format the time into year and month columns
