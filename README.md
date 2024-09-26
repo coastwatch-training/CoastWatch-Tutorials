@@ -29,7 +29,7 @@ Work with datasets with -180&deg; to +180&deg; longitude values in a region that
 * [matchup-satellite-data-to-track-locations](matchup-satellite-data-to-track-locations)
   Extract satellite data along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track. R and python versions.
   
-__Polar and Sea ice Specific Examples__
+__Polar Projection Specific Examples__
 
 * [transform-to-another-map-projection](transform-to-another-map-projection)
   	Access satellite data with polar stereographic coordinates and transform it into a different coordinate system using EPSG code. R and python versions. 
@@ -42,11 +42,18 @@ __Polar and Sea ice Specific Examples__
 * [matchup-polar-satellite-data-to-track-locations](matchup-satellite-data-to-track-locations)
   Extract satellite data along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track. R and python versions.
 * [subset-polar-data-with-shapefile](subset-polar-data-with-shapefile)
-  Download remote sensing data in polar stereographic projection from ERDDAP and subset it within the boundaries of Lake Iliamna in Alaska, where the lake shape data is presented in a different projection
+  Download remote sensing data in polar stereographic projection from ERDDAP and subset it within the boundaries of Lake Iliamna in Alaska, where the lake shape data is presented in a different projection.
 
 __Great Lakes Specific Examples__
 
-
+* [gl-access-sat-surface-temp-data](gl-access-sat-surface-temp-data.ipynb)
+Access and subset Lake Erie water surface temperature data, and plot both individual time steps and a time series. 
+* [gl-timeseries-chloro-from-diff-sensors](gl-timeseries-chloro-from-diff-sensors.ipynb)
+Download mean chlorophyll-a concentration data from two sensors, MODIS (2002-2017) and VIIRS (2018-2023), to compare the values.
+* [gl-ice-plot-timeseries-ice-conc.ipynb](gl-ice-plot-timeseries-ice-conc.ipynb)
+Access Great Lakes ice concentration data from ERDDAP, visualize it on a map, and calculate the monthly means.
+* [gl-timeseries-surface-temp.ipynb](gl-timeseries-surface-temp.ipynb)
+ Download Great Lakes average water surface temperature and compute a long-term time series (2007-2024), identifying the warmest and coldest years.
 
 ### Acknowledgement
 
