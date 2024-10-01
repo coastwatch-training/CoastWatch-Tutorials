@@ -1,0 +1,27 @@
+Data headers and brief description
+
+BirdId - unique identifier for each individual bird tracked
+
+Sex -  the sex of the bird tracked, either male, female, or unkonwn.
+
+Age - the age or life stage of the bird tracked, either adult or juvenile.
+
+Breed Stage - the period of the annual life cycle during with the bird was tracked. Entries include:
+	incubation - the period during which eggs are incubated by the parents. 
+	brood/guard - the period during which chicks are continuously guarded by the parents. 
+	creche - the period when the chick is left unattended by both parents. 
+	winter - the period after the breeding season
+
+DateGMT - the date of the location estimate, provided in a DD/MM/YYYY format.
+
+TimeGMT - the time of the location estimate, provided in HH:MM:SS
+
+Latitude - the latitude, in decimal degrees, of the location estimate
+
+Longitude - the longitude, in decimal degrees, of the location estimate
+
+ArgosQuality - ranked alphanumeric code (3, 2, 1, 0, A, B) identifying uncertainty in the location estimate. Quality codes 3, 2, 1, and 0 indicate that the location was obtained with 4 or more messages and an estimate of location uncertainty was possible. Generally, quality code 3 has an error of less than 150m, quality code 2 has an error of 150–350m, quality code 1 has an error of 350–1000m, and quality code 0 has an error greater than 1000m. Code A indicates that the location was obtained with 3 messages and Code B indicates that the location was obtained with 2 messages. An estimate of location uncertainty is not provided for codes A and B. Further detail and assessment of uncertainty in Argos codes are provided in the following:
+
+Costa DP, Robinson PW, Arnould JPY, Harrison A-L, Simmons SE, Hassrick JL, et al. 2010. Accuracy of ARGOS locations of pinnipeds at-sea estimated using Fastloc GPS. PLoS One 5:e8677. https://doi.org/10.1371/journal.pone.0008677
+
+Douglas DC, Weinzierl R, Davidson SC, Kays R, Wikelski M, Bohrer G. 2012. Moderating Argos location errors in animal tracking data. Methods in Ecology and Evolution 3:999-1007.
