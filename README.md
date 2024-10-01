@@ -39,8 +39,8 @@ __Polar Projection Specific Examples__
   View sea ice concentration (SIC) data on a map with the polar stereographic projection.  Calculate and compare sea ice area/extent from multi-year SIC datasets. R and python versions. 
 * [matchup-polar-satellite-data-to-buoy-data](matchup-polar-satellite-data-to-buoy-data)
    Extract sea ice thickness (remote sensing) data in a polar stereographic projection using the buoy's location and dates.
-* [matchup-polar-satellite-data-to-track-locations](matchup-satellite-data-to-track-locations)
-  Extract satellite data along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track. R and python versions.
+* [matchup-polar-data-to-animal-track-locations](matchup-polar-data-to-animal-track-locations)
+  Extract sea ice concentration data in polar projection along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track. 
 * [subset-polar-data-with-shapefile](subset-polar-data-with-shapefile)
   Download remote sensing data in polar stereographic projection from ERDDAP and subset it within the boundaries of Lake Iliamna in Alaska, where the lake shape data is presented in a different projection.
 
