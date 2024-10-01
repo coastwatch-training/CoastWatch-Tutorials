@@ -46,13 +46,13 @@ __Polar Projection Specific Examples__
 
 __Great Lakes Specific Examples__
 
-* [gl-access-sat-surface-temp-data](gl-access-sat-surface-temp-data.ipynb)
+* [gl-access-sat-surface-temp-data](great-lakes-examples/gl-access-sat-surface-temp-data.ipynb)
 Access and subset Lake Erie water surface temperature data, and plot both individual time steps and a time series. 
-* [gl-timeseries-chloro-from-diff-sensors](gl-timeseries-chloro-from-diff-sensors.ipynb)
+* [gl-timeseries-chloro-from-diff-sensors](great-lakes-examples/gl-timeseries-chloro-from-diff-sensors.ipynb)
 Download mean chlorophyll-a concentration data from two sensors, MODIS (2002-2017) and VIIRS (2018-2023), to compare the values.
-* [gl-ice-plot-timeseries-ice-conc.ipynb](gl-ice-plot-timeseries-ice-conc.ipynb)
+* [gl-ice-plot-timeseries-ice-conc.ipynb](great-lakes-examples/gl-ice-plot-timeseries-ice-conc.ipynb)
 Access Great Lakes ice concentration data from ERDDAP, visualize it on a map, and calculate the monthly means.
-* [gl-timeseries-surface-temp.ipynb](gl-timeseries-surface-temp.ipynb)
+* [gl-timeseries-surface-temp.ipynb](great-lakes-examples/gl-timeseries-surface-temp.ipynb)
  Download Great Lakes average water surface temperature and compute a long-term time series (2007-2024), identifying the warmest and coldest years.
 
 ### Acknowledgement
