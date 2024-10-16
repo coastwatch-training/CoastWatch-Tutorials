@@ -1,0 +1,276 @@
+---
+title: "Tracking Penguin in Antarctica"
+output: html_document
+---
+
+# **Tracking Penguin in Antarctica**
+
+> Modified October 2024
+
+### Overview
+
+In this exercise, you will learn how to extract satellite data in polar stereographic projection (defined by xgrid and ygrid) around a set of points specified by longitude, latitude, and time coordinates. These coordinates could represent data from animal telemetry tags, ship tracks, or glider tracks.
+
+
+#### The exercise demonstrates the following techniques:
+
+* Loading animal telemetry tags data from tab- or comma-separated files
+* Extracting satellite data along a track
+* Plotting animal tracks and satellite data on a map
+
+### Datasets Used:
+**Sea Ice Concentration Satellite Data**  
+
+This dataset contains daily and monthly Climate Data Records (CDR) of sea ice concentration, processed by the NOAA/NSIDC team for the Arctic at a 25 km resolution, spanning from 1978 to the most recent annual data processing update. The sea ice concentration data are derived from microwave remote sensing. Due to processing and quality control, CDR data has a slight delay in availability, but [near real-time data is available for more recent dates.](https://polarwatch.noaa.gov/catalog/ice-sq-sh-nsidc-cdr-v4/preview).
+
+For this tutorial, the monthly sea ice concentration data is used. To preview and download CDR data, [visit NOAA PolarWatch CDR Data](https://polarwatch.noaa.gov/catalog/ice-sq-sh-nsidc-cdr-v4/preview/?).
+
+
+
+**Adelie Penguin Telemetry Track** 
+
+Telemetry data from Adelie penguins (_Pygoscelis adeliae_) were collected via Argos satellites in the Southern Ocean between October 29, 1996, and February 19, 2013, as part of the U.S. Antarctic Marine Living Resources project. Additionally, a turtle raised in captivity in Japan was tagged and released on May 4, 2005, in the Central Pacific.  
+
+The telemetry track dataset is included in the data/ folder of this module. For more information about the project and to download the full dataset, visit the [NOAA NCEI webpage](https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.nodc:0244399).
+ 
+
+## Import the required Python modules
+
+## Packages
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.path = "images/",
+  warning = FALSE, message = FALSE
+)
+```
+
+```{r}
+# Function to check if pkgs are installed, and install any missing pkgs
+pkgTest <- function(x)
+{
+  if (!require(x,character.only = TRUE))
+  {
+    install.packages(x,dep=TRUE,repos='http://cran.us.r-project.org')
+    if(!require(x,character.only = TRUE)) stop(x, " :Package not found")
+  }
+}
+
+
+# Create list of required packages
+list.of.packages <- c("rerddap", "plotdap", "parsedate", "ggplot2", "rerddapXtracto",
+                       "date", "maps", "mapdata", "RColorBrewer","viridis", "dplyr", "ncdf4", "sf", "gridExtra", "lubridate")
+
+# Create list of installed packages
+pkges = installed.packages()[,"Package"]
+
+# Install and load all required pkgs
+for (pk in list.of.packages) {
+  pkgTest(pk)
+}
+```
+
+### Loading the sea ice data from PolarWatch ERDDAP
+
+```{r}
+ds = nc_open("https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday")
+names(ds$var)
+names(ds$dim)
+```
+
+### Plotting Sea Ice Data on a Map
+
+```{r}
+
+# Select sea ice concentration variable of first timestep
+sic = ncvar_get(ds, "cdr_seaice_conc_monthly")[,,1]
+
+# Based on the metadata, values above 1 represent variouag flags, therefore we will 
+# remove the values greater than 1.
+sic = ifelse(sic <= 1, sic, NA)
+
+# Extract grid values
+xgrid = ncvar_get(ds, "xgrid")
+ygrid = ncvar_get(ds, "ygrid")
+
+# Data Frame
+sic_df = expand.grid(xgrid = xgrid, ygrid = ygrid)
+sic_df$sic = as.vector(sic)
+
+ggplot(sic_df, aes(x = xgrid, y = ygrid, fill = sic)) +
+  geom_raster() +
+  scale_fill_gradientn(colours = c('white', 'dodgerblue4')) +
+  coord_fixed(ratio = 1) +
+  theme_minimal() +
+  labs(title = "Ice Concentration of Timestep 1", fill = "Sea Ice Concentration") +
+  theme(
+    # Can modify below 
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(), 
+    panel.grid = element_blank()) +
+  theme(legend.position = "right")
+
+```
+
+### Loading penguin telemetry data in csv 
+
+```{r}
+# Load penguin data into pandas data frame
+penguin = read.csv("copa_adpe_ncei.csv")
+head(penguin)
+```
+
+### Processing Penguin Data
+
+For this exercise, we will select ADPE24, female penguin whose track records are highest within the female group, and will follow her 
+journey in the Arctic.
+
+```{r}
+# Find BirdID with the most count by sex
+penguin %>% group_by(Sex) %>% count(BirdId) %>% top_n(1, n)
+
+# Extract ADPE24 track data
+adpe24 = penguin %>% filter(BirdId == 'ADPE24')
+
+# Format Date
+adpe24$DateGMT = as.Date(adpe24$Date, format = "%d/%m/%Y")
+adpe24$Year_Month = format(adpe24$DateGMT, "%Y-%m")
+
+# Unique penguin dates
+adpe_dates = unique(adpe24$Year_Month)
+
+# Convert lat/long to x-ygrid add to a new column
+adpe24_sf = st_as_sf(adpe24, coords = c("Longitude", "Latitude"), crs = 4326)
+adpe24_tr = st_transform(adpe24_sf, crs = 3412)
+
+adpe24$xgrid = st_coordinates(adpe24_tr)[, 1]  # xgrid
+adpe24$ygrid = st_coordinates(adpe24_tr)[, 2]  # ygrid
+
+print(paste("Date Range:", min(adpe24$DateGMT), ",", max(adpe24$DateGMT)))
+print(paste("Unique Month:", paste(unique(adpe24$Year_Month), collapse = ", ")))
+```
+
+
+### Visualize penguin tracks on sea ice concentration map
+
+```{r}
+# Penguin Data for Each Month
+adpe24_jan = subset(adpe24, month(DateGMT) == 1)
+adpe24_feb = subset(adpe24, month(DateGMT) == 2)
+adpe24_mar = subset(adpe24, month(DateGMT) == 3)
+```
+
+```{r}
+
+# Extract time from SIC
+time = ncvar_get(ds, "time")
+time = as.POSIXct(time, origin="1970-01-01", tz="UTC")
+
+# Find indices for below times
+target_dates = as.POSIXct(c("2003-01-01", "2003-02-01", "2003-03-01"), tz="UTC")
+nearest_indices = sapply(target_dates, function(x) {which.min(abs(difftime(time, x, units = "secs")))})
+
+# Extract SIC data with corresponding time
+sic_jan = ncvar_get(ds, "cdr_seaice_conc_monthly", start = c(1, 1, nearest_indices[1]), count = c(-1, -1, 1))
+sic_feb = ncvar_get(ds, "cdr_seaice_conc_monthly", start = c(1, 1, nearest_indices[2]), count = c(-1, -1, 1))
+sic_mar = ncvar_get(ds, "cdr_seaice_conc_monthly", start = c(1, 1, nearest_indices[3]), count = c(-1, -1, 1))
+
+# Remove the values greater than 1
+sic_jan = ifelse(sic_jan <= 1, sic_jan, NA)
+sic_feb = ifelse(sic_feb <= 1, sic_feb, NA)
+sic_mar = ifelse(sic_mar <= 1, sic_mar, NA)
+
+# Extract xgrid, ygrid from SIC
+xgrid = ncvar_get(ds, "xgrid")
+ygrid = ncvar_get(ds, "ygrid")
+
+# Data Frame
+sic_jan_df = expand.grid(xgrid = xgrid, ygrid = ygrid)
+sic_jan_df$sic = as.vector(sic_jan)
+sic_feb_df = expand.grid(xgrid = xgrid, ygrid = ygrid)
+sic_feb_df$sic = as.vector(sic_feb)
+sic_mar_df = expand.grid(xgrid = xgrid, ygrid = ygrid)
+sic_mar_df$sic = as.vector(sic_mar)
+
+```
+
+```{r}
+
+ggplot() +
+  geom_raster(data = sic_jan_df, aes(x = xgrid, y = ygrid, fill = sic)) +
+  scale_fill_gradientn(colours = c('white', 'dodgerblue4')) +
+  coord_fixed(ratio = 1, xlim = c(-3000000, -1000000), ylim = c(500000, 3000000)) +
+  labs(title = "ADPE24 January", fill = "Sea Ice Concentration") +
+  theme(legend.position = "right") +
+  
+  # Penguin tracking
+  geom_point(data = adpe24_jan, aes(x = xgrid, y = ygrid), color = "red", size = 1, alpha = 0.7)
+
+ggplot() +
+  geom_raster(data = sic_feb_df, aes(x = xgrid, y = ygrid, fill = sic)) +
+  scale_fill_gradientn(colours = c('white', 'dodgerblue4')) +
+  coord_fixed(ratio = 1, xlim = c(-3000000, -1000000), ylim = c(500000, 3000000)) +
+  labs(title = "ADPE24 February", fill = "Sea Ice Concentration") +
+  theme(legend.position = "right") +
+  
+  # Penguin tracking
+  geom_point(data = adpe24_feb, aes(x = xgrid, y = ygrid), color = "red", size = 1, alpha = 0.7)
+
+ggplot() +
+  geom_raster(data = sic_mar_df, aes(x = xgrid, y = ygrid, fill = sic)) +
+  scale_fill_gradientn(colours = c('white', 'dodgerblue4')) +
+  coord_fixed(ratio = 1, xlim = c(-3000000, -1000000), ylim = c(500000, 3000000)) +
+  labs(title = "ADPE24 March", fill = "Sea Ice Concentration") +
+  theme(legend.position = "right") +
+  
+  # Penguin tracking
+  geom_point(data = adpe24_mar, aes(x = xgrid, y = ygrid), color = "red", size = 1, alpha = 0.7)
+```
+
+
+```{r}
+
+# January plot
+plot_jan <- ggplot() +
+  geom_raster(data = sic_jan_df, aes(x = xgrid, y = ygrid, fill = sic)) +
+  scale_fill_gradientn(colours = c('white', 'dodgerblue4')) +
+  coord_fixed(ratio = 1, xlim = c(-3000000, -1000000), ylim = c(500000, 3000000)) +
+  labs(title = "ADPE24 January", fill = "Sea Ice Concentration") +
+  theme(legend.position = "right") +
+  geom_point(data = adpe24_jan, aes(x = xgrid, y = ygrid), color = "red", size = 1, alpha = 0.7)
+
+# February plot
+plot_feb <- ggplot() +
+  geom_raster(data = sic_feb_df, aes(x = xgrid, y = ygrid, fill = sic)) +
+  scale_fill_gradientn(colours = c('white', 'dodgerblue4')) +
+  coord_fixed(ratio = 1, xlim = c(-3000000, -1000000), ylim = c(500000, 3000000)) +
+  labs(title = "ADPE24 February", fill = "Sea Ice Concentration") +
+  theme(legend.position = "right") +
+  geom_point(data = adpe24_feb, aes(x = xgrid, y = ygrid), color = "red", size = 1, alpha = 0.7)
+
+# March plot
+plot_mar <- ggplot() +
+  geom_raster(data = sic_mar_df, aes(x = xgrid, y = ygrid, fill = sic)) +
+  scale_fill_gradientn(colours = c('white', 'dodgerblue4')) +
+  coord_fixed(ratio = 1, xlim = c(-3000000, -1000000), ylim = c(500000, 3000000)) +
+  labs(title = "ADPE24 March", fill = "Sea Ice Concentration") +
+  theme(legend.position = "right") +
+  geom_point(data = adpe24_mar, aes(x = xgrid, y = ygrid), color = "red", size = 1, alpha = 0.7)
+
+# Combine plots using gridExtra
+grid.arrange(plot_jan, plot_feb, plot_mar, nrow = 2)
+
+```
+
+### Resampling Penguin data to match satellite Date
+
+
+### Transforming CRS of the penguin locations
+
+
+### Extracting Satellite Data to match penguin track and date
+
+
+### Plotting Penguin Tracks with Matched Sea Ice Concentration Data
