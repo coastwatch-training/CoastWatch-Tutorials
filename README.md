@@ -29,7 +29,7 @@ Work with datasets with -180&deg; to +180&deg; longitude values in a region that
 * [matchup-satellite-data-to-track-locations](matchup-satellite-data-to-track-locations)
   Extract satellite data along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track. R and python versions.
   
-__Polar Projection Specific Examples__
+__PolarWatch Specific Examples__
 
 * [transform-to-another-map-projection](transform-to-another-map-projection)
   	Access satellite data with polar stereographic coordinates and transform it into a different coordinate system using EPSG code. R and python versions. 
@@ -43,6 +43,9 @@ __Polar Projection Specific Examples__
   Extract sea ice concentration data in polar projection along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track. 
 * [subset-polar-data-with-shapefile](subset-polar-data-with-shapefile)
   Download remote sensing data in polar stereographic projection from ERDDAP and subset it within the boundaries of Lake Iliamna in Alaska, where the lake shape data is presented in a different projection.
+* [seaice-thickness-climatology](seaice-thickness-climatology)
+  Calculate anomalies and trends of sea ice thickness to study changes in monthly average sea ice thickness values.
+
 
 __Great Lakes Specific Examples__
 
