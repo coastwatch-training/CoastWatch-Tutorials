@@ -38,7 +38,7 @@ __PolarWatch Specific Examples__
 * [calculate-seaice-extent](calculate-seaice-extent)
   View sea ice concentration (SIC) data on a map with the polar stereographic projection.  Calculate and compare sea ice area/extent from multi-year SIC datasets. R and python versions. 
 * [matchup-polar-satellite-data-to-buoy-data](matchup-polar-satellite-data-to-buoy-data)
-   Extract satellite sea ice temperature data in a polar stereographic projection that is col-located with acbuoy's location and dates. R and python versions.
+   Extract satellite sea ice temperature data in a polar stereographic projection that is col-located with a buoy's location and dates. R and python versions.
 * [matchup-polar-data-to-animal-track-locations](matchup-polar-data-to-animal-track-locations)
   Extract sea ice concentration data in polar projection along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track.R and python versions.
 * [subset-polar-data-with-shapefile](subset-polar-data-with-shapefile)
