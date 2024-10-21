@@ -1,0 +1,389 @@
+---
+title: "Matching Satellite and Buoy Data"
+author: NOAA CoastWatch
+date: October 2024
+output:
+  md_document:
+    variant: gfm
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.path = "images/",
+  warning = FALSE, message = FALSE
+)
+```
+
+# Matching Satellite and Buoy Data
+In this exercise, you will combine satellite and buoy data by extracting satellite measurements around specific points defined by buoy locations and dates.  
+- The focus of this exercise is on matching two data sources from different projections.  
+- Similar tutorials for mid to lower latitudes can be found at [https://github.com/coastwatch-training/CoastWatch-Tutorials](https://github.com/coastwatch-training/CoastWatch-Tutorials?tab=readme-ov-file#readme).
+
+## This exercise demonstrates the following techniques:
+- Using ERDDAP to retrieve buoy data in CSV format and satellite data in netCDF format
+- Importing and manipulating data with the pandas and xarray libraries
+- Resampling data to lower-resolution time steps
+- Converting latitude and longitude coordinates to the polar stereographic projection
+
+## Data used in this exercise
+
+__[Ice Surface Temperature, NOAA-20 VIIRS, Near Real-Time, Polar Stereographic (North), 4-day](https://polarwatch.noaa.gov/erddap/info/noaacwVIIRSn20icesrftempNP06Daily4Day/index.html
+)__
+
+This dataset provides VIIRS sea ice surface temperature for the Arctic at a 750m resolution, collected by the NOAA-20 satellite. It includes near-real-time daily data and 4-day composites for the past three weeks. For this exercise, we will use 4-day composites data. This dataset is in a polar stereographic projection.   
+
+
+__[International Arctic Buoy Programme (IABP) Buoy Data, Daily](https://polarwatch.noaa.gov/erddap/info/iabpv2_buoys/index.html)__
+
+This dataset is from the US International Arctic Buoy Programme and includes meteorological and oceanographic data from buoys. Dataset is updated daily and includes multiple variables.  For this exercise, we will extract surface temperature data.  
+
+
+__Satellite Ice Surface Temperature (IST)__ is measured by the Visible Infrared Imaging Radiometer Suite (VIIRS) and captures the temperature of the surface layer of ice.
+
+__Buoy Surface Temperature (Ts)__ is measured from the bottom of the buoy hull. If the buoy is floating, the reported temperature is of the sea surface. If the buoy is frozen into the ice or sitting on top of it, the reported temperature is of the ground or ice. The freezing temperature of seawater is about -1.8°C, so temperature readings below this indicate ground or ice temperatures.
+
+More details can be found in the metadata section of the data products (click on the data links above).
+
+## Load packages
+
+```{r}
+pkgTest <- function(x)
+{
+  if (!require(x,character.only = TRUE))
+  {
+    install.packages(x,dep=TRUE)
+    if(!require(x,character.only = TRUE)) stop("Package not found")
+  }
+}
+
+list.of.packages <- c( "ncdf4", "rerddap", "plotdap", "httr",
+                       "lubridate", "gridGraphics",  "mapdata",
+                       "ggplot2", "RColorBrewer", "grid", "PBSmapping", 
+                       "rerddapXtracto","dplyr","viridis","cmocean", "sf")
+
+# create list of installed packages
+pkges = installed.packages()[,"Package"]
+
+for (pk in list.of.packages) {
+  pkgTest(pk)
+}
+```
+
+## Load buoy data (IABP) from PolarWatch ERDDAP data server
+### First view information about the data  
+Use the info function from the `rerddap` package. The variable `surface_temp` will be used for this exercise.
+
+```{r}
+ERDDAP_Node = "https://polarwatch.noaa.gov/erddap"
+
+NDBC_id = 'iabpv2_buoys'
+NDBC_info=info(datasetid = NDBC_id,url = ERDDAP_Node)
+
+print(NDBC_info)
+
+
+```
+
+### Load the data and put into a data frame
+```{r}
+buoy <- rerddap::tabledap(url = ERDDAP_Node, NDBC_id,
+                           fields=c('buoy_id', 'latitude',  'longitude', 'time', 'surface_temp', 
+                           'has_surface_temp'), 'time>=2023-08-01',   'time<=2023-09-30'
+)
+
+# Create data frame with the downloaded data
+buoy.df <-data.frame(buoy_id=as.character(buoy$buoy_id),
+                     longitude=as.numeric(buoy$longitude),
+                     latitude=as.numeric(buoy$latitude),
+                     time=as.POSIXct(buoy$time, "%Y-%m-%dT%H:%M:%S", tz="UTC"),
+                     surface_temp=as.numeric(buoy$surface_temp))
+
+summary(buoy.df)
+head(buoy.df)
+```
+
+## Select one buoy and process data  
+We will first select one buoy  (buoy id = "300534062897730"). The buoy records measurements at intervals of minutes, resulting in a high-resolution dataset. To align it with the daily resolution of the satellite dataset, we will downsample the buoy data. 
+
+### Load the data for the target buoy
+Check the number of timesteps
+```{r}
+# Select one buoy (buoy id = "300534062897730")
+target.buoy <- buoy.df %>% filter(buoy_id == "300534062897730")
+
+# Print the number of timestamps before resampling
+# cat("# of timesteps before =", nrow(target.buoy), "\n")
+#print(c("# of timesteps before =", nrow(target.buoy.daily)))
+steps_before <- length(buoy.df$time)
+
+# Resample to daily mean by averaging surface_temp values for each day
+# And rename surface_temp to temp_buoy
+target.buoy.daily <- target.buoy %>%
+  mutate(time = as.Date(time)) %>% 
+  group_by(time) %>%
+  summarize(
+    buoy_id = first(buoy_id),
+    longitude = first(longitude),
+    latitude = first(latitude),
+    temp_buoy = mean(surface_temp, na.rm = TRUE))
+
+# Print the number of timesteps after resampling
+# cat("# of timesteps before =", nrow(target.buoy.daily), "\n")
+steps_after <- length(target.buoy.daily$time)
+
+
+head(target.buoy.daily)
+
+```
+
+### Verify the reduced number of timesteps
+```{r}
+cat("# of timesteps before =", steps_before, "# of timesteps after =", steps_after)
+#length(buoy.df$time)
+```
+
+
+## Transform buoy coordinates to polar projection
+
+The buoy locations are provided in latitude and longitude coordinates, whereas the satellite data are in a polar stereographic projection with locations in units of meters. We will convert the buoy locations from latitude and longitude to the corresponding columns and rows in the polar projection.
+
+```{r}
+# Define the projection using the PROJ4 string format
+proj4text <- "+proj=stere +lat_0=90 +lat_ts=70 +lon_0=-45 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
+
+# Convert the dataframe into an sf object (Spatial Dataframe)
+target.buoy.sf <- st_as_sf(target.buoy.daily, coords = c("longitude", "latitude"), crs = 4326)
+
+# Reproject the data to the Polar Stereographic projection using the PROJ4 string
+target.buoy.projected <- st_transform(target.buoy.sf, crs = proj4text)
+
+# Extract the projected coordinates
+target.buoy.projected$cols <- st_coordinates(target.buoy.projected)[,1] # X (columns)
+target.buoy.projected$rows <- st_coordinates(target.buoy.projected)[,2] # Y (rows)
+
+# Show the first 2 rows to verify that the 'cols' and 'rows' columns were added
+head(target.buoy.projected, 2)
+
+# Select the first buoy location to pull corresponding satellite data
+target.buoy.cols <- target.buoy.projected$cols[1]
+target.buoy.rows <- target.buoy.projected$rows[1]
+
+# Verify the data
+print(target.buoy.cols)
+print(target.buoy.rows)
+
+```
+
+
+### Load satellite data from PolarWatch
+Look at the metadata to check the metadata Note that the temperature is in degrees Kelvin. 
+```{r}
+
+NDBC_id_2 = 'noaacwVIIRSn20icesrftempNP06Daily4Day'
+NDBC_info_2=info(datasetid = NDBC_id_2,url = ERDDAP_Node)
+
+print(NDBC_info_2)
+
+
+```
+
+## Extract the satellite ice surface temperture timeseries
+Use the rxtracto function from the rerddapXtracto package
+```{r}
+
+zpos <- rep(0., length(target.buoy.projected$time))
+
+sat_data <- rxtracto(NDBC_info_2,
+                    xName="cols",
+                    yName="rows",
+                    tName="time",
+                    zName="altitude",
+                    parameter="IceSrfTemp",
+                    xcoord = target.buoy.projected$cols,
+                    ycoord = target.buoy.projected$rows,
+                    tcoord = target.buoy.projected$time,
+                    zcoord = zpos
+                    )
+head(sat_data)
+```
+
+
+### Convert degrees K to degrees C
+```{r}
+
+#sftemp_ds_subset$temp_sat <- sftemp_ds_subset$IceSrfTemp - 273.15
+temp_sat <- sat_data$mean - 273.15
+temp_sat
+#extract$mean
+
+```
+### Merge Buoy and Satellite Data
+Add the satellite ice temperature to the buoy dataset. Not all buoy dates have corresponding satellite data. Any unmatched dates will be filled with NaN values.
+```{r}
+target.buoy.projected$temp_sat <- temp_sat
+head(target.buoy.projected)
+```
+### Visualize Matched DataSets  
+Visualize the matched buoy and satellite datasets to assess the data alignment. 
+```{r}
+# Create the plot
+ggplot(target.buoy.projected, aes(x = time)) +
+  # Plot the buoy data
+  geom_point(aes(y = temp_buoy, color = 'Buoy Surface Temperature'), size =3) +
+  geom_line(aes(y = temp_buoy, color = 'Buoy Surface Temperature'), linewidth = 1, na.rm = TRUE) +
+  
+  # Plot the satellite (VIIRS Sea Ice Surface Temperature) data
+  geom_point(aes(y = temp_sat, color = 'VIIRS Sea Ice Surface Temperature'), shape = 15, size = 3) +
+  geom_line(aes(y = temp_sat, color = 'VIIRS Sea Ice Surface Temperature'), linewidth = 1, na.rm = TRUE) +
+  
+  # Set the y-axis limits
+  ylim(-20, 5) +
+  
+  # Labels and theme
+  labs(x = 'Time', y = 'Temperature (degrees C)', color = 'Legend') +
+  scale_color_manual(values = c('Buoy Surface Temperature' = 'red',
+                                'VIIRS Sea Ice Surface Temperature' = 'blue')) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+# Madi and Cara - End here
+## Below is pure R code from Madi
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Select satellite data to match buoy location and dates
+
+Next, subset the satellite data using the buoy's first location and the corresponding start and end dates.
+
+```{r}
+
+# Set the coordinate variable ranges
+time_range <- c('2023-08-01', '2023-09-30')
+rows_range <- c(49687.5, 99772.5)
+cols_range <- c(-400282.5, -350197.5)
+field <- 'IceSrfTemp'
+
+# extract satellite data
+gridded.data <- griddap(
+  url = ERDDAP_Node,
+  NDBC_id_2,
+  time = time_range,
+  rows = rows_range,
+  cols = cols_range,
+  fields = c(field)
+)
+
+head(gridded.data)
+```
+
+### Extract data from gridded.data
+```{r}
+# Extract data from gridded.data
+time <- gridded.data$data$time
+rows <- gridded.data$data$rows
+cols <- gridded.data$data$cols
+IceSrfTemp <- gridded.data$data$IceSrfTemp
+
+# Calculate the difference between the buoy's first location and the rows/cols
+row.diff <- abs(rows - target.buoy.rows)
+col.diff <- abs(cols - target.buoy.cols)
+
+# Find the index of the nearest row and column 
+nearest.row <- which.min(row.diff)
+nearest.col <- which.min(col.diff)
+
+# Subset the data 
+sftemp_ds_subset <- data.frame(
+  time = time,
+  rows = rows,
+  cols = cols,
+  IceSrfTemp = IceSrfTemp) %>%
+  subset(rows == rows[nearest.row] &
+           cols == cols[nearest.col] &
+           time >= as.Date('2023-08-01') & time <= as.Date('2023-09-30'))
+```
+
+
+### Convert temperature time data
+```{r}
+#temperature from Kelvin to Celsius
+sftemp_ds_subset$temp_sat <- sftemp_ds_subset$IceSrfTemp - 273.15
+
+head(sftemp_ds_subset)
+
+# Convert time to Date format
+sftemp_ds_subset$time <- as.Date(sftemp_ds_subset$time)
+
+
+```
+
+### Resample the data to a daily format to ensure consistency with the buoy data
+```{r}
+
+sftemp_ds_daily <- sftemp_ds_subset %>%
+  group_by(time) %>%
+  summarize(
+    temp_sat = mean(temp_sat, na.rm = TRUE),
+    sat_cols = first(cols),
+    sat_rows = first(rows)
+  )
+
+head(sftemp_ds_daily)
+
+target.buoy.daily <- target.buoy.daily %>%
+  mutate(
+    cols = target.buoy.projected$cols,
+    rows = target.buoy.projected$rows
+  )
+
+```
+
+### Merge Buoy and Satellite Data
+We will merge the datasets by index (date). As shown in the data frame, not all buoy dates have corresponding satellite data. We will match the available data, and any unmatched dates will be filled with NaN values.
+```{r}
+
+# Merge using a left join
+merged_df <- left_join(target.buoy.daily, sftemp_ds_daily, by = "time")
+
+head(merged_df, 3)
+```
+
+### Visualize Matched DataSets  
+Visualize the matched buoy and satellite datasets to assess the data alignment. 
+```{r}
+# Create the plot
+ggplot(merged_df, aes(x = time)) +
+  # Plot the buoy data
+  geom_point(aes(y = temp_buoy, color = 'Buoy Surface Temperature'), size =3) +
+  geom_line(aes(y = temp_buoy, color = 'Buoy Surface Temperature'), linewidth = 1, na.rm = TRUE) +
+  
+  # Plot the satellite (VIIRS Sea Ice Surface Temperature) data
+  geom_point(aes(y = temp_sat, color = 'VIIRS Sea Ice Surface Temperature'), shape = 15, size = 3) +
+  geom_line(aes(y = temp_sat, color = 'VIIRS Sea Ice Surface Temperature'), linewidth = 1, na.rm = TRUE) +
+  
+  # Set the y-axis limits
+  ylim(-35, 5) +
+  
+  # Labels and theme
+  labs(x = 'Time', y = 'Temperature (degrees C)', color = 'Legend') +
+  scale_color_manual(values = c('Buoy Surface Temperature' = 'red',
+                                'VIIRS Sea Ice Surface Temperature' = 'blue')) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+
+
+
