@@ -44,7 +44,7 @@ __PolarWatch Specific Examples__
 * [subset-polar-data-with-shapefile](subset-polar-data-with-shapefile)
   Download remote sensing data in polar stereographic projection from ERDDAP and subset it within the boundaries of Lake Iliamna in Alaska, where the lake shape data is presented in a different projection. R and python versions.
 * [jpss-seaice-concentration](jpss-projects/sport-jpss-seaice)
-  Process L2 or L3 sea ice data and visualize it on a map with a polar stereographic projection. Tutorial created by [SPoRT](https://weather.ndc.nasa.gov/sport/). Python only.
+  Process L2 or L3 sea ice data and visualize it on a map with a polar stereographic projection. This tutorial is created by [SPoRT](https://weather.ndc.nasa.gov/sport/) and is designed to be run in Google Colab with pre-downloaded data files. Python only.
  
 
 __Great Lakes Specific Examples__
