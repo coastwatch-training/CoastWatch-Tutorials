@@ -43,8 +43,9 @@ __PolarWatch Specific Examples__
   Extract sea ice concentration data in polar projection along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track.R and python versions.
 * [subset-polar-data-with-shapefile](subset-polar-data-with-shapefile)
   Download remote sensing data in polar stereographic projection from ERDDAP and subset it within the boundaries of Lake Iliamna in Alaska, where the lake shape data is presented in a different projection. R and python versions.
-* Link to Matt's Notebook
-  Notebook to visualize level 2 or level 3 sea ice data. Python only. 
+* [jpss-seaice-concentration](jpss-projects/sport-jpss-seaice)
+  Process L2 or L3 sea ice data and visualize it on a map with a polar stereographic projection. Tutorial created by [SPoRT](https://weather.ndc.nasa.gov/sport/). Python only.
+ 
 
 __Great Lakes Specific Examples__
 
