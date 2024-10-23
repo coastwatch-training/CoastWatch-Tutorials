@@ -6,7 +6,7 @@ history \| Modified July 2024
 
 This tutorial will demonstrate how to extract satellite data around a
 set of points defined by longitude, latitude, and time coordinates from
-ab animal telemetry tag that was acquired from the Animal Telemetry
+an animal telemetry tag that was acquired from the Animal Telemetry
 Network (<https://ioos.noaa.gov/project/atn/>).
 
 ## The tutorial demonstrates the following techniques
