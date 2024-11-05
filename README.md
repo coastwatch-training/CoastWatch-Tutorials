@@ -44,14 +44,7 @@ __PolarWatch Specific Examples__
 * [subset-polar-data-with-shapefile](subset-polar-data-with-shapefile)
   Download remote sensing data in polar stereographic projection from ERDDAP and subset it within the boundaries of Lake Iliamna in Alaska, where the lake shape data is presented in a different projection. R and python versions.
 * [seaice-thickness-climatology](seaice-thickness-climatology)
-  Calculate the lon-term monthly mean of sea ice thickness and assess the current sea ice thickness by analyzing anomalies and trends relative to the long-term mean. Python only
-
-
-  In this exercise, we will use the sea ice thickness data in the Arctic region, available through the PolarWatch data server, to study changes in monthly average sea ice thickness values. We will compare the current state of sea ice thickness to the historical mean and also evaluate the long-term trend from the data.
-
-
-
-
+  Calculate the long-term monthly mean of sea ice thickness and assess the current sea ice thickness by analyzing anomalies and trends relative to the long-term mean. Python only
 * [jpss-seaice-concentration](jpss-projects/sport-jpss-seaice)
   Process L2 or L3 sea ice data and visualize it on a map with a polar stereographic projection. This tutorial is created by [SPoRT](https://weather.ndc.nasa.gov/sport/) and is designed to be run in Google Colab with pre-downloaded data files. Python only.
  
