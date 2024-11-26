@@ -69,7 +69,7 @@ If you use these materials in your research or projects, please cite it as follo
 **Author**: NOAA CoastWatch  
 **DOI**: 10.5281/zenodo.14225895  
 **Version**: v1.0.1  
-**URL**: [Link to GitHub Repository or Zenodo DOI Page](https://zenodo.org/account/settings/github/repository/coastwatch-training/CoastWatch-Tutorials)
+**URL**: [https://github.com/coastwatch-training/CoastWatch-Tutorials](https://github.com/coastwatch-training/CoastWatch-Tutorials)
 
 ### Acknowledgement
 
