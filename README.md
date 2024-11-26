@@ -62,6 +62,15 @@ Access Great Lakes ice concentration data from ERDDAP, visualize it on a map, an
 * [gl-timeseries-surface-temp.ipynb](great-lakes-examples/gl-timeseries-surface-temp.ipynb)
  Download Great Lakes average water surface temperature and compute a long-term time series (2007-2024), identifying the warmest and coldest years.
 
+### Citation
+If you use these materials in your research or projects, please cite it as follows:
+
+**Project Name**: CoastWatch Tutorials  
+**Author**: NOAA CoastWatch  
+**DOI**: 10.5281/zenodo.14225895  
+**Version**: v1.0.1  
+**URL**: [https://github.com/coastwatch-training/CoastWatch-Tutorials](https://github.com/coastwatch-training/CoastWatch-Tutorials)
+
 ### Acknowledgement
 
 The training materials for the CoastWatch Program have been developed, reviewed, and edited with the contributions of many dedicated individuals.
@@ -70,6 +79,7 @@ __Contributors__: Melanie Abecassis, Peter Hollemans, Sun Bak Hospital, Songzhi 
 
 
 We also extend our gratitude to other external contributors whose specific acknowledgements are included within the training materials they helped to create.
+
 ### Questions?
 
 If you need any further assistance, questions or error reporting, please submit an issue on github.
