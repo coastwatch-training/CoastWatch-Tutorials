@@ -1,4 +1,6 @@
-## CoastWatch-Tutorials
+## CoastWatch-Tutorials 
+
+[![DOI](https://zenodo.org/badge/687659653.svg)](https://doi.org/10.5281/zenodo.14225894)
 
 Each tutorial module is designed to illustrate the process of accessing and manipulating satellite data from the CoastWatch ERDDAP data servers. In addition to this, the modules incorporate commonly employed data wrangling techniques and tasks as exemplars. 
 
