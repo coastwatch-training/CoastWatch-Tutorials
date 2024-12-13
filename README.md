@@ -63,7 +63,6 @@ Access Great Lakes ice concentration data from ERDDAP, visualize it on a map, an
  Download Great Lakes average water surface temperature and compute a long-term time series (2007-2024), identifying the warmest and coldest years.
 
 ### Citation
-If you use these materials in your research or projects, please cite it as follows:
 
 **Project Name**: CoastWatch Tutorials  
 **Author**: NOAA CoastWatch  
