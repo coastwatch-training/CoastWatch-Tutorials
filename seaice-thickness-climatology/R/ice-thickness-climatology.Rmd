@@ -1,0 +1,295 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#  Calculating anomaly and trend with sea ice thickness time series
+
+In this exercise, we will use the sea ice thickness data in the Arctic region, available through the PolarWatch data server, to study changes in monthly average sea ice thickness values.  We will calculate both the long-term trend at each location as well as estimate a changing seasonal.
+
+
+
+### The exercise demonstrates the following techniques:
+- Downloading, as a netcdf file, twice daily sea ice thickness data for a region sdelected at random for the years 1982 to late 2024.
+- Calculating a monthly mean from the twice-daily data.
+- Calculating the trend and changing seasonal  of monthly sea ice thickness means  using state-space models
+- Visualizing the result of the state-space analysis.
+
+###  Getting the data
+
+First we will load the packages that will be used:
+
+
+```{r}
+#load needed libraries
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(KFAS)
+library(ncdf4)
+library(tidyr)
+
+```
+
+Next the script to download the data (it is advised not to run this because it can take a long time to download and can fail - the resulting file is included), the region selected in projected coordinates was chosen arbitarily:
+
+
+```{r, echo = TRUE, eval = FALSE}
+download_url <- "https://polarwatch.noaa.gov/erddap/griddap/ncei_polarAPPX20_nhem.nc?cdr_sea_ice_thickness[(1982-10-31T14:00:00Z):1:(2024-10-31T14:00:00Z)][(-388546.6):1:(338411.6)][(-438681.7):1:(338411.6)]"
+download.file(download_url,  "ncei_polar.nc", 'wb')
+```
+
+
+
+The next step is to read in the netcdf file:
+
+```{r, echo = TRUE}
+root <- nc_open('data/ncei_polar.nc')
+time <- ncvar_get(root, 'time')
+rows <- ncvar_get(root, 'rows')
+columns <- ncvar_get(root, 'columns')
+ice_thick <- ncvar_get(root, 'cdr_sea_ice_thickness')
+nc_close(root)
+
+```
+
+"time" needs to be converted to an 'R' time, and then year and month extracted:
+
+```{r, echo = TRUE}
+time <- as.POSIXlt(time, origin = '1970-01-01', tz = "GMT")
+years <- year(time)
+uniqueYears <- unique(years)
+months <- month(time)
+
+```
+
+One solution to calculate the mean time series is to "melt" the data to long form, and then use functions like 'apply()' or 'tapply()' or any of the appropriate "tidyverse" functions to calculate the mean value for each month. Code below shows how to "melt" the data, but we will not do so because as you will find out you will quickly run out of memory and likely crash your R.
+
+```{r, echo = TRUE,  eval = FALSE}
+out <- list(year = years, month = months, rows = rows,  columns = columns)
+df <- as.data.frame(as.vector(ice_thick))
+meta  <- expand.grid(out, stringsAsFactors = FALSE)
+alldf <-  cbind(meta, df)
+
+```
+
+A simpler, less elegant but more straightforward method (and easier to debug) is to use loops:
+
+```{r, echo = TRUE}
+no_years <- length(unique(years))
+month_avg <- array(NA, dim = c(length(rows), length(columns), 12, no_years))
+for (myMonth in 1:12){
+  for (yearCount in 1:length(uniqueYears)){
+    myYear <- uniqueYears[yearCount]
+    data_point <- which((months == myMonth) & (years == myYear))
+    temp_data <- ice_thick[, , data_point]
+    month_avg[, , myMonth, yearCount] <- apply(temp_data, c(1, 2), function(x) mean(x, na.rm = TRUE))
+  }
+}
+# re-from array to be a time-series at each point
+month_avg_series <- array(month_avg, dim = c(length(rows), length(columns), 12*length(uniqueYears)))
+#  remove the last two months of 2024 which are missing
+month_avg_series <- month_avg_series[, , 1:514]
+# create a date-time object to be used with plotting and other functions
+date_time <- seq.Date(from = as.Date("1982-01-01"), to = as.Date("2024-10-01"), by = "month")
+
+```
+
+In the code above, the "apply()" function applies the function "mean()" elementwise, and 'month_avg_series' just flattens the calculated array so that there is a time-series for each time period at each location, rather than being subscripted by month and year.
+
+In order to examine the series, we will use a state-space decomposition of the data, which separates the data into a nonparametric trend and plus a seasonal component that can vary in phase and amplitude. This is implemented in the 'R' package 'KFAS'. To start, a function is defined that sets up the state-space model, another that is used with the optimization routine to re-evaluate the function for the new parameters, and a function to call what is needed to do all of the calculation steps:
+
+```{r, echo=TRUE}
+
+### define the model in KFAS
+state_space_decomp <- function(dataSeries){
+  #  set model starting values
+  irreg_init <- 0.5 * log(1)
+  level_init <- 0.5 * log(.01)
+  season_init <-  0.5 * log(.1)
+  modelts_inits <- c(irreg_init, level_init, season_init)
+  # define the state-space model in KFAS
+  model_ice <- SSModel(dataSeries ~ SSMtrend(degree = 1 , Q = list(NA)) +
+                        SSMseasonal(12, Q=NA, sea.type = "trigonometric"),  H = matrix(NA))
+  #  fit the model to the data
+  model_ice_Fit <- fitSSM(model = model_ice, inits = modelts_inits, updatefn = update_modelts)
+  # calculate the smoothed values for the optimal parameters
+  smooth_ice <- KFS(model_ice_Fit$model, filtering = "state", smoothing = "state")
+  # extract the estimated trend and seasonal
+  level <-  signal(smooth_ice, states = 'level')$signal
+  season <- signal(smooth_ice, states = 'season')$signal
+  smooths <- data.frame(level = level, season = season)
+  
+}
+### define the function to update model for the optimization routine 
+update_modelts <- function(pars, model) {
+  finite_test <- 0.5 * log(.000001)
+  if (pars[1] < finite_test) {
+    pars[1] <- finite_test
+  }
+  model$H[1,1,1] <- exp(2. * pars[1])
+  temp3 <- exp(c(2 * pars[2], rep((2 * pars[3]), 11)))
+  diag(model$Q[,,1]) <-  temp3
+  return(model)
+}
+
+
+```
+
+To get an idea of the output from the state-space model we look at the first series and estimate the model:
+
+```{r, echo=TRUE}
+dataSeries <- month_avg_series[1, 1, ]
+# make certain we start at the first actual value in the series
+nobs <- length(na.omit(dataSeries))
+ice_decomp <- state_space_decomp(dataSeries)
+
+```
+
+In order to examine the output, some 'ggplot2' plotting functions are defined:
+
+```{r, echo = TRUE}
+plot_trend_data <- function(dataSeries, level, date_time){
+  df <- data.frame(
+    date_time <- date_time,
+    data = dataSeries,
+    trend = level
+  )
+  
+  p <- ggplot(df, aes(x = date_time)) +
+    geom_line(aes(y = data, color = "Data"), linewidth = 0.5) +    # Plot the data
+    geom_line(aes(y = trend, color = "Trend"), linewidth = 0.5) +  # Plot the trend
+    labs(title = "Data and Trend Plot",
+         x = "Time",
+         y = "Ice Thickness") +
+    scale_color_manual(values = c("Data" = "black", "Trend" = "red")) +  # Customize colors
+    theme_minimal()
+  return(p)
+}
+
+
+plot_season <- function(season, date_time){
+  df <- data.frame(
+    date_time = date_time,
+    season = season
+  )
+  ggplot(df, aes(x = date_time, y = season)) +
+    geom_line(size = 0.5) +
+    labs(title = "Ice Thickness Seasonal Component", x = "Time", y = "Ice Thickness") +
+    theme_minimal()
+  
+}
+
+plot_season_month  <- function(season, date_time){
+   myMonth <- month(date_time)
+   myYear <- year(date_time)
+   df <- data.frame(
+         month = myMonth,  
+         year = myYear,   
+         season = season
+     )
+   
+     monthly_means <- df %>%
+           group_by(month) %>%
+           summarise(mean_value = mean(season))
+     
+       df <- df %>%
+             left_join(monthly_means, by = "month")
+       
+         p <- ggplot(df, aes(x = factor(month), y = season, group = year, color = factor(year))) +
+             geom_line() +
+             geom_line(aes(y = mean_value), color = "gray") +
+             labs(x = "Month", y = "Values", title = "Monthly Series and Monthly Mean") +
+             theme_minimal() +
+             theme(legend.title = element_blank())
+       return(p) 
+}
+
+
+
+plot_season_polar  <- function(season, date_time){
+  myMonth <- month(date_time)
+  myYear <- year(date_time)
+  df <- data.frame(
+         month = myMonth,  
+         year = myYear,   
+         season = season
+     )
+   p <- ggplot(df, aes(x = factor(month), y = season, group = year)) +
+         geom_line(aes(color = factor(year))) +
+         coord_polar() +
+         labs(x = "Month", y = "Values", title = "Polar Plot of Time Series") +
+         theme_minimal() +
+         theme(legend.position = "right") 
+    return(p)
+}
+```
+
+Plot the trend versus the series:
+
+```{r}
+p <- plot_trend_data(dataSeries, ice_decomp$level, date_time)
+p
+```
+
+Plot the seasonal:
+
+```{r}
+p <- plot_season(ice_decomp$season, date_time)
+p
+```
+
+In interpreting the seasonal plot,  even though in theory the seasonal and trend are independent,  in practice since the ice thickness has a lower bound of zero, if the trend decreases this limits the amount the seasonal can vary downward. 
+
+
+Plot each year's season on one graph:
+
+```{r}
+p <- plot_season_month(ice_decomp$season, date_time)
+p
+```
+
+Make a polar plot of the seasonal:
+
+```{r}
+p <- plot_season_polar(ice_decomp$season, date_time)
+p
+```
+
+What can clearly be seen in the seasonal is how it has been slowly but consistently changing over roughly decadal time scales.  
+
+To examine another location just change the indices in the data array,  that is set irow and jcol to the desired values and run the code below:
+
+```{r, echo = TRUE, eval = FALSE}
+    dataSeries <- month_avg_series[irow, jcol, ]
+    # make certain we start at the first actual value in the series
+    ice_decomp <- state_space_decomp(dataSeries)
+    p_trend <- plot_trend_data(dataSeries, ice_decomp$level, date_time)
+    p_season <- plot_season(ice_decomp$season, date_time)
+    p_season_month <- plot_season_month(ice_decomp$season, date_time)
+    p_season_polar <- plot_season_polar(ice_decomp$season, date_time)
+    
+
+```
+
+To get the state-space decomposition for all of the series,  just iterate over rows and columns  (this can take 5 minutes or there abouts so a good time to stretch you legs):
+
+```{r, echo = TRUE, eval = FALSE}
+#  create arrays of NA to store results
+trends <- array(NA_real_, dim = c(length(rows), length(columns), length(date_time)))
+seasons <- array(NA_real_, dim = c(length(rows), length(columns), length(date_time)))
+
+# loop over rows and columns
+for (irow in seq(1, length(rows))) {
+  for (jcol in seq(1, length(columns))) {
+    dataSeries <- month_avg_series[irow, jcol, ]
+    # make certain we start at the first actual value in the series
+    ice_decomp <- state_space_decomp(dataSeries)
+    trends[irow, jcol, ] <- ice_decomp$level
+    seasons[irow, jcol, ] <- ice_decomp$season
+  }
+}
+
+```
+
+This analysis looks at each location separately and can be informative,  but a better analysis,  beyond the scope of this tutorial,  would be to model all the locations jointly,  both to take into account spatial correlation as well as the fact that neighboring locations most like will have more similar locations,  so some amount of spatial smootiing or regularization would be called for.
