@@ -8,7 +8,8 @@ Note: The mapping code in this tutorial uses the Mapping Toolbox.  If you don't 
 Because ERDDAP includes RESTful services, you can download data listed on any ERDDAP platform from Matlab using the URL structure.  For example, the following page allows you to subset monthly SST data: https://oceanwatch.pifsc.noaa.gov/erddap/griddap/CRW_sst_v3_1_monthly.html 
 Select your region and date range of interest, then select the '.nc' (NetCDF) file type and click on "Just Generate the URL".  
 
-[image](images/erddap.png)
+![erddap interface](images/erddap.png)
+
 
 In this specific example, the URL we generated is:
 `https://oceanwatch.pifsc.noaa.gov/erddap/griddap/CRW_sst_v3_1_monthly.nc?sea_surface_temperature%5B(2018-1-31T12:00:00Z):1:(2018-12-31T12:00:00Z)%5D%5B(17):1:(30)%5D%5B(195):1:(210)%5D `
@@ -123,7 +124,7 @@ contourm(lat, lon, sst(:,:,1)', [20 20], 'k');
 geoshow('landareas.shp', 'FaceColor', [0.5 0.5 0.5]);
 tightmap % This removes an additional frame around the map that can interfere with the labeling
 ```
-[image](images/monthlysst.png)
+![January SST](images/monthlysst.png)
 
 ### Plotting a Time Series
 
@@ -152,7 +153,7 @@ xlabel('Month');
 ylabel('SST (Deg C)');
 ```
 
-[image](images/timeseries.png)
+![SST time series](images/timeseries.png)
 
 
 ### Creating a map of average SST over a year
@@ -184,4 +185,4 @@ tightmap
 
 ```
 
-[image](images/meansst_jan.png)
+![Jan mean sst](images/meansst_jan.png)
