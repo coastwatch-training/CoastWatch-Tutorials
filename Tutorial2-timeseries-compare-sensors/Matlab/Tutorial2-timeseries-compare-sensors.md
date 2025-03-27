@@ -209,6 +209,8 @@ ylabel('Chlorophyll-a');
 ```
 
 ![Chloraophyll-a from MODIS and VIIRS](images/chlora_timeseries.png)
+
+
 You can see that the values of chlorophyll-a concentration don't match across sensors.
 
 ### Make another plot with the ESA OC-CCI data to compare
