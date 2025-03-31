@@ -53,14 +53,19 @@ __PolarWatch Specific Examples__
 
 __Great Lakes Specific Examples__
 
-* [gl-access-sat-surface-temp-data](great-lakes-examples/gl-access-sat-surface-temp-data.ipynb)
+* [gl-access-sat-surface-temp-data](great-lakes-examples/Python/gl-access-sat-surface-temp-data.ipynb)
 Access and subset Lake Erie water surface temperature data, and plot both individual time steps and a time series. 
-* [gl-timeseries-chloro-from-diff-sensors](great-lakes-examples/gl-timeseries-chloro-from-diff-sensors.ipynb)
+* [gl-timeseries-chloro-from-diff-sensors](great-lakes-examples/Python/gl-timeseries-chloro-from-diff-sensors.ipynb)
 Download mean chlorophyll-a concentration data from two sensors, MODIS (2002-2017) and VIIRS (2018-2023), to compare the values.
-* [gl-ice-plot-timeseries-ice-conc.ipynb](great-lakes-examples/gl-ice-plot-timeseries-ice-conc.ipynb)
+* [gl-ice-plot-timeseries-ice-conc.ipynb](great-lakes-examples/Python/gl-ice-plot-timeseries-ice-conc.ipynb)
 Access Great Lakes ice concentration data from ERDDAP, visualize it on a map, and calculate the monthly means.
-* [gl-timeseries-surface-temp.ipynb](great-lakes-examples/gl-timeseries-surface-temp.ipynb)
+* [gl-timeseries-surface-temp.ipynb](great-lakes-examples/Python/gl-timeseries-surface-temp.ipynb)
  Download Great Lakes average water surface temperature and compute a long-term time series (2007-2024), identifying the warmest and coldest years.
+
+__Long Island Sound Specific Examples__
+* [lis-chlora-dynamics.ipynb](long-island-sound-examples/Python/lis-chlora-dynamics.ipynb)
+Download Sentinel-3 OLCI water quality data optimized for Long Island Sound from CoastWatch ERDDAP data server. Visualize
+monthly chlorophyll-a in a multi-panel figure and compare chlorophyll-a time series across regions.
 
 ### Citation
 
@@ -74,7 +79,7 @@ Access Great Lakes ice concentration data from ERDDAP, visualize it on a map, an
 
 The training materials for the CoastWatch Program have been developed, reviewed, and edited with the contributions of many dedicated individuals.
 
-__Contributors__: Melanie Abecassis, Peter Hollemans, Sun Bak Hospital, Songzhi Liu, Roy Mendelssohn, Madison Richardson, Dale Robinson, Jennifer Sevadjian, Hui (Daisy) Shi, Michael Soracco, Shelly Tomlinson, Ron Vogel, Victoria Wegman, Cara Wilson  
+__Contributors__: Melanie Abecassis, Peter Hollemans, Sun Bak Hospital, Songzhi Liu, Roy Mendelssohn, Madison Richardson, Dale Robinson, Jennifer Sevadjian, Jonathan Sherman,  Hui (Daisy) Shi, Michael Soracco, Shelly Tomlinson, Ron Vogel, Victoria Wegman, Cara Wilson  
 
 
 We also extend our gratitude to other external contributors whose specific acknowledgements are included within the training materials they helped to create.
