@@ -19,12 +19,16 @@ figure
 axesm('mercator', 'MapLatLimit', [15 50], 'MapLonLimit', [120 255], 'MeridianLabel', 'on', ...
     'ParallelLabel', 'on', 'MLabelLocation', 120:20:-100, 'PLabelLocation', 20:10:50, ...
     'MLabelParallel', 'south'); % This is the basemap
+
 % Add land and color it grey
 geoshow('landareas.shp', 'FaceColor', [0.5 0.5 0.5]);
+
 % Add the turtle track, in black
 plotm(turtle.mean_lat, turtle.mean_lon, 'k');
+
 % Mark the first location with a red triangle
 plotm(turtle.mean_lat(1), turtle.mean_lon(1), 'rv', 'MarkerFaceColor', 'r');
+
 % Add a title
 title('Turtle #25317');
 tightmap

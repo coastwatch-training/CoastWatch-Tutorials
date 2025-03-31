@@ -20,20 +20,25 @@ We can see in the information above that longitude is in the 0 - 360 degree form
 ```matlab
 % Access the Lat and Lon coordinates
 PMNM = shaperead('pmnm_py/PMNM_py_files/PMNM_py.shp','UseGeoCoords',true);
+
 % Convert negative longitudes to positive values
 neg_lon = find(PMNM.Lon < 0);
 PMNM.Lon(neg_lon) = PMNM.Lon(neg_lon) + 360;
 clear neg_lon
+
 % Find the minimum and maximum lat and lon values, for using to download
 % SST data
 [Lon_min, Lon_max] = bounds(PMNM.Lon);
 [Lat_min, Lat_max] = bounds(PMNM.Lat);
+
 % Now we can follow the steps we used in the earlier tutorials to download
 % the SST data
 time_full = ncread('https://oceanwatch.pifsc.noaa.gov/erddap/griddap/goes-poes-monthly-ghrsst-RAN', ...
    'time');
+
 % Convert this to [Y M D H M S]
 time_full_ymdhms = datevec(time_full/86400 + datenum([1970 1 1 0 0 0])); 
+
 % In this particular example, we're interested in March - November 2015
 time_aoi = find(time_full_ymdhms(:,1) == 2015 & time_full_ymdhms(:,2) >= 3 & ...
     time_full_ymdhms(:,2) <= 11);
@@ -41,6 +46,7 @@ lat_full = ncread('https://oceanwatch.pifsc.noaa.gov/erddap/griddap/goes-poes-mo
     'latitude');
 lon_full = ncread('https://oceanwatch.pifsc.noaa.gov/erddap/griddap/goes-poes-monthly-ghrsst-RAN', ...
     'longitude');
+
 % Find longitudes that span our area of interest
 % Rounding the minimum down and the maximum up
 lon_aoi = find(lon_full >= floor(Lon_min) & lon_full <= ceil(Lon_max));
@@ -49,16 +55,20 @@ lon_aoi = find(lon_full >= floor(Lon_min) & lon_full <= ceil(Lon_max));
 lat_aoi = find(lat_full >= floor(Lat_min) & lat_full <= ceil(Lat_max));
 % Start coordinates
 aoi_start = [lon_aoi(1) lat_aoi(1) time_aoi(1)];
+
 % Coordinates to span
 aoi_span = [length(lon_aoi) length(lat_aoi) length(time_aoi)];
+
 % Download the data of interest
 sst = ncread('https://oceanwatch.pifsc.noaa.gov/erddap/griddap/goes-poes-monthly-ghrsst-RAN', ...
     'analysed_sst', aoi_start, aoi_span);
+
 % Area and time indices, in a format Matlab is expecting
 lat = double(lat_full(lat_aoi));
 lon = double(lon_full(lon_aoi));
 time = time_full(time_aoi);
 time_ymdhms = time_full_ymdhms(time_aoi,:); % Note that this variable has 6 columns, unlike the others
+
 % Tidying up
 clear *aoi* *full* *min *max
 ```
@@ -76,29 +86,37 @@ Now we have everything we need to clip the SST data to just those within the bou
 [XLON, XLAT] = meshgrid(lon, lat);
 [IN ON] = inpolygon(XLON, XLAT, PMNM.Lon, PMNM.Lat);
 mask2D = IN | ON;
+
 % Replicate it over the number of time steps, which is the third dimension
 % of our sst variable
 mask3D = permute(repmat(mask2D,[1 1 size(sst,3)]),[2 1 3]);
+
 % Set to NaN all points not within the polygon
 sst(~mask3D) = NaN;
 ```
 
 ### Plotting the data
 The extracted data contains several time steps (months) of sst data in the monument boundaries.  Let's make a plot of the second time step.   Also, we can see above where we used 'ncdisp', that the units for these data are Kelvin.  Let's changes this to degrees Celsius when we make our map. 
+
 ```matlab
 figure
 axesm('mercator', 'MapLatLimit', [18 32], 'MapLonLimit', [177 207], 'MeridianLabel', 'on', ...
     'ParallelLabel', 'on', 'MLabelLocation', -180:5:-155, 'PLabelLocation', 20:5:30, ...
     'MLabelParallel', 'south'); % This is the basemap
+
 % Plot SST for the second time step, in degrees C, with 50 contour levels
 contourm(lat, lon, sst(:,:,2)'-273.15, 50, 'fill', 'on'); 
+
 % Title the map
 title(sprintf('SST %s', datestr(time_ymdhms(2,:), 'mmm-yyyy')));
+
 % Set the color map to jet colors, with 50 levels
 colormap(jet(50));
+
 % Add a color bar and label it
 c = colorbar;
 c.Label.String = 'SST';
+
 % Add land and color it grey
 geoshow('landareas.shp', 'FaceColor', [0.5 0.5 0.5]);
 tightmap
