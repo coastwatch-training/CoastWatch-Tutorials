@@ -79,7 +79,7 @@ monthly chlorophyll-a in a multi-panel figure and compare chlorophyll-a time ser
 
 The training materials for the CoastWatch Program have been developed, reviewed, and edited with the contributions of many dedicated individuals.
 
-__Contributors__: Melanie Abecassis, Peter Hollemans, Sun Bak Hospital, Songzhi Liu, Roy Mendelssohn, Madison Richardson, Dale Robinson, Jonathan Sherman, Jennifer Sevadjian, Hui (Daisy) Shi, Michael Soracco, Shelly Tomlinson, Ron Vogel, Victoria Wegman, Cara Wilson  
+__Contributors__: Melanie Abecassis, Peter Hollemans, Sun Bak Hospital, Songzhi Liu, Roy Mendelssohn, Madison Richardson, Dale Robinson, Jennifer Sevadjian, Jonathan Sherman,  Hui (Daisy) Shi, Michael Soracco, Shelly Tomlinson, Ron Vogel, Victoria Wegman, Cara Wilson  
 
 
 We also extend our gratitude to other external contributors whose specific acknowledgements are included within the training materials they helped to create.
