@@ -62,6 +62,11 @@ Access Great Lakes ice concentration data from ERDDAP, visualize it on a map, an
 * [gl-timeseries-surface-temp.ipynb](great-lakes-examples/gl-timeseries-surface-temp.ipynb)
  Download Great Lakes average water surface temperature and compute a long-term time series (2007-2024), identifying the warmest and coldest years.
 
+__Long Island Sound Specific Examples__
+* [lis-chlora-dynamics.ipynb](long-island-sound-examples/lis-chlora-dynamics.ipynb)
+Download Sentinel-3 OLCI water quality data optimized for Long Island Sound from CoastWatch ERDDAP data server. Visualize
+monthly chlorophyll-a in a multi-panel figure and compare chlorophyll-a time series across regions.
+
 ### Citation
 
 **Project Name**: CoastWatch Tutorials  
@@ -74,7 +79,7 @@ Access Great Lakes ice concentration data from ERDDAP, visualize it on a map, an
 
 The training materials for the CoastWatch Program have been developed, reviewed, and edited with the contributions of many dedicated individuals.
 
-__Contributors__: Melanie Abecassis, Peter Hollemans, Sun Bak Hospital, Songzhi Liu, Roy Mendelssohn, Madison Richardson, Dale Robinson, Jennifer Sevadjian, Hui (Daisy) Shi, Michael Soracco, Shelly Tomlinson, Ron Vogel, Victoria Wegman, Cara Wilson  
+__Contributors__: Melanie Abecassis, Peter Hollemans, Sun Bak Hospital, Songzhi Liu, Roy Mendelssohn, Madison Richardson, Dale Robinson, Jonathan Sherman, Jennifer Sevadjian, Hui (Daisy) Shi, Michael Soracco, Shelly Tomlinson, Ron Vogel, Victoria Wegman, Cara Wilson  
 
 
 We also extend our gratitude to other external contributors whose specific acknowledgements are included within the training materials they helped to create.
