@@ -211,7 +211,9 @@ ggplot(monthly_mean, aes(x = longitude, y = latitude, fill = chlor_a)) +
 
 ```
 
-![images](facet_chla.png)
+![image](https://github.com/user-attachments/assets/3738f849-beca-40b7-aea4-55ec95c1dad7)
+
+
 
 ## Compute the annual average for the region
 
@@ -244,7 +246,8 @@ ggplot(yearly_mean, aes(x = longitude, y = latitude, fill = chlor_a)) +
 
 ```
 
-![images](average_chlorophyll-a.png)
+![image](https://github.com/user-attachments/assets/4d1b7ea0-f5bd-44ba-904f-e7d6391d5c5b)
+
 
 ## Spatial Subset and Time Series Comparing Chlorophyll-a Seasonal Cycles in Western and Eastern Long Island Sound
 
@@ -332,4 +335,5 @@ ggplot(ts_combined, aes(x = period, y = chlor_a, color = region)) +
 
 ```
 
-![images](chla_timeseries.png)
+![image](https://github.com/user-attachments/assets/412001c0-f132-4260-af6b-add2b82467be)
+
