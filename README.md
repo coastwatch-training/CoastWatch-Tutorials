@@ -63,7 +63,7 @@ Access Great Lakes ice concentration data from ERDDAP, visualize it on a map, an
  Download Great Lakes average water surface temperature and compute a long-term time series (2007-2024), identifying the warmest and coldest years.
 
 __Long Island Sound Specific Examples__
-* [lis-chlora-dynamics.ipynb](long-island-sound-examples/Python/lis-chlora-dynamics.ipynb)
+* [lis-chlora-dynamics](long-island-sound-examples)
 Download Sentinel-3 OLCI water quality data optimized for Long Island Sound from CoastWatch ERDDAP data server. Visualize
 monthly chlorophyll-a in a multi-panel figure and compare chlorophyll-a time series across regions.
 
