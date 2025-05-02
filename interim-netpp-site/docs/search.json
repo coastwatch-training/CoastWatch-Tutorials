@@ -1,0 +1,156 @@
+[
+  {
+    "objectID": "stats2.html",
+    "href": "stats2.html",
+    "title": "\nStatistical Analysis\n",
+    "section": "",
+    "text": "Statistical Analysis\nTo evaluate how the interim primary productivity products (VIIRS-SNPP and VIIRS-NOAA-20) differ from the legacy product (MODIS-Aqua), we conducted a comprehensive statistical analysis that includes the following methods:\nFor the VIIRS SNPP analysis we used a 10-year time period from January 2013 to December 2023. For the VIIRS NOAA-20 analysis we used a 5-year time period from January 2018 to December 2023."
+  },
+  {
+    "objectID": "stats2.html#summary-of-results",
+    "href": "stats2.html#summary-of-results",
+    "title": "\nStatistical Analysis\n",
+    "section": "Summary of Results",
+    "text": "Summary of Results\n\nVIIRS SNPP and VIIRS NOAA-20 interim primary productivity products both have similar values as the legacy product. Multi-year analysis showed that the mean monthly difference between either interim product and the legacy product was no more that 7%. Spatially, differences between the interim and legacy products were typically less than 5% in open ocean regions, 5-10% in subtropical gyres, and greater than 20% at high latitudes and coastal upwelling zones.\nInterim SNPP and NOAA-20 produce trend patterns that are consistent with the legacy product. Visually, the global trend maps display negative trends in subtropical gyres and major current systems, and positive trends in high latitude and coastal upwelling regions. Contingency analysis further supports the similarity in trend patterns, showing 86% agreement between SNPP and the legacy product, and over 88% agreement between NOAA-20 and the legacy product. Cohen’s Kappa values of 0.86 (SNPP) and 0.89 (NOAA-20) indicate almost perfect agreement in slope trend direction between the interim and legacy netPP products.\n\nThe relatively small differences between the interim products and the legacy product suggests that either interim would be a suitable replacement for the legacy product in many applications."
+  },
+  {
+    "objectID": "stats2.html#psi",
+    "href": "stats2.html#psi",
+    "title": "\nStatistical Analysis\n",
+    "section": "Unbiased Relative Difference (ψ)",
+    "text": "Unbiased Relative Difference (ψ)\nIn plain language, Unbiased Relative Difference (ψ) is the difference between interim and legacy primary productivity values (netPP), normalized to the mean of the two values. Normalizing to the mean avoids the bias of arbitrarily selecting one product as the reference. For a detailed explanation of the calculation, see the Appendix. This analysis allows us to determine how similar netPP values are between the interim and legacy products.\nFor our analysis, we calculated ψ for each pixel in our global grid for each month over a multi-year timespan. The resulting monthly maps of global ψ allowed us to generate a timeseries of mean global monthly ψ and a map of the multi-year mean ψ for each pixel in our global grid.\n\n\n Figure 1. Conceptual workflow for calculating unbiased relative difference (ψ) between interim and legacy satellite-derived net primary productivity (netPP) products. The yellow layers represent monthly netPP data from the Interim and Legacy datasets. Matching pixels are connected by the red lines. Monthly ψ maps are calculated for each time step, forming the blue layers. A time series of ψ is extracted from the blue stack, and a multi-year average is computed (green layer). \n\n\nTemporal Variability\nFor the VIIRS SNPP interim product relative to the legacy product, monthly mean global ψ values are positive over most of the 10-year timeseries, indicating that the interim netPP values are on average greater than the legacy values. The values for the interim product were quite similar to the legacy values, as indicated by ψ values ranging from 0 to 0.07 (0-7% difference from the legacy product) over the entire timeseries.\nFor the VIIRS NOAA-20 interim product, monthly mean global ψ values were also positive over most of the 5-year timeseries and within a range of 0 to 0.07 (0-7% difference from the legacy product). These values were slightly lower than those observed for SNPP over its respective time period, but similarly indicate that the interim netPP estimates were generally higher than those from the legacy product.\n\nTimeseries: Monthly Means of Unbiased Relative Difference\n  Figure 2. The timeseries of mean global ψ values for each month from January 2013 to December 2022 (a ten-year period). \n\n\n\nSpatial Variability\nThe 10-year average map (Figure 3a) reveals the spatial variable in ψ, with most oceanic regions showing &lt;5% difference (lightest blue and pink) between the two netPP products. However, in the tropical and subtropical gyres there is a 5-10% difference between SNPP and the legacy product (medium blue) and areas of higher differences (&gt;20%) are visible at high latitudes and in coast upwelling regions.\nThe 5-year average map (Figure 3b) shows similar spatial patterns in ψ that are consistent with those observed for SNPP. Most open ocean regions show &lt;5% difference between NOAA-20 and legacy netPP products. Moderate differences (5-10%) are apparent in the subtropical gyres and larger differences (&gt;20%) are observed at higher latitudes in both hemispheres and along coastal upwelling regions. Compared to SNPP, the NOAA-20 map contains slightly larger areas of difference.\n\nUnbiased Relative Difference\n  Figure 3. Global maps of the multi-year mean unbiased relative difference (ψ) comparing VIIRS-SNPP(a) and VIIRS-NOAA(b) with MODIS-Aqua. Positive (blue) values indicate that the interim product netPP values are larger than those of the legacy product and negative (red) values indicate that the interim product netPP values are less than those of the legacy product."
+  },
+  {
+    "objectID": "stats2.html#trends-analysis",
+    "href": "stats2.html#trends-analysis",
+    "title": "\nStatistical Analysis\n",
+    "section": "Trends Analysis",
+    "text": "Trends Analysis\nTemporal trends were calculated globally for the interim and legacy primary productivity products using linear regression methods. For our analysis, we determined the slopes of netPP versus time for each pixel in our global grid over a multi-year timespan using monthly netPP data. Results for the interim and legacy products were compared to identify how well the two products agree on the presence or absence of long-term trends. The purpose of this analysis was to identify how well the interim and legacy primary productivity timeseries agree using an arbitrarily chosen trend analysis method, not to accurately identify environmentally relevant trends in the ocean. We also applied statistical methods Contingency Matrices and Cohen’s Kappa to evaluate the strength of agreement. For a detailed explanation of the calculations, see the Appendix.\n\n\n Figure 4. Conceptual workflow illustrating how trends in netPP are calculated using linear regression. Monthly netPP maps from January 2013 to December 2022 (yellow layers) are used to estimate the slope (β) at each pixel across time. The slope values are compiled into a spatial map (blue layer) representing trend in productivity over the timeseries. \n\nVisually, the global maps of slopes show very similar trend patterns, indicating that the interim and legacy products yield similar trends (Figure 5). The SNPP (a) and legacy (b) maps both show negative trends (red) in subtropical gyres and major current systems, and positive trends (blue) are shown in higher latitudes and coastal upwelling zones. Relative to the legacy product, the SNPP map displays more positive trends in coastal regions.\nThe NOAA-20 (c) and legacy (d) maps also show similar large-scale patterns, with negative trends across much of the subtropical gyres and open ocean, and positive trends concentrated in polar and coastal upwelling regions. Compared to the legacy product, the NOAA-20 map exhibits slightly stronger trend magnitudes, particularly in the coastal and high-latitude zones.\n\nMulti-Year Trend Maps\n\n Figure 5. Linear trends in monthly primary productivity from (a) interim VIIRS SNPP and (b) legacy products for the years 2013-2022. Linear trends in monthly primary productivity from (c) interim VIIRS NOAA-20 and (d) legacy products for the years 2018-2022. Positive values (blue) indicate increasing trends in netPP, while negative values (red) indicate decreasing trends. \n\n\nContingency Matrices and Cohen’s Kappa\nTo obtain more quantitative results from the trends analysis, we built contingency matrices using the slope data. Contingency analysis is an approach used to test whether or not there is an association between categorical variables. We treated the slopes from the trend analysis as categorical variables by recording whether the slope had a statistically significant positive value (β &gt; 0), a statistically negative value (β &lt; 0), or if the slope was not significantly different from zero (n.s.). This categorization was done for each pixel in the global maps of slopes for both the interim and legacy products. Therefore, for each pixel location there were nine possible slope combinations (Figure 6). The cells on the downward-sloping diagonal (from left to right) are the combinations where the interim and legacy products agree.\n\n\n Figure 6. Contingency matrix of all possible combinations of pixel location trends and significance outcomes between the interim and legacy netPP products. Each cell describes one of nine possible category pairings based on whether a pixel exhibited no significant trends (n.s.), a significant positive trend (β &gt; 0), or a significant negative trend (β &lt; 0) in each dataset. Columns represent trend categories from the legacy product; rows represent trend categories from the interim product. \n\nFor our analysis comparing the interim product to the legacy product, the percent of the total pixels that fell into each of the nine combinations was tallied and placed in the corresponding cell in the matrix. Tallying the values on the downward-sloping diagonal yielded the percentage of pixels where the slope trends were in agreement. In addition, we use Cohen’s Kappa as a statistical measure to quantify reliability of the agreement between the two products, accounting for the possibility that they could agree by chance. Cohen’s Kappa values range from &lt; 0 (no agreement) to 1 (perfect agreement); Cohen’s Kappa was interpreted using a standard scale Viera and Garrett 2005. Qualitative categories for Cohen’s Kappa values are listed in Table 1.\n\n Table 1. Scale for Cohen’s Kappa coefficient values, indicating the level of agreement between two categorical classifications. The scale ranges from &lt; 0 (no agreement) to 1.00 (perfect agreement), with descriptive categories assigned to each interval.  \n\nTallying the values on the downward-sloping diagonal contingency matrix yield that co-occurrence slope trends shows 86% agreement between the SNPP interim and legacy products (Figure 7a) and over 88% agreement between the NOAA-20 interim and legacy products (Figure 7b). The Cohen’s Kappa values of 0.86 for the SNPP interim to legacy comparison and 0.89 for the NOAA-20 interim to legacy comparison, translated qualitatively to almost perfect agreement.\n\nContingency Matrices for Interim and Legacy Products \n Figure 7. Contingency table and Cohen’s Kappa statistic comparing (a) the VIIRS SNPP and the legacy products and (b) the VIIRS NOAA-20 and the legacy products."
+  },
+  {
+    "objectID": "stats2.html#download-statistical-analysis-data-products",
+    "href": "stats2.html#download-statistical-analysis-data-products",
+    "title": "\nStatistical Analysis\n",
+    "section": "Download Statistical Analysis Data Products",
+    "text": "Download Statistical Analysis Data Products\nAccess datasets used in the statistical analysis, including unbiased and biased relative differences, correlations, trends, and contingency matrices.\n\n\nUnbiased Relative Difference (ψ)\n\n\n\nVIIRS-SNPP - MODIS-Aqua\n\n\nVIIRS-NOAA-20 - MODIS-Aqua\n\n\n\nLinear Regression Trends\n\n\n\nMODIS-Aqua & VIIRS SNPP\n\n\nMODIS-Aqua & VIIRS NOAA-20"
+  },
+  {
+    "objectID": "stats2.html#references",
+    "href": "stats2.html#references",
+    "title": "\nStatistical Analysis\n",
+    "section": "References",
+    "text": "References\n\nMélin, F., V. Vantrepotte, A. Chuprin, M. Grant, T. Jackson, and S. Sathyendranath. 2017. Assessing the fitness-for-purpose of satellite multi-mission ocean color climate data records: A protocol applied to OC-CCI chlorophyll- a data. Remote Sensing of Environment 203:139–151. \n\n\n\n Viera, A. J., and J. M. Garrett. 2005. Understanding interobserver agreement: the kappa statistic. Family Medicine 37(5):360–363."
+  },
+  {
+    "objectID": "stats2.html#appendix",
+    "href": "stats2.html#appendix",
+    "title": "\nStatistical Analysis\n",
+    "section": "Appendix",
+    "text": "Appendix\nThe following sections provide detailed explanations of how the statistical analyses between the legacy and interim products were calculated. If you are interested in exploring or replicating these analyses yoursel, check out our Code Gallery for step-by-step tutorials.\n\nUnbiased Relative Difference (ψ)\nThe pixel-by-pixel unbiased relative difference (ψnetPP) was computed for the globe for each month at 9km resolution across two datasets.\nThe unbiased relative difference (ψnetPP) is calculated for each pixel as follows:\n\n\n\\(ψ^{netPP} = \\frac{netPP_{VIIRS} - netPP_{MODIS}}{\\left(\\frac{netPP_{VIIRS} + netPP_{MODIS}}{2}\\right)}\\)\n\n\n\nWhere:\n\n\n\nThe difference between VIIRS-based netPP (netPPVIIRS) and MODIS-based netPP (netPPMODIS) values for that pixel is divided by the mean of netPPVIIRS and netPPMODIS.\n\n\nThis metric allows for sensor-to-sensor consistency assessment, ensuring that variations are not biased by absolute magnitude differences.\n\n\nTrends Analysis\nThe purpose of calculating linear regression trends for each of the products is to evaluate how much the products agree in temporal patterns. Linear trends were calculated in the time series of monthly primary productivity for every pixel with anomalies for the MODIS-Aqua, VIIRS-SNPP, and VIIRS-NOAA-20 datasets. Calculating trends with anomalies enables us to focus on trends by removing seasonality. P-values were calculated to test the statistical significance of the trends for each pixel.\nThe trend analysis follows methods outlined in Melin et al. 2017, see the section 2.3 “Trend estimates and comparison of trends”.\n\n\nContingency Matrix and Cohen’s Kappa\nTo quantitatively assess agreement in trend classifications between the legacy and the interim netPP products, we use a contingency matrix and compute Cohen’s Kappa.\nA contingency matrix compares the direction of linear trends between the legacy and interim netPP products at each pixel. Each trend is classified into one of three categories:\n\nPositive trend: statistically significant increasing trend\n\nNegative trend: statistically significant decreasing trend\n\nNo significant trend: slope not significantly different from zero (e.g., p &gt; 0.05)\n\nWe then count how often each combination occurs across all pixels to build a 3×3 matrix:\n\n\n\n\n\n\n\n\n\n\nVIIRS Positive\nVIIRS Negative\nVIIRS No Trend\n\n\n\n\nMODIS Positive\na\nb\nc\n\n\nMODIS Negative\nd\ne\nf\n\n\nMODIS No Trend\ng\nh\ni\n\n\n\n\nDiagonal cells (a, e, i) indicate agreement.\nOff-diagonal cells indicate disagreement.\n\n\n\nCohen’s Kappa: Measuring Agreement Beyond Chance\nCohen’s Kappa (κ) quantifies how much the agreement between the legacy and interim products exceeds what would be expected by chance. It ranges from:\n\n1 = perfect agreement\n\n&lt;0 = no better than random\n\n\n\n\\(\\kappa = \\frac{P_o - P_e}{1 - P_e}\\)\n\n\nWhere:\n\n( P_o ) = observed agreement (proportion of pixels where legacy and interim agree):\n\n\\[\nP_o = \\frac{a + e + i}{N}\n\\]\n\n( P_e ) = expected agreement by chance:\n\n\\[\nP_e = \\frac{(a + b + c)(a + d + g) + (d + e + f)(b + e + h) + (g + h + i)(c + f + i)}{N^2}\n\\]\n\n( N ) = total number of valid pixels (sum of all cells):\n\n\\[\nN = a + b + c + d + e + f + g + h + i\n\\]"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "\nVIIRS-based Primary Productivity Products\n",
+    "section": "",
+    "text": "Replacing the Legacy MODIS-based Products"
+  },
+  {
+    "objectID": "index.html#project-overview",
+    "href": "index.html#project-overview",
+    "title": "\nVIIRS-based Primary Productivity Products\n",
+    "section": "Project Overview",
+    "text": "Project Overview\nSince 2007, the only satellite product available from NOAA for monitoring primary productivity has been the global product developed by the NOAA CoastWatch West Coast Node. The product is based on the Vertically Generalized Production Model (VPGM) described by Behrenfeld and Falkowski (1997) and relies on data from the MODIS sensor on the Aqua satellite to drive the algorithm. The MODIS Aqua sensor will be decommissioned soon, effectively ending this legacy MODIS-based primary productivity product. New primary productivity algorithms that use the latest satellite sensors are under development, but are unlikely to be in production before MODIS Aqua is retired.\nInterim products are required to address the needs of users for primary productivity data during the gap between the loss of the legacy MODIS primary productivity and the availability of the new generation primary productivity products. The NOAA CoastWatch was funded to produce the interim products."
+  },
+  {
+    "objectID": "index.html#project-goals",
+    "href": "index.html#project-goals",
+    "title": "\nVIIRS-based Primary Productivity Products\n",
+    "section": "Project Goals",
+    "text": "Project Goals\n\nOur group was funded to create two interim primary productivity products. The products use the Behrenfeld and Falkowski VPGM, but are driven by newer generation satellite data.\n\n\nA product based on data from the VIIRS SNPP sensor – The SNPP VIRS data provides a product time series that extends back to 2012;\nA product based on the VIIRS NOAA-20 sensor, to ensure the future availability of an interim product until a new generation product is available.\n\nAn important objective of the project was for the interim products to yield results that are similar to those generated by the legacy products, facilitating easy transitions by users to the interim product that require fewer resources for recalibrating their application. A comprehensive statistical evaluation was applied to both interim product lines to document their similarities to the legacy product. On a global level, both product lines yielded results similar to those of the legacy MODIS product. The detailed results and statistical methods can be found on the Statistical Analysis page. Users interested in conducting a statistical analyses tailored to their region of interest will find Python and R notebooks on the User Resources page that will guide them through the process."
+  },
+  {
+    "objectID": "index.html#the-importance-of-primary-productivity",
+    "href": "index.html#the-importance-of-primary-productivity",
+    "title": "\nVIIRS-based Primary Productivity Products\n",
+    "section": "The Importance of Primary Productivity",
+    "text": "The Importance of Primary Productivity\nPrimary productivity in marine surface waters is primarily the rate at which phytoplankton convert light energy into chemical energy stored as carbon biomass via the process of photosynthesis. Primary productivity forms the base of the marine food web, supplying higher trophic levels and microbial food webs with an energy and carbon source. It also contributes to the release oxygen and uptake of carbon dioxide in the ocean and atmosphere, and plays a crucial role in the global carbon cycle. Therefore, monitoring primary productivity is important for studying marine ecosystems, managing fisheries, and understanding global biogeochemical cycling."
+  },
+  {
+    "objectID": "index.html#download-interim-product-data",
+    "href": "index.html#download-interim-product-data",
+    "title": "\nVIIRS-based Primary Productivity Products\n",
+    "section": "Download Interim Product Data",
+    "text": "Download Interim Product Data\nThe two interim products lines are routinely produced and are available online as daily and monthly composites via the West Coast Node ERDDAP data server.\n\n\nVIIRS SNPP Interim Primary Productivity\n\n\n\nDaily Composites\n\n\nMonthly Composites\n\n\n\nVIIRS NOAA-20 Interim Primary Productivity\n\n\n\nDaily Composites\n\n\nMonthly Composites"
+  },
+  {
+    "objectID": "index.html#project-team-and-funding",
+    "href": "index.html#project-team-and-funding",
+    "title": "\nVIIRS-based Primary Productivity Products\n",
+    "section": "Project Team and Funding",
+    "text": "Project Team and Funding\n\nThe project team included Dale Robinson, Cara Wilson, Sunny Hospital, Veronica Lance, Johnathon Sherman, Ryan Rykaczewski, Andrea Vander Woude, Menghua Wang, and Melanie Abecassis associated with NOAA CoastWatch; Kim Hyde from NOAA Southeast Fisheries Science Center; and Ryan Vandermeulen from the NOAA National Marine Fisheries Service.\n\n\nA special thanks to Jesse Espinoza and Madison Richardson who made important contributions to the project including helping to generate the production Python code, produce the primary productivity products and develop the web presence.\n\n\nThe project was supported by funding from the Portfolio Management Branch of NESDIS, NOAA CoastWatch, and CSU COAST."
+  },
+  {
+    "objectID": "index.html#references",
+    "href": "index.html#references",
+    "title": "\nVIIRS-based Primary Productivity Products\n",
+    "section": "References",
+    "text": "References\nBehrenfeld and Falkowski. (1997) Photosynthetic rates derived from satellite-based chlorophyll concentration Limnol. Oceanogr. 42:1-20."
+  },
+  {
+    "objectID": "algorithm.html",
+    "href": "algorithm.html",
+    "title": "\nAlgorithm and Data\n",
+    "section": "",
+    "text": "Algorithm and Data"
+  },
+  {
+    "objectID": "algorithm.html#primary-productivity-netpp-algorithm",
+    "href": "algorithm.html#primary-productivity-netpp-algorithm",
+    "title": "\nAlgorithm and Data\n",
+    "section": "Primary Productivity (netPP) Algorithm",
+    "text": "Primary Productivity (netPP) Algorithm\n\nThe Behrenfeld and Falkowski (1997) algorithm estimates primary productivity using satellite measurements and derived parameters. The algorithm formulation is listed below:\n\n\n\n\\(netPP = 0.66125 \\times P_{opt}^b \\times \\frac{PAR^o}{PAR^o + 4.1} \\times Z_{eu} \\times CHL \\times DL\\)\n\n\n\nSatellite Measurements\n\nThe algorithm uses three satellite measurements:\n\n\n\nCHL - Surface Chlorophyll_a Concentration\n\n\nPAR - Photosynthetically Active Radiation\n\n\nSea Surface Temperature\n\n\n\n\nDerived Parameters\n\nThe derived parameters are:\n\n\n\n\\(P_{opt}^b\\) - Maximum Carbon fixation rate within the water column - Units: \\(mg\\) \\(C\\) \\(mg^{-2}\\) \\(chl\\) \\(h^{-1}\\) :\n\n\n\\(P_{opt}^b = - 3.27E-8 \\cdot SST^7 + 3.4132E-6 \\cdot SST^6\\)\n\n\n\\(- 1.348E-4 \\cdot SST^5 + 2.462E-3 \\cdot SST^4\\)\n\n\n\\(- 0.0205 \\cdot SST^3 + 0.0617 \\cdot SST^2 + 0.2749 \\cdot SST\\)\n\n\n\n\n\n\\(PAR/(PAR + 4.1)\\) - Fraction of realized \\(P_{opt}^b\\)\n\n\n\n\n\\(Z_{eu}\\) - Depth where light is 1% of that at the surface - Units: meters (m)\n\n\n\n\\(Z_{eu}\\) is derived from an estimate of the total chlorophyll concentration within the euphotic layer (\\(CHL_{eu}\\)) based on the Case I models of Morel and Berthon (1989):\n\n\n\n\\(Z_{eu} = 568.2 \\cdot CHL^{-0.746} \\quad \\text{when } CHL_{eu} &gt; 10.0\\)\n\n\nor\n\n\n\\(Z_{eu} = 200.0 \\cdot CHL^{-0.293} \\quad \\text{when } CHL_{eu} \\leq 10.0\\)\n\n\n\nWhere:\n\n\n\n\n\\(CHL_{eu} = 38.0 \\cdot CHL^{0.4250} \\quad \\text{when } CHL \\leq 1.0\\)\n\n\nor\n\n\n\\(CHL_{eu} = 40.2 \\cdot CHL^{0.5070} \\quad \\text{when } CHL &gt; 1.0\\)\n\n\n\n\n\nDL - Daylength determined from the day of the year and latitude - Units: hours"
+  },
+  {
+    "objectID": "algorithm.html#satellite-data-used-in-the-algorithm",
+    "href": "algorithm.html#satellite-data-used-in-the-algorithm",
+    "title": "\nAlgorithm and Data\n",
+    "section": "Satellite Data Used in the Algorithm",
+    "text": "Satellite Data Used in the Algorithm\n\nLegacy Product\n\n\nThe original netPP product made by CoastWatch West Coast Node uses chlorophyll, sea surface temperature and photosynthetically active radiation derived from the MODIS sensor on the Aqua satellite. The dataset began in 2002 and ends in 2024, offering daily, weekly, and monthly versions of the dataset.\n\n\nVIIRS SNPP Interim Product\n\n\nThe VIIRS SNPP interim netPP product uses chlorophyll, sea surface temperature and photosynthetically active radiation derived from the VIIRS sensor on the SNPP satellite. The dataset began in 2012 and continues to the present, offering daily and monthly versions of the dataset.\n\n\nVIIRS NOAA20 Interim Product\n\n\nThe VIIRS NOAA20 interim netPP product uses chlorophyll, sea surface temperature and photosynthetically active radiation derived from the VIIRS sensor on the NOAA20 satellite. The dataset began in 2018 and continues to the present, offering daily and monthly versions of the dataset."
+  },
+  {
+    "objectID": "algorithm.html#download-algorithm-input-data",
+    "href": "algorithm.html#download-algorithm-input-data",
+    "title": "\nAlgorithm and Data\n",
+    "section": "Download Algorithm Input Data",
+    "text": "Download Algorithm Input Data\n\n\nMODIS Aqua netPP\n\n\n\nMODIS netPP\n\n\n\nMODIS Aqua input data for legacy netPP\n\n\n\nMODIS Chlorophyll_a\n\n\nMODIS PAR\n\n\nMODIS SST\n\n\n\nVIIRS SNPP netPP\n\n\n\nVIIRS SNPP netPP\n\n\n\nVIIRS SNPP input data for interim netPP\n\n\n\nVIIRS SNPP Chlorophyll_a\n\n\nVIIRS SNPP PAR\n\n\nVIIRS SNPP SST\n\n\n\nVIIRS NOAA20 nPP\n\n\n\nVIIRS NOAA20 netPP\n\n\n\nVIIRS NOAA20 input data for interim netPP\n\n\n\nVIIRS NOAA20 Chlorophyll_a\n\n\nVIIRS NOAA20 PAR\n\n\nVIIRS NOAA20 SST"
+  },
+  {
+    "objectID": "user_resources.html",
+    "href": "user_resources.html",
+    "title": "\nUser Resources\n",
+    "section": "",
+    "text": "User Resources"
+  },
+  {
+    "objectID": "user_resources.html#code-gallery",
+    "href": "user_resources.html#code-gallery",
+    "title": "\nUser Resources\n",
+    "section": "Code Gallery",
+    "text": "Code Gallery\nExplore tutorials designed to help users analyze and compare legacy and interim primary productivity using Python or R.\n\nCustomizable Regional Analysis Tutorials\n\nUnbiased Relative Difference Analysis of the Legacy and Interim Products\n\n\n\n\n\nCalculate the mean unbiased relative difference (\\(\\psi\\)) between the legacy and interim products for a user-specified region.\nView in Github\n\n\n\n\nAbsolute Relative Difference Analysis of the Legacy and Interim Products\n\n\n\n\n\nCalculate the absolute relative difference (\\(\\Delta\\)) between the legacy and interim products for a user-specified region.\nView in Github\n\n\n\n\nContingency Tables: Assessing the Similarity Between Two Primary Productivity Products\n\n\n\n\n\nConstruct a contingency matrix to compare the trends between the legacy and interim product for a user-specified region.\nView in Github\n\n\n\n\n\nFull Statistical Analysis Tutorials\n\nPrimary Productivity Unbiased Relative Difference Analysis\n\n\nCalculate the mean unbiased relative difference (\\(\\psi\\)) of the interim VIIRS netPP and legacy MODIS netPP products for each month from the timeseries shared between the two sensors.\nView in Github\n\n\n\n\nPrimary Productivity Absolute Relative Difference Analysis\n\n\nCalculate the mean absolute relative difference (\\(\\Delta\\)) of the interim VIIRS netPP product and legacy MODIS netPP product for each month from a timeseries shared between the two sensors.\nView in Github\n\n\n\n\nCalculating Trends and P-Values for Legacy and Interim NetPP Products\n\n\nGenerate trends for satellite-derived hourly means of legacy or interim primary productivity products.\nView in Github"
+  },
+  {
+    "objectID": "user_resources.html#satellite-courses",
+    "href": "user_resources.html#satellite-courses",
+    "title": "\nUser Resources\n",
+    "section": "Satellite Courses",
+    "text": "Satellite Courses\n\nCoastWatch hosts satellite training opportunites in-person and online, providing users with the knowledge and skills to utilize satellite data in their research.\n\n  Satellite Courses→"
+  },
+  {
+    "objectID": "user_resources.html#erddap-server",
+    "href": "user_resources.html#erddap-server",
+    "title": "\nUser Resources\n",
+    "section": "ERDDAP Server",
+    "text": "ERDDAP Server\n\nSearch satellite data on the CoastWatch West Coast Node ERDDAP data server.\n\n  ERDDAP→"
+  }
+]
