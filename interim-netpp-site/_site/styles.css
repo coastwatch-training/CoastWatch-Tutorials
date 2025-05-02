@@ -1,0 +1,69 @@
+/* Center the navbar items */
+nav.quarto-navbar {
+    display: flex;
+    justify-content: center;
+}
+
+/*Center logo or adjust padding */
+nav.quarto-navbar .quarto-navbar-logo {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.navbar-logo {
+  max-height: 45px;
+  width: auto;
+  padding-right: 4px;
+}
+
+.navbar {
+    background-color:  #0058A6;
+    color: white;
+}
+
+.navbar-brand {
+    color: white;
+}
+
+.navbar #quarto-search.type-overlay .aa-Autocomplete svg.aa-SubmitIcon {
+    width: 26px;
+    height: 26px;
+    color: white;
+    opacity: 1;
+}
+
+.navbar-dark, .navbar[data-bs-theme=dark] {
+    --bs-navbar-color: #545555;
+    --bs-navbar-hover-color: #dee2e6;
+    --bs-navbar-disabled-color: rgba(84, 85, 85, 0.75);
+    --bs-navbar-active-color: #1f4eb6;
+    --bs-navbar-brand-color: #545555;
+    --bs-navbar-brand-hover-color: #dee2e6;
+    --bs-navbar-toggler-border-color: rgba(84, 85, 85, 0);
+    --bs-navbar-toggler-icon-bg: url(data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23545555' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e);
+}
+
+.nav-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-tabs .nav-link {
+  box-sizing: border-box;
+  min-width: 150px;
+  white-space: nowrap;
+  text-align: center;
+  margin: 0;
+  padding: 10px;
+}
+
+.tab-content {
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 1em;
+}

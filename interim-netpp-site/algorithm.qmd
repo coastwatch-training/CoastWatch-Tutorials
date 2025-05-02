@@ -1,0 +1,118 @@
+---
+anchor-sections: false
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    include-after-body: footer.html
+    toc: true
+    toc-depth: 3
+    toc-location: left
+sidebar:
+  style: "floating"
+---
+<h1> Algorithm and Data </h1>
+
+## Primary Productivity (netPP) Algorithm 
+
+<p>The Behrenfeld and Falkowski (1997) algorithm estimates primary productivity using satellite measurements and derived parameters. The algorithm formulation is listed below:</p>
+
+<blockquote>
+  <p style="color: black;">$netPP = 0.66125 \times P_{opt}^b \times \frac{PAR^o}{PAR^o + 4.1} \times Z_{eu} \times CHL \times DL$</p>
+</blockquote>
+
+### Satellite Measurements
+<p>The algorithm uses three satellite measurements:</p>
+<ul>
+  <li><strong>CHL</strong> - Surface Chlorophyll_a Concentration</li>
+  <li><strong>PAR</strong> - Photosynthetically Active Radiation</li>
+  <li><strong>Sea Surface Temperature</strong></li>
+</ul>
+
+### Derived Parameters
+<p>The derived parameters are:</p>
+<ul>
+  <li>
+    <strong>$P_{opt}^b$</strong> - Maximum Carbon fixation rate within the water column - Units: $mg$ $C$ $mg^{-2}$ $chl$ $h^{-1}$ :
+    <blockquote style="margin: 0; padding-left: 1em; border-left: 4px solid #ddd;">
+      <p style="color: black; margin: 0;">
+        $P_{opt}^b = - 3.27E-8 \cdot SST^7 + 3.4132E-6 \cdot SST^6$
+      </p>
+      <p style="color: black; margin: 0;">
+        $- 1.348E-4 \cdot SST^5 + 2.462E-3 \cdot SST^4$
+      </p>
+      <p style="color: black; margin: 0;">
+        $- 0.0205 \cdot SST^3 + 0.0617 \cdot SST^2 + 0.2749 \cdot SST$
+      </p>
+    </blockquote>
+    <p></p>
+  <li>
+    <strong>$PAR/(PAR + 4.1)$</strong> - Fraction of realized $P_{opt}^b$
+  </li>
+    <p></p>
+  <li>
+    <strong>$Z_{eu}$</strong> - Depth where light is 1% of that at the surface - Units: meters (m)
+    <p></p>
+    <p>$Z_{eu}$ is derived from an estimate of the total chlorophyll concentration within the euphotic layer        (<span>$CHL_{eu}$</span>) based on the Case I models of Morel and Berthon (1989):</p>
+    <blockquote>
+        <p style="color: black;">$Z_{eu} = 568.2 \cdot CHL^{-0.746} \quad \text{when } CHL_{eu} > 10.0$</p>
+        <p>or</p>
+        <p style="color: black;">$Z_{eu} = 200.0 \cdot CHL^{-0.293} \quad \text{when } CHL_{eu} \leq 10.0$</p>
+      </blockquote>
+    <p>Where:</p>
+    <ul>
+      <blockquote>
+        <p style="color: black;">$CHL_{eu} = 38.0 \cdot CHL^{0.4250} \quad \text{when } CHL \leq 1.0$</p>
+        <p>or</p>
+        <p style="color: black;">$CHL_{eu} = 40.2 \cdot CHL^{0.5070} \quad \text{when } CHL > 1.0$</p>
+      </blockquote>
+    </ul>
+  </li>
+  <li>
+      <strong>DL</strong> - Daylength determined from the day of the year and latitude - Units: hours
+  </li>
+</ul>
+
+## Satellite Data Used in the Algorithm 
+<h4><strong>Legacy Product</strong></h4>
+  <p>The original netPP product made by CoastWatch West Coast Node uses chlorophyll, sea surface temperature and photosynthetically active radiation derived from the MODIS sensor on the Aqua satellite. The dataset began in 2002 and ends in 2024, offering daily, weekly, and monthly versions of the dataset.</p>
+
+  <h4><strong>VIIRS SNPP Interim Product</strong></h4>
+  <p>The VIIRS SNPP interim netPP product uses chlorophyll, sea surface temperature and photosynthetically active radiation derived from the VIIRS sensor on the SNPP satellite. The dataset began in 2012 and continues to the present, offering daily and monthly versions of the dataset.</p>
+
+  <h4><strong>VIIRS NOAA20 Interim Product</strong></h4>
+  <p>The VIIRS NOAA20 interim netPP product uses chlorophyll, sea surface temperature and photosynthetically active radiation derived from the VIIRS sensor on the NOAA20 satellite. The dataset began in 2018 and continues to the present, offering daily and monthly versions of the dataset.</p>
+
+## Download Algorithm Input Data
+<ul>
+  <li><a>MODIS Aqua netPP</a></li>
+    <ul>
+      <li><a href="https://example.com">MODIS netPP</a></li>
+    </ul>
+  <li><a>MODIS Aqua input data for legacy netPP</a></li>
+    <ul>
+      <li><a href="https://www.earthdata.nasa.gov/">MODIS Chlorophyll_a</a></li>
+      <li><a href="https://www.earthdata.nasa.gov/">MODIS PAR</a></li>
+      <li><a href="https://www.earthdata.nasa.gov/">MODIS SST</a></li>
+    </ul>
+  <li><a>VIIRS SNPP netPP</a></li>
+    <ul>
+      <li><a href="https://example.com">VIIRS SNPP netPP</a></li>
+    </ul>
+  <li><a>VIIRS SNPP input data for interim netPP</a></li>
+    <ul>
+      <li><a href="https://www.earthdata.nasa.gov/">VIIRS SNPP Chlorophyll_a</a></li>
+      <li><a href="https://www.earthdata.nasa.gov/">VIIRS SNPP PAR</a></li>
+      <li><a href="https://www.earthdata.nasa.gov/">VIIRS SNPP SST</a></li>
+    </ul>
+  <li><a>VIIRS NOAA20 nPP</a></li>
+    <ul>
+      <li><a href="https://example.com">VIIRS NOAA20 netPP</a></li>
+    </ul>
+  <li><a>VIIRS NOAA20 input data for interim netPP</a></li>
+    <ul>
+      <li><a href="https://www.earthdata.nasa.gov/">VIIRS NOAA20 Chlorophyll_a</a></li>
+      <li><a href="https://www.earthdata.nasa.gov/">VIIRS NOAA20 PAR</a></li>
+      <li><a href="https://www.earthdata.nasa.gov/">VIIRS NOAA20 SST</a></li>
+    </ul>
+</ul>

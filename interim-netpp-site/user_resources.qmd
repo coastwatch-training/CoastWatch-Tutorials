@@ -1,0 +1,114 @@
+---
+anchor-sections: false
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    include-after-body: footer.html
+    toc: true
+    toc-depth: 4
+    toc-location: left
+sidebar:
+  style: "floating"
+---
+
+<h1> User Resources </h1>
+
+## Code Gallery
+
+Explore tutorials designed to help users analyze and compare legacy and interim primary productivity using Python or R.
+
+### Customizable Regional Analysis Tutorials
+
+#### Unbiased Relative Difference Analysis of the Legacy and Interim Products
+::: {.grid}
+::::{.g-col-6}
+![](images/CCAL_MODIS_SNPP_psi.png){width=100%}
+::::
+:::: {.g-col-6}
+Calculate the mean unbiased relative difference ($\psi$) between the legacy and interim products for a user-specified region.
+
+[View in Github](https://example.com)
+::::
+:::
+
+#### Absolute Relative Difference Analysis of the Legacy and Interim Products
+::: {.grid}
+::::{.g-col-6}
+![](images/CCAL_MODIS_SNPP_delta.png){width=100%}
+::::
+:::: {.g-col-6}
+Calculate the absolute relative difference ($\Delta$) between the legacy and interim products for a user-specified region.
+
+[View in Github](https://example.com)
+::::
+:::
+
+#### Contingency Tables: Assessing the Similarity Between Two Primary Productivity Products
+::: {.grid}
+::::{.g-col-6}
+![](images/CCAL_modis_snpp_3x3_contingency.png){width=100%}
+::::
+:::: {.g-col-6}
+Construct a contingency matrix to compare the trends between the legacy and interim product for a user-specified region.
+
+[View in Github](https://example.com)
+::::
+:::
+
+### Full Statistical Analysis Tutorials 
+
+#### Primary Productivity Unbiased Relative Difference Analysis  
+::: {.grid}
+::::{.g-col-12}
+
+Calculate the mean unbiased relative difference ($\psi$) of the interim VIIRS netPP and legacy MODIS netPP products for each month from the timeseries shared between the two sensors. 
+
+[View in Github](https://example.com)
+::::
+:::
+
+#### Primary Productivity Absolute Relative Difference Analysis  
+::: {.grid}
+::::{.g-col-12}
+
+Calculate the mean absolute relative difference ($\Delta$) of the interim VIIRS netPP product and legacy MODIS netPP product for each month from a timeseries shared between the two sensors. 
+
+[View in Github](https://example.com)
+::::
+:::
+
+#### Calculating Trends and P-Values for Legacy and Interim NetPP Products  
+::: {.grid}
+::::{.g-col-12}
+
+Generate trends for satellite-derived hourly means of legacy or interim primary productivity products.
+
+[View in Github](https://example.com)
+::::
+:::
+
+
+## Satellite Courses
+
+<p>
+    CoastWatch hosts satellite training opportunites in-person and online, providing users with the knowledge and skills to utilize satellite data in their research.
+</p>
+
+<a href="https://coastwatch.pfeg.noaa.gov/courses/satellite_course.html" target="_blank" style="text-decoration: none;">
+    <button style="padding: 10px 20px; font-size: 18px; color:white; background-color:  #0072ce; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+        Satellite Courses<span style="margin-left: 10px;">&rarr;</span>
+    </button>
+</a>
+
+## ERDDAP Server
+
+<p>
+    Search satellite data on the CoastWatch West Coast Node ERDDAP data server.
+</p>
+
+<a href="https://coastwatch.pfeg.noaa.gov/erddap/index.html" target="_blank" style="text-decoration: none;">
+    <button style="padding: 10px 20px; font-size: 18px; color:white; background-color:  #0072ce; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+        ERDDAP<span style="margin-left: 10px;">&rarr;</span>
+    </button>
+</a>

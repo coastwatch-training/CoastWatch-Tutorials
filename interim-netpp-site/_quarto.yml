@@ -1,0 +1,22 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "CoastWatch Primary Productivity Project"
+  navbar:
+    logo: images/NOAA_logo.png
+    href: https://coastwatch.noaa.gov/cwn/index.html
+    right:
+      - text: "Algorithm and Data"
+        href: algorithm.qmd
+      - text: "Statistical Analysis"
+        href: stats2.qmd
+      - text: "User Resources"
+        href: user_resources.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+
