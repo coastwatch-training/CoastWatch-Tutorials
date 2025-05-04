@@ -32,7 +32,7 @@
     "href": "stats2.html#download-statistical-analysis-data-products",
     "title": "\nStatistical Analysis\n",
     "section": "Download Statistical Analysis Data Products",
-    "text": "Download Statistical Analysis Data Products\nAccess datasets used in the statistical analysis, including unbiased and biased relative differences, correlations, trends, and contingency matrices.\n\n\nUnbiased Relative Difference (ψ)\n\n\n\nVIIRS-SNPP - MODIS-Aqua\n\n\nVIIRS-NOAA-20 - MODIS-Aqua\n\n\n\nLinear Regression Trends\n\n\n\nMODIS-Aqua & VIIRS SNPP\n\n\nMODIS-Aqua & VIIRS NOAA-20"
+    "text": "Download Statistical Analysis Data Products\nAccess datasets used in the statistical analysis, including unbiased relative differences, correlations, trends, and contingency matrices.\n\n\nUnbiased Relative Difference (ψ)\n\n\n\nVIIRS-SNPP - MODIS-Aqua\n\n\nVIIRS-NOAA-20 - MODIS-Aqua\n\n\n\nLinear Regression Trends\n\n\n\nMODIS-Aqua & VIIRS SNPP\n\n\nMODIS-Aqua & VIIRS NOAA-20"
   },
   {
     "objectID": "stats2.html#references",
@@ -152,5 +152,12 @@
     "title": "\nUser Resources\n",
     "section": "ERDDAP Server",
     "text": "ERDDAP Server\n\nSearch satellite data on the CoastWatch West Coast Node ERDDAP data server.\n\n  ERDDAP→"
+  },
+  {
+    "objectID": "user_resources.html#download-statistical-analysis-data-products",
+    "href": "user_resources.html#download-statistical-analysis-data-products",
+    "title": "\nUser Resources\n",
+    "section": "Download Statistical Analysis Data Products",
+    "text": "Download Statistical Analysis Data Products\nAccess the absolute relative difference dataset below. We included this analysis so users can directly compare the absolute differences between the legacy and interim netPP products.\n\n\nAbsolute Relative Difference (ψ)\n\n\n\nVIIRS-SNPP - MODIS-Aqua\n\n\nVIIRS-NOAA-20 - MODIS-Aqua"
   }
 ]

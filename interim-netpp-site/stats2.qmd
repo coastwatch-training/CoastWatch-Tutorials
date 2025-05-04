@@ -135,7 +135,7 @@ Tallying the values on the downward-sloping diagonal contingency matrix yield th
 
 
 ## Download Statistical Analysis Data Products
-Access datasets used in the statistical analysis, including unbiased and biased relative differences, correlations, trends, and contingency matrices.
+Access datasets used in the statistical analysis, including unbiased relative differences, correlations, trends, and contingency matrices.
 
 <ul>
   <li><a>Unbiased Relative Difference (&psi;)</a></li>
