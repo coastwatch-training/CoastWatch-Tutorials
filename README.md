@@ -17,19 +17,19 @@ An introduction to what ERDDAP is and an overview of the different CoastWatch ER
 * [netcdf-and-panoply-tutorial](netcdf-and-panoply-tutorial)
 Learn how to use NASA's Panoply software to open and view netCDF data. 
 * [Tutorial1-basics](Tutorial1-basics) 
-Learn to access satellite data from CoastWatch ERDDAP data server and to work with NetCDF files.  Visualize sea surface temperature on a map and plot time series data. R and python versions. 
+Learn to access satellite data from CoastWatch ERDDAP data server and to work with NetCDF files.  Visualize sea surface temperature on a map and plot time series data. R, python and Matlab versions. 
 * [Tutorial2-timeseries-compare-sensors](Tutorial2-timeseries-compare-sensors)
-Learn common ways to download data from ERDDAP servers to access time-series chlorophyll data from four different satellite datasets and summarize and visualize the data for comparison. R and python versions. 
+Learn common ways to download data from ERDDAP servers to access time-series chlorophyll data from four different satellite datasets and summarize and visualize the data for comparison. R, python and Matlab versions. 
 * [convert-180+180-to-0-360-longitude](convert-180+180-to-0-360-longitude)
 Work with datasets with -180&deg; to +180&deg; longitude values in a region that crosses the antimeridian.  Convert the coordinates from (-180, +180) to (0, 360)  and visualize data on a map. Python only. 
 * [create-virtual-buoy-with-satellite-data](create-virtual-buoy-with-satellite-data)
   Create a “virtual” buoy using satellite data to fill the gaps in in-situ data collected by a physical buoy. Extract data from a location close to an existing buoy.  Clean dataset by removing outliers, and aggregate (resample) to achieve a reduced temporal resolution.  Plot time series data. R and python versions. 
 * [extract-satellite-data-within-boundary](extract-satellite-data-within-boundary)
-  Extract sea surface temperature satellite data for an non-rectangular geographical region from an ERDDAP server using a shapefile, make maps, and plot a timeseries of the seasonal cycle of SST within the boundary. R and python versions. 
+  Extract sea surface temperature satellite data for an non-rectangular geographical region from an ERDDAP server using a shapefile, make maps, and plot a timeseries of the seasonal cycle of SST within the boundary. R, python and Matlab versions.  
 * [matchup-satellite-buoy-data](matchup-satellite-buoy-data)
   Temporally and geospatially subset satellite data to match with buoy data (tabular), run statistical analysis and produce a map of the satellite data with overlaying buoy data. R only. 
 * [matchup-satellite-data-to-track-locations](matchup-satellite-data-to-track-locations)
-  Extract satellite data along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track. R and python versions.
+  Extract satellite data along a set of points defined by longitude, latitude, and time coordinates like that produced by an animal telemetry tag, a ship track, or a glider track. R, python and Matlab versions. 
   
 __PolarWatch Specific Examples__
 
@@ -54,13 +54,13 @@ __PolarWatch Specific Examples__
 __Great Lakes Specific Examples__
 
 * [gl-access-sat-surface-temp-data](great-lakes-examples/Python/gl-access-sat-surface-temp-data.ipynb)
-Access and subset Lake Erie water surface temperature data, and plot both individual time steps and a time series. 
+Access and subset Lake Erie water surface temperature data, and plot both individual time steps and a time series. Python only.
 * [gl-timeseries-chloro-from-diff-sensors](great-lakes-examples/Python/gl-timeseries-chloro-from-diff-sensors.ipynb)
-Download mean chlorophyll-a concentration data from two sensors, MODIS (2002-2017) and VIIRS (2018-2023), to compare the values.
+Download mean chlorophyll-a concentration data from two sensors, MODIS (2002-2017) and VIIRS (2018-2023), to compare the values. Python only.
 * [gl-ice-plot-timeseries-ice-conc.ipynb](great-lakes-examples/Python/gl-ice-plot-timeseries-ice-conc.ipynb)
-Access Great Lakes ice concentration data from ERDDAP, visualize it on a map, and calculate the monthly means.
+Access Great Lakes ice concentration data from ERDDAP, visualize it on a map, and calculate the monthly means. Python only.
 * [gl-timeseries-surface-temp.ipynb](great-lakes-examples/Python/gl-timeseries-surface-temp.ipynb)
- Download Great Lakes average water surface temperature and compute a long-term time series (2007-2024), identifying the warmest and coldest years.
+ Download Great Lakes average water surface temperature and compute a long-term time series (2007-2024), identifying the warmest and coldest years. Python only.
 
 __Long Island Sound Specific Examples__
 * [lis-chlora-dynamics](long-island-sound-examples)
